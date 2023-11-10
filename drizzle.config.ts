@@ -8,5 +8,5 @@ export default {
   dbCredentials: {
     connectionString: env.DATABASE_URL,
   },
-  tablesFilter: ["test_*"],
+  tablesFilter: ["dojo_*"],
 } satisfies Config;
