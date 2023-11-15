@@ -22,8 +22,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="light">
-      <body className={`font-sans ${inter.variable}`}>
+    <html lang="en" className="dark">
+      <body className={`font-sans ${inter.variable} bg-background`}>
         <TRPCReactProvider headers={headers()}>{children}</TRPCReactProvider>
       </body>
     </html>

@@ -22,7 +22,7 @@ export default async function Home() {
       <div className="h-12 w-12 bg-accent"></div>
       <div className="flex flex-col items-center justify-center gap-4">
         <p className="text-center text-2xl text-white">
-          {session && <span>Logged in as {session.user?.name}</span>}
+          {/* {session && <span>Logged in as {session.user?.name}</span>} */}
         </p>
         <Link href={"/api/auth/signin/google"}>Google Sign In</Link>
         {/* <button
