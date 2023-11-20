@@ -8,11 +8,11 @@ import { signIn } from "next-auth/react";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
-  const hello = await api.post.hello.query({ text: "from tRPC" });
+  // const hello = await api.post.hello.query({ text: "from tRPC" });
   const session = await getServerAuthSession();
 
   if (session) {
-    redirect("/group");
+    redirect("/stores");
   }
 
   return (

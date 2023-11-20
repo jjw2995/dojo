@@ -120,7 +120,7 @@ export const verificationTokens = mysqlTable(
 // }));
 
 export const stores = mysqlTable("store", {
-  id: varchar("id", { length: 255 }).notNull().primaryKey(),
+  id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
   name: varchar("name", { length: 256 }).notNull(),
   // location: str || geohash
   // tax
@@ -130,7 +130,7 @@ export const members = mysqlTable(
   "member",
   {
     userId: varchar("userId", { length: 255 }).notNull(),
-    storeId: varchar("storeId", { length: 255 }).notNull(),
+    storeId: bigint("storeId", { mode: "number" }).notNull(),
     authority: mysqlEnum("authority", ["owner", "manager", "member"])
       .notNull()
       .default("member"),
@@ -145,6 +145,7 @@ export const memberRelations = relations(members, ({ many, one }) => ({
   user: one(users, { fields: [members.userId], references: [users.id] }),
   store: one(stores, { fields: [members.storeId], references: [stores.id] }),
 }));
+
 export const items = mysqlTable("item", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
   name: varchar("name", { length: 256 }).notNull(),

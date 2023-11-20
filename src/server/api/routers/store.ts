@@ -26,11 +26,24 @@ export const storeRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ name: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
-      // await ctx.db.transaction(async (tx)=>{
-      //   let {insertId} = await tx.insert(stores).values({name: input.name})
-      //   let b = await tx.insert(members).values({userId: ctx.session.user.id, storeId:insertId,authority:"owner"})
-      // })
+      return await ctx.db.transaction(async (tx) => {
+        let { insertId } = await tx.insert(stores).values({ name: input.name });
+        let b = await tx.insert(members).values({
+          userId: ctx.session.user.id,
+          storeId: Number(insertId),
+          authority: "owner",
+        });
+        return await tx
+          .selectDistinct()
+          .from(stores)
+          .where(eq(stores.id, Number(insertId)));
+      });
     }),
+
+  // delete if owner is only member
+  // delete: protectedProcedure.input({storeId: z.string().min(1)}).mutation(async ({ctx, input})=>{
+  //   // await ctx.db.transaction()
+  // }),
 
   getLatest: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.posts.findFirst({
