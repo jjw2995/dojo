@@ -35,7 +35,7 @@ type Store = RouterOutputs["store"]["get"][number]["store"];
 function Store({ store }: { store: Store }) {
   return (
     <Link
-      href={`/stores/${store.id}`}
+      href={`/stores/${store.id}/home`}
       key={store.id}
       className="m-2 w-[80%] rounded p-2 text-lg outline"
     >
