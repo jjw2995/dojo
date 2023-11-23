@@ -146,10 +146,16 @@ export const memberRelations = relations(members, ({ many, one }) => ({
   store: one(stores, { fields: [members.storeId], references: [stores.id] }),
 }));
 
+export const kitchens = mysqlTable("kitchen", {
+  id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+  name: varchar("name", { length: 256 }).notNull(),
+  storeId: bigint("storeId", { mode: "number" }).notNull(),
+});
+
 export const items = mysqlTable("item", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
   name: varchar("name", { length: 256 }).notNull(),
-  storeId: varchar("storeId", { length: 255 }).notNull(),
+  storeId: bigint("storeId", { mode: "number" }).notNull(),
   // options ? simple json obj or db relation? idk
 });
 // export const modifiers = mysqlTable("modifier", {})

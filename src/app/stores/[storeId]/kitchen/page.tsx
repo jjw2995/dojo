@@ -6,8 +6,12 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { api } from "~/trpc/react";
 
 export default function Page({ params }: { params: { storeId: string } }) {
+  const kitchen = api.kitchen.get.useQuery();
   return (
     <div>
+      {kitchen.data?.map((v) => {
+        return <div key={v.id}>{v.name}</div>;
+      })}
       <Create />
     </div>
   );
@@ -18,15 +22,15 @@ type Input = { stationName: string };
 function Create() {
   const [open, setOpen] = useState(false);
   const form = useForm<Input>();
-  const storeCreate = api.store.create.useMutation();
+  const kitchenCreate = api.kitchen.create.useMutation();
   const utils = api.useUtils();
   const onSubmit: SubmitHandler<Input> = (data) => {
     // console.log(data);
-    storeCreate.mutate(
+    kitchenCreate.mutate(
       { name: data.stationName },
       {
         onSuccess(data, variables, context) {
-          utils.store.get.invalidate();
+          utils.kitchen.get.invalidate();
           form.reset();
           setOpen(false);
         },
@@ -49,7 +53,7 @@ function Create() {
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <input
               className="text-black"
-              placeholder="Group Name"
+              placeholder="Station Name"
               {...form.register("stationName", { required: true })}
             />
             <div className="m-2 flex flex-row justify-around">
