@@ -22,7 +22,7 @@ export default {
       },
       dark: {
         text: "#ffffff",
-        background: "#000000",
+        background: "#444444",
         primary: "#8fb3ff",
         secondary: "#001952",
         accent: "#f199bf",
