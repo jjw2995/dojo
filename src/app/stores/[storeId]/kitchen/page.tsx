@@ -1,5 +1,6 @@
 "use client";
 
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Select from "@radix-ui/react-select";
 
@@ -9,16 +10,22 @@ import { api } from "~/trpc/react";
 
 export default function Page({ params }: { params: { storeId: string } }) {
   const kitchen = api.kitchen.get.useQuery();
+
+  const setCurrentStation = (name: String) => {
+    console.log(name);
+  };
+
   return (
     <div>
-      <div className="flex-row">
-        <Create />
-        <StationSelect />
-        <button>...</button>
+      <div className="flex-row text-sm">
+        {/* <Create /> */}
+        <StationSelect setStation={setCurrentStation} />
+        <DropDown />
+        {/* <button>...</button> */}
       </div>
-      {kitchen.data?.map((v) => {
+      {/* {kitchen.data?.map((v) => {
         return <div key={v.id}>{v.name}</div>;
-      })}
+      })} */}
     </div>
   );
 }
@@ -127,12 +134,49 @@ function Delete() {
   );
 }
 
-function StationSelect() {
+function DropDown() {
   return (
-    <Select.Root>
-      <Select.Trigger className="m-2 justify-center p-2 outline">
-        <Select.Value />
-        ??
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger>
+        ???
+        {/* <button>???</button> */}
+      </DropdownMenu.Trigger>
+
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content>
+          <DropdownMenu.Label />
+          <DropdownMenu.Item>a1</DropdownMenu.Item>
+
+          <Create></Create>
+
+          <DropdownMenu.Sub>
+            <DropdownMenu.SubTrigger>?</DropdownMenu.SubTrigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.SubContent>
+                <DropdownMenu.Item>a1</DropdownMenu.Item>
+              </DropdownMenu.SubContent>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Sub>
+
+          <DropdownMenu.Separator />
+          <DropdownMenu.Arrow />
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  );
+}
+
+function StationSelect({
+  setStation,
+}: {
+  setStation: (value: String) => void;
+}) {
+  const kitchen = api.kitchen.get.useQuery();
+
+  return (
+    <Select.Root onValueChange={setStation}>
+      <Select.Trigger>
+        <Select.Value placeholder="???" />
         <Select.Icon />
       </Select.Trigger>
 
@@ -140,19 +184,14 @@ function StationSelect() {
         <Select.Content>
           <Select.ScrollUpButton />
           <Select.Viewport>
-            <Select.Item value="????">
-              <Select.ItemText />
-              asfasd
-              <Select.ItemIndicator />
-            </Select.Item>
-
-            <Select.Group>
-              <Select.Label />
-              <Select.Item value="w">
-                <Select.ItemText />
-                <Select.ItemIndicator />
-              </Select.Item>
-            </Select.Group>
+            <Create></Create>
+            {kitchen.data?.map((val, idx) => {
+              return (
+                <Select.Item value={val.name}>
+                  <Select.ItemText>{val.name}</Select.ItemText>
+                </Select.Item>
+              );
+            })}
 
             <Select.Separator />
           </Select.Viewport>
