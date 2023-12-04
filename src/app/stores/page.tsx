@@ -32,6 +32,7 @@ export default function Stores() {
 type Input = { groupName: string };
 
 type Store = RouterOutputs["store"]["get"][number]["store"];
+
 function Store({ store }: { store: Store }) {
   return (
     <Link

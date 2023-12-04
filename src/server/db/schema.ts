@@ -6,6 +6,7 @@ import {
   mysqlEnum,
   mysqlTableCreator,
   primaryKey,
+  serial,
   text,
   timestamp,
   varchar,
@@ -111,16 +112,8 @@ export const verificationTokens = mysqlTable(
 
 // ===============================
 
-// export const sessionsRelations = relations(sessions, ({ one }) => ({
-//   user: one(users, { fields: [sessions.userId], references: [users.id] }),
-// }));
-
-// export const usersRelations = relations(users, ({ many }) => ({
-//   accounts: many(accounts),
-// }));
-
 export const stores = mysqlTable("store", {
-  id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+  id: serial("id").primaryKey(),
   name: varchar("name", { length: 256 }).notNull(),
   // location: str || geohash
   // tax
@@ -141,23 +134,59 @@ export const members = mysqlTable(
   }),
 );
 
-export const memberRelations = relations(members, ({ many, one }) => ({
+export const membersRelations = relations(members, ({ many, one }) => ({
   user: one(users, { fields: [members.userId], references: [users.id] }),
   store: one(stores, { fields: [members.storeId], references: [stores.id] }),
 }));
 
-export const kitchens = mysqlTable("kitchen", {
-  id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+export const stations = mysqlTable("station", {
+  id: serial("id").primaryKey(),
   name: varchar("name", { length: 256 }).notNull(),
   storeId: bigint("storeId", { mode: "number" }).notNull(),
 });
+export const stationsRelations = relations(stations, ({ many }) => ({
+  stationsToItems: many(itemsToStations),
+}));
 
 export const items = mysqlTable("item", {
-  id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+  id: serial("id").primaryKey(),
   name: varchar("name", { length: 256 }).notNull(),
   storeId: bigint("storeId", { mode: "number" }).notNull(),
   // options ? simple json obj or db relation? idk
 });
+export const itemsRelations = relations(items, ({ many }) => ({
+  itemsToStations: many(itemsToStations),
+}));
+
+export const itemsToStations = mysqlTable(
+  "itemToStation",
+  {
+    itemId: int("itemId").notNull(),
+    // .references(() => items.id),
+    stationId: int("stationId").notNull(),
+    // .references(() => stations.id),
+  },
+  (t) => ({
+    pk: primaryKey(t.itemId, t.stationId),
+  }),
+);
+
+export const itemsToStationsRelations = relations(
+  itemsToStations,
+  ({ one }) => ({
+    item: one(items, {
+      fields: [itemsToStations.itemId],
+      references: [items.id],
+    }),
+    station: one(stations, {
+      fields: [itemsToStations.stationId],
+      references: [stations.id],
+    }),
+  }),
+);
+
+// export const itemsToStationsRelations = relations()
+
 // export const modifiers = mysqlTable("modifier", {})
 
 // export const ws = mysqlTable(
