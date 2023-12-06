@@ -123,7 +123,7 @@ export const members = mysqlTable(
   "member",
   {
     userId: varchar("userId", { length: 255 }).notNull(),
-    storeId: bigint("storeId", { mode: "number" }).notNull(),
+    storeId: int("storeId").notNull(),
     authority: mysqlEnum("authority", ["owner", "manager", "member"])
       .notNull()
       .default("member"),
@@ -142,7 +142,7 @@ export const membersRelations = relations(members, ({ many, one }) => ({
 export const stations = mysqlTable("station", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 256 }).notNull(),
-  storeId: bigint("storeId", { mode: "number" }).notNull(),
+  storeId: int("storeId").notNull(),
 });
 export const stationsRelations = relations(stations, ({ many }) => ({
   stationsToItems: many(itemsToStations),
@@ -151,11 +151,17 @@ export const stationsRelations = relations(stations, ({ many }) => ({
 export const items = mysqlTable("item", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 256 }).notNull(),
-  storeId: bigint("storeId", { mode: "number" }).notNull(),
+  storeId: int("storeId").notNull(),
+  categoryId: int("categoryId").notNull(),
+
   // options ? simple json obj or db relation? idk
 });
-export const itemsRelations = relations(items, ({ many }) => ({
+export const itemsRelations = relations(items, ({ many, one }) => ({
   itemsToStations: many(itemsToStations),
+  category: one(categories, {
+    fields: [items.categoryId],
+    references: [categories.id],
+  }),
 }));
 
 export const itemsToStations = mysqlTable(
@@ -185,26 +191,25 @@ export const itemsToStationsRelations = relations(
   }),
 );
 
-// export const itemsToStationsRelations = relations()
+export const categories = mysqlTable("categories", {
+  id: serial("id").primaryKey(),
+  storeId: int("storeId").notNull(),
+  name: varchar("name", { length: 256 }).notNull(),
+});
+
+export const categoriesRelations = relations(categories, ({ many }) => ({
+  items: many(items),
+}));
+// export const stations = mysqlTable("station", {
+//   id: serial("id").primaryKey(),
+//   name: varchar("name", { length: 256 }).notNull(),
+//   storeId: bigint("storeId", { mode: "number" }).notNull(),
+// });
+// export const stationsRelations = relations(stations, ({ many }) => ({
+//   stationsToItems: many(itemsToStations),
+// }));
 
 // export const modifiers = mysqlTable("modifier", {})
-
-// export const ws = mysqlTable(
-//   "w",
-//   {
-//     id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-//     name: varchar("name", { length: 256 }),
-//     createdById: varchar("createdById", { length: 255 }).notNull(),
-//     createdAt: timestamp("created_at")
-//       .default(sql`CURRENT_TIMESTAMP`)
-//       .notNull(),
-//     updatedAt: timestamp("updatedAt").onUpdateNow(),
-//   },
-//   (example) => ({
-//     createdByIdIdx: index("createdById_idx").on(example.createdById),
-//     nameIndex: index("name_idx").on(example.name),
-//   }),
-// );
 
 /**
  *
