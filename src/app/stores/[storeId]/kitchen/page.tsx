@@ -7,25 +7,37 @@ import * as Select from "@radix-ui/react-select";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { api } from "~/trpc/react";
+import { RouterOutputs } from "~/trpc/shared";
 
+type stationType = RouterOutputs["station"]["get"][number];
 export default function Page({ params }: { params: { storeId: string } }) {
-  const [curStationId, setCurStationId] = useState<String | null>(null);
+  const [curStation, setCurStation] = useState<stationType | null>(null);
   // const station = api.station.get.useQuery(undefined, {
   //   enabled: curStationId !== null,
   // });
 
-  const setCurrentStation = (stationId: String) => {
-    setCurStationId(stationId);
+  const setCurrentStation = (station: stationType) => {
+    setCurStation(station);
+  };
+
+  const setStationNull = () => {
+    setCurStation(null);
   };
 
   return (
     <div>
       <div className="mx-[5%] my-[2%] flex flex-row justify-between text-2xl">
-        <StationSelect setStation={setCurrentStation} />
+        <StationSelect setStation={setCurrentStation}>
+          {curStation?.name}
+        </StationSelect>
 
-        {curStationId ? <StationMenu stationId={curStationId} /> : null}
+        {curStation ? (
+          <StationMenu
+            stationId={curStation.id}
+            setStationNull={setStationNull}
+          />
+        ) : null}
       </div>
-      {curStationId}
     </div>
   );
 }
@@ -82,7 +94,13 @@ function Create() {
   );
 }
 
-function StationMenu({ stationId }: { stationId: String }) {
+function StationMenu({
+  stationId,
+  setStationNull,
+}: {
+  stationId: number;
+  setStationNull: () => void;
+}) {
   const util = api.useUtils();
   const d = api.station.delete.useMutation({
     onSuccess: () => {
@@ -99,7 +117,8 @@ function StationMenu({ stationId }: { stationId: String }) {
           {/* <DropdownMenu.Arrow className="fill-white" /> */}
           <DropdownMenu.Item
             onClick={() => {
-              d.mutate({ stationId: Number(stationId) });
+              d.mutate({ stationId });
+              setStationNull();
             }}
           >
             delete
@@ -110,14 +129,29 @@ function StationMenu({ stationId }: { stationId: String }) {
   );
 }
 
-function StationSelect({ setStation }: { setStation: (id: String) => void }) {
+function StationSelect({
+  setStation,
+  children,
+}: {
+  setStation: (station: stationType) => void;
+  children?: React.ReactNode;
+}) {
   const kitchen = api.station.get.useQuery();
 
   return (
-    <Select.Root onValueChange={setStation}>
-      <Select.Trigger>
+    <Select.Root
+      onValueChange={(stationId) => {
+        const a = kitchen.data?.find(({ id }) => {
+          return id === Number(stationId);
+        });
+        if (a) {
+          setStation(a);
+        }
+      }}
+    >
+      <Select.Trigger asChild>
         <div className="underline underline-offset-4">
-          ??
+          {children ? children : kitchen.data ? "select" : "create"}
           {/* <Select.Value placeholder={kitchen.data ? "select" : "create"} /> */}
         </div>
       </Select.Trigger>
