@@ -4,11 +4,22 @@ import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { api } from "~/trpc/react";
 import * as Dialog from "@radix-ui/react-dialog";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 export default function Page({ params }: { params: { storeId: string } }) {
-  // const a = api.category.get.useQuery();
+  const a = api.category.get.useQuery();
   return (
-    <div>
+    <div className="mx-[5%] my-[2%] text-2xl">
+      <div className="flex flex-col">
+        {a.data?.map((d) => {
+          return (
+            <div className="m-2 flex justify-between" key={d.id}>
+              {d.name}
+              <CategoryMenu categoryId={d.id} setCategoryNull={() => {}} />
+            </div>
+          );
+        })}
+      </div>
       <CreateCategory />
     </div>
   );
@@ -26,7 +37,7 @@ function CreateCategory() {
       { name: data.categoryName },
       {
         onSuccess(data, variables, context) {
-          utils.station.get.invalidate();
+          utils.category.get.invalidate();
           form.reset();
           setOpen(false);
         },
@@ -37,7 +48,9 @@ function CreateCategory() {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <button className="m-2 p-2 text-xl">+</button>
+        <button className="fixed bottom-[10%] right-[10%] m-2 rounded-full p-2 text-xl outline">
+          +
+        </button>
       </Dialog.Trigger>
 
       <Dialog.Portal>
@@ -63,5 +76,48 @@ function CreateCategory() {
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
+  );
+}
+
+function CategoryMenu({
+  categoryId,
+  setCategoryNull,
+}: {
+  categoryId: number;
+  setCategoryNull: () => void;
+}) {
+  const util = api.useUtils();
+  const d = api.category.delete.useMutation({
+    onSuccess: () => {
+      util.category.get.invalidate();
+    },
+  });
+
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger>...</DropdownMenu.Trigger>
+
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content className="bg-white ">
+          {/* <DropdownMenu.Arrow className="fill-white" /> */}
+          <DropdownMenu.Item
+            onClick={() => {
+              d.mutate({ categoryId });
+              setCategoryNull();
+            }}
+          >
+            add item
+          </DropdownMenu.Item>
+          <DropdownMenu.Item
+            onClick={() => {
+              d.mutate({ categoryId });
+              setCategoryNull();
+            }}
+          >
+            delete
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 }

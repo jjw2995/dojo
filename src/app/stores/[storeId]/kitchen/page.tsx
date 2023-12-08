@@ -25,19 +25,17 @@ export default function Page({ params }: { params: { storeId: string } }) {
   };
 
   return (
-    <div>
-      <div className="mx-[5%] my-[2%] flex flex-row justify-between text-2xl">
-        <StationSelect setStation={setCurrentStation}>
-          {curStation?.name}
-        </StationSelect>
+    <div className="mx-[5%] my-[2%] flex flex-row justify-between text-2xl">
+      <StationSelect setStation={setCurrentStation}>
+        {curStation?.name}
+      </StationSelect>
 
-        {curStation ? (
-          <StationMenu
-            stationId={curStation.id}
-            setStationNull={setStationNull}
-          />
-        ) : null}
-      </div>
+      {curStation ? (
+        <StationMenu
+          stationId={curStation.id}
+          setStationNull={setStationNull}
+        />
+      ) : null}
     </div>
   );
 }
