@@ -11,16 +11,41 @@ export default function StoreLayout({
   };
 }) {
   return (
-    <>
-      {children}
-      <Nav storeId={params.storeId} />
-    </>
+    <div className="flex w-screen">
+      <div className="fixed bottom-0 flex w-[100%] justify-around outline lg:relative lg:bottom-auto lg:flex lg:w-fit lg:flex-col">
+        <Link
+          className={`m-2 p-2 text-lg`}
+          href={`/stores/${params.storeId}/home`}
+        >
+          Home
+        </Link>
+        <Link
+          className={`m-2 p-2 text-lg`}
+          href={`/stores/${params.storeId}/order`}
+        >
+          Order
+        </Link>
+        <Link
+          className={`m-2 p-2 text-lg`}
+          href={`/stores/${params.storeId}/kitchen`}
+        >
+          Kitchen
+        </Link>
+        <Link
+          className={`m-2 p-2 text-lg`}
+          href={`/stores/${params.storeId}/items`}
+        >
+          Items
+        </Link>
+      </div>
+      <div className="w-full">{children}</div>
+    </div>
   );
 }
 
 function Nav({ storeId }: { storeId: string }) {
   return (
-    <div className="fixed bottom-0 right-[50%] flex w-[100%] translate-x-[50%] justify-around">
+    <div className="lg:fix fixed bottom-0 right-[50%] flex w-[100%] translate-x-[50%] justify-around outline">
       <Link className={`m-2 p-2 text-lg`} href={`/stores/${storeId}/home`}>
         Home
       </Link>

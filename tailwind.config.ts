@@ -15,6 +15,7 @@ export default {
     createThemes({
       light: {
         text: "#000000",
+        // using custom color messes up opacity for some reason
         background: "#ffffff",
         primary: "#8fb3ff",
         secondary: "#ebf1ff",
