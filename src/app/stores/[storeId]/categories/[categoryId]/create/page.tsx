@@ -9,7 +9,7 @@ export default function Page({
   console.log(params);
 
   return (
-    <div className="mx-[5%] my-[2%] text-2xl">
+    <div className="text-2xl">
       <button
         onClick={() => {
           window.history.back();

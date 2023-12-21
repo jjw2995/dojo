@@ -21,7 +21,7 @@ export default function Page({
   const a = api.category.get.useQuery();
 
   return (
-    <div className="flex text-2xl">
+    <div className="flex">
       <div className="flex-1 lg:relative">
         <div className="flex flex-col">
           {a.data?.map((category) => {
@@ -37,7 +37,7 @@ export default function Page({
         <CreateCategory />
       </div>
       <div className="fixed lg:relative lg:flex-1">{children}</div>
-      {/* <div className="h-4/5 lg:relative lg:w-fit lg:flex-1">{children}</div> */}
+      {/* {children} */}
     </div>
   );
 }
@@ -99,7 +99,7 @@ function CreateCategory() {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <button className="fixed bottom-[10%] left-[90%] m-2 rounded-full p-2 text-xl outline lg:left-[45%]">
+        <button className="fixed bottom-[10%] left-[90%] m-2 rounded-full p-2 outline lg:left-[45%]">
           +
         </button>
       </Dialog.Trigger>

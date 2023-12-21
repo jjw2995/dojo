@@ -8,7 +8,7 @@ export default function Page({
   children: React.ReactNode;
 }) {
   return (
-    <div className="fixed h-4/5 w-screen bg-white lg:relative lg:block lg:w-fit lg:flex-1">
+    <div className="fixed h-screen w-screen bg-white outline lg:relative lg:flex lg:h-auto lg:w-fit">
       {children}
     </div>
   );

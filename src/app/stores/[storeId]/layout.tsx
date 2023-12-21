@@ -12,27 +12,18 @@ export default function StoreLayout({
 }) {
   return (
     <div className="flex w-screen">
-      <div className="fixed bottom-0 flex w-[100%] justify-around outline lg:relative lg:bottom-auto lg:flex lg:w-fit lg:flex-col">
-        <Link
-          className={`m-2 p-2 text-lg`}
-          href={`/stores/${params.storeId}/home`}
-        >
+      <div className="fixed bottom-0 z-50 flex w-[100%] justify-around outline lg:relative lg:bottom-auto lg:flex lg:w-fit lg:flex-col lg:justify-normal">
+        <Link className={`m-2 p-2`} href={`/stores/${params.storeId}/home`}>
           Home
         </Link>
-        <Link
-          className={`m-2 p-2 text-lg`}
-          href={`/stores/${params.storeId}/order`}
-        >
+        <Link className={`m-2 p-2`} href={`/stores/${params.storeId}/order`}>
           Order
         </Link>
-        <Link
-          className={`m-2 p-2 text-lg`}
-          href={`/stores/${params.storeId}/kitchen`}
-        >
+        <Link className={`m-2 p-2`} href={`/stores/${params.storeId}/kitchen`}>
           Kitchen
         </Link>
         <Link
-          className={`m-2 p-2 text-lg`}
+          className={`m-2 p-2`}
           href={`/stores/${params.storeId}/categories`}
         >
           Items
@@ -46,16 +37,16 @@ export default function StoreLayout({
 function Nav({ storeId }: { storeId: string }) {
   return (
     <div className="lg:fix fixed bottom-0 right-[50%] flex w-[100%] translate-x-[50%] justify-around outline">
-      <Link className={`m-2 p-2 text-lg`} href={`/stores/${storeId}/home`}>
+      <Link className={`m-2 p-2`} href={`/stores/${storeId}/home`}>
         Home
       </Link>
-      <Link className={`m-2 p-2 text-lg`} href={`/stores/${storeId}/order`}>
+      <Link className={`m-2 p-2`} href={`/stores/${storeId}/order`}>
         Order
       </Link>
-      <Link className={`m-2 p-2 text-lg`} href={`/stores/${storeId}/kitchen`}>
+      <Link className={`m-2 p-2`} href={`/stores/${storeId}/kitchen`}>
         Kitchen
       </Link>
-      <Link className={`m-2 p-2 text-lg`} href={`/stores/${storeId}/items`}>
+      <Link className={`m-2 p-2`} href={`/stores/${storeId}/items`}>
         Items
       </Link>
     </div>

@@ -21,7 +21,7 @@ export default function Stores() {
             return <Store store={store.store} key={store.store.id} />;
           })
         ) : (
-          <div className="m-2 text-xl">create store</div>
+          <div className="m-2">create store</div>
         )}
       </div>
       <Create />
@@ -38,7 +38,7 @@ function Store({ store }: { store: Store }) {
     <Link
       href={`/stores/${store.id}/home`}
       key={store.id}
-      className="m-2 w-[80%] rounded p-2 text-lg outline"
+      className="m-2 w-[80%] rounded p-2 outline"
     >
       {store.name}
     </Link>
@@ -67,7 +67,7 @@ function Create() {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <button className="fixed left-[80%] top-[90%] z-10 m-2 translate-x-[-50%] translate-y-[-50%] rounded-full bg-background p-2 text-xl leading-none text-text outline">
+        <button className="fixed left-[80%] top-[90%] z-10 m-2 translate-x-[-50%] translate-y-[-50%] rounded-full bg-background p-2 leading-none text-text outline">
           +
         </button>
       </Dialog.Trigger>
