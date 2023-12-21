@@ -6,10 +6,7 @@ import { api } from "~/trpc/react";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { RouterOutputs } from "~/trpc/shared";
-import CreateItem from "./itemCreate";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { param } from "drizzle-orm";
 
 export default function Page({
   children,
@@ -51,27 +48,11 @@ function Category({
   storeId: string;
 }) {
   const [addItemModOpen, setAddItemModOpen] = useState(false);
-  const openAddItemMod = () => {
-    setAddItemModOpen(true);
-  };
-  const closeAddItemMod = () => {
-    setAddItemModOpen(false);
-  };
 
   return (
     <div className="m-2 flex justify-between" key={category.id}>
       {category.name}
-      <CategoryMenu
-        categoryId={category.id}
-        storeId={storeId}
-        openAddItemMod={openAddItemMod}
-      />
-      {addItemModOpen && (
-        <CreateItem
-          closeAddItemMod={closeAddItemMod}
-          categoryId={category.id}
-        />
-      )}
+      <CategoryMenu categoryId={category.id} storeId={storeId} />
     </div>
   );
 }
@@ -132,24 +113,11 @@ function CreateCategory() {
 
 function CategoryMenu({
   categoryId,
-  openAddItemMod,
   storeId,
 }: {
   categoryId: number;
   storeId: string;
-  openAddItemMod: () => void;
 }) {
-  const util = api.useUtils();
-  const d = api.category.delete.useMutation({
-    onSuccess: () => {
-      util.category.get.invalidate();
-    },
-  });
-
-  // const a = usePathname();
-
-  // console.log(a);
-
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>...</DropdownMenu.Trigger>
@@ -157,13 +125,7 @@ function CategoryMenu({
       <DropdownMenu.Portal>
         <DropdownMenu.Content className="bg-white ">
           {/* <DropdownMenu.Arrow className="fill-white" /> */}
-          <DropdownMenu.Item
-            onClick={() => {
-              openAddItemMod();
-            }}
-          >
-            add item
-          </DropdownMenu.Item>
+
           <DropdownMenu.Item asChild>
             <Link
               className={`m-2 p-2 text-lg`}
