@@ -33,7 +33,7 @@ export default function StoreLayout({
         </Link>
         <Link
           className={`m-2 p-2 text-lg`}
-          href={`/stores/${params.storeId}/items`}
+          href={`/stores/${params.storeId}/categories`}
         >
           Items
         </Link>

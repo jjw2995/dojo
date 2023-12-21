@@ -9,6 +9,7 @@ import { RouterOutputs } from "~/trpc/shared";
 import CreateItem from "./itemCreate";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { param } from "drizzle-orm";
 
 export default function Page({
   children,
@@ -24,7 +25,13 @@ export default function Page({
       <div className="flex-1 lg:relative">
         <div className="flex flex-col">
           {a.data?.map((category) => {
-            return <Category category={category} key={category.id} />;
+            return (
+              <Category
+                storeId={params.storeId}
+                category={category}
+                key={category.id}
+              />
+            );
           })}
         </div>
         <CreateCategory />
@@ -36,7 +43,13 @@ export default function Page({
 }
 
 type Category = RouterOutputs["category"]["get"][number];
-function Category({ category }: { category: Category }) {
+function Category({
+  category,
+  storeId,
+}: {
+  category: Category;
+  storeId: string;
+}) {
   const [addItemModOpen, setAddItemModOpen] = useState(false);
   const openAddItemMod = () => {
     setAddItemModOpen(true);
@@ -48,7 +61,11 @@ function Category({ category }: { category: Category }) {
   return (
     <div className="m-2 flex justify-between" key={category.id}>
       {category.name}
-      <CategoryMenu categoryId={category.id} openAddItemMod={openAddItemMod} />
+      <CategoryMenu
+        categoryId={category.id}
+        storeId={storeId}
+        openAddItemMod={openAddItemMod}
+      />
       {addItemModOpen && (
         <CreateItem
           closeAddItemMod={closeAddItemMod}
@@ -116,8 +133,10 @@ function CreateCategory() {
 function CategoryMenu({
   categoryId,
   openAddItemMod,
+  storeId,
 }: {
   categoryId: number;
+  storeId: string;
   openAddItemMod: () => void;
 }) {
   const util = api.useUtils();
@@ -145,10 +164,10 @@ function CategoryMenu({
           >
             add item
           </DropdownMenu.Item>
-          <DropdownMenu.Item>
+          <DropdownMenu.Item asChild>
             <Link
               className={`m-2 p-2 text-lg`}
-              href={`${usePathname()}/create`}
+              href={`/stores/${storeId}/categories/${categoryId}/create`}
             >
               create item link
             </Link>
