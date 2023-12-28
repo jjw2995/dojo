@@ -20,11 +20,21 @@ cloud POS for your stores bootstrapped with [T3 Stack](https://create.t3.gg/)
 
 [x] create category
 [] delete category
+
 [] create item
 
-- [] add/delete option
-- [] add/delete taxes
+- [] option
+  -- [] create option
+  -- [] assign options
+  -- [] edit option
+  -- [] delete option
+- [] tax
+  -- [] create tax
+  -- [] assign taxes
+  -- [] edit tax
+  -- [] delete tax
 
+[] view item
 [] delete item
 
 ### Order

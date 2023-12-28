@@ -107,30 +107,29 @@ function Options() {
         <button className=" m-2 rounded-full p-2 text-xl outline">+</button>
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className="z-50">
-          <Dialog.Content className="fixed left-[50%] top-[50%] z-40 h-[70%] w-[90%] translate-x-[-50%] translate-y-[-50%] overflow-hidden rounded-sm bg-white p-2 text-text outline">
-            <Tabs.Root defaultValue="tab1">
-              <Tabs.List className="flex justify-around">
-                <Tabs.Trigger
-                  value="tab1"
-                  className="data-[state=active]:underline"
-                >
-                  add
-                </Tabs.Trigger>
-                <Tabs.Trigger
-                  value="tab2"
-                  className="data-[state=active]:underline"
-                >
-                  existing
-                </Tabs.Trigger>
-              </Tabs.List>
-              <Tabs.Content value="tab1">tab1 content</Tabs.Content>
-              <Tabs.Content value="tab2">tab2 content</Tabs.Content>
-            </Tabs.Root>
-
-            <Dialog.Description>???</Dialog.Description>
-          </Dialog.Content>
-        </Dialog.Overlay>
+        {/* <Dialog.Overlay className="z-50"> */}
+        <Dialog.Content className="relative z-40 h-[70%] w-[90%] bg-white p-2 text-text outline">
+          {/* <Dialog.Content className="fixed z-40 h-[70%] w-[90%] overflow-hidden rounded-sm bg-white p-2 text-text outline"> */}
+          <Tabs.Root defaultValue="tab1">
+            <Tabs.List className="flex justify-around">
+              <Tabs.Trigger
+                value="tab1"
+                className="data-[state=active]:underline"
+              >
+                add
+              </Tabs.Trigger>
+              <Tabs.Trigger
+                value="tab2"
+                className="data-[state=active]:underline"
+              >
+                existing
+              </Tabs.Trigger>
+            </Tabs.List>
+            <Tabs.Content value="tab1">tab1 content</Tabs.Content>
+            <Tabs.Content value="tab2">tab2 content</Tabs.Content>
+          </Tabs.Root>
+        </Dialog.Content>
+        {/* </Dialog.Overlay> */}
       </Dialog.Portal>
     </Dialog.Root>
   );

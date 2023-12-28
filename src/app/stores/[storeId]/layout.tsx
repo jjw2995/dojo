@@ -12,7 +12,7 @@ export default function StoreLayout({
 }) {
   return (
     <div className="flex w-screen">
-      <div className="fixed bottom-0 z-50 flex w-[100%] justify-around outline lg:relative lg:bottom-auto lg:flex lg:w-fit lg:flex-col lg:justify-normal">
+      <div className="fixed bottom-0 z-20 flex w-[100%] justify-around outline lg:relative lg:bottom-auto lg:flex lg:w-fit lg:flex-col lg:justify-normal">
         <Link className={`m-2 p-2`} href={`/stores/${params.storeId}/home`}>
           Home
         </Link>
