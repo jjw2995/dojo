@@ -14,43 +14,43 @@ cloud POS for your stores bootstrapped with [T3 Stack](https://create.t3.gg/)
 
 [x] create stations
 [x] delete stations
-[] show orders realtime (websocket ably)
+[ ] show orders realtime (websocket ably)
 
 ### Items
 
 [x] create category
-[] delete category
+[ ] delete category
 
-[] create item
+[ ] create item
 
-- [] option
-  -- [] create option
-  -- [] assign options
-  -- [] edit option
-  -- [] delete option
-- [] tax
-  -- [] create tax
-  -- [] assign taxes
-  -- [] edit tax
-  -- [] delete tax
+- [ ] option
+  - [ ] create option
+  - [ ] assign options
+  - [ ] edit option
+  - [ ] delete option
+- [ ] tax
+  - [ ] create tax
+  - [ ] assign taxes
+  - [ ] edit tax
+  - [ ] delete tax
 
-[] view item
-[] delete item
+[ ] view item
+[ ] delete item
 
 ### Order
 
-[] togo
+[ ] togo
 
-- []
+- [ ]
 
 ###
 
-[] togo/retail order taking
-[] passcode set/reset (owner email)
-[] owner transfer
+[ ] togo/retail order taking
+[ ] passcode set/reset (owner email)
+[ ] owner transfer
 
 ## maybe
 
-[] "Eats" integration
-[] printer
-[]
+[ ] "Eats" integration
+[ ] printer
+[ ]
