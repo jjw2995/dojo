@@ -134,7 +134,7 @@ export const members = mysqlTable(
   }),
 );
 
-export const membersRelations = relations(members, ({ many, one }) => ({
+export const membersRelations = relations(members, ({ one }) => ({
   user: one(users, { fields: [members.userId], references: [users.id] }),
   store: one(stores, { fields: [members.storeId], references: [stores.id] }),
 }));

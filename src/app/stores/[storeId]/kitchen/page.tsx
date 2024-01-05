@@ -5,12 +5,13 @@ import * as Dialog from "@radix-ui/react-dialog";
 import * as Select from "@radix-ui/react-select";
 
 import { useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { type SubmitHandler, useForm } from "react-hook-form";
 import { api } from "~/trpc/react";
-import { RouterOutputs } from "~/trpc/shared";
+import type { RouterOutputs } from "~/trpc/shared";
 
 type stationType = RouterOutputs["station"]["get"][number];
-export default function Page({ params }: { params: { storeId: string } }) {
+export default function Page() {
+  // { params }: { params: { storeId: string } }
   const [curStation, setCurStation] = useState<stationType | null>(null);
   // const station = api.station.get.useQuery(undefined, {
   //   enabled: curStationId !== null,
@@ -51,8 +52,8 @@ function Create() {
     stationCreate.mutate(
       { name: data.stationName },
       {
-        onSuccess(data, variables, context) {
-          utils.station.get.invalidate();
+        onSuccess() {
+          void utils.station.get.invalidate();
           form.reset();
           setOpen(false);
         },
@@ -101,8 +102,8 @@ function StationMenu({
 }) {
   const util = api.useUtils();
   const d = api.station.delete.useMutation({
-    onSuccess: () => {
-      util.station.get.invalidate();
+    onSuccess: async () => {
+      await util.station.get.invalidate();
     },
   });
 

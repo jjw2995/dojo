@@ -3,9 +3,9 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { api } from "~/trpc/react";
-import { RouterOutputs } from "~/trpc/shared";
+import type { RouterOutputs } from "~/trpc/shared";
 
 export default function Stores() {
   const stores = api.store.get.useQuery();
@@ -55,8 +55,8 @@ function Create() {
     storeCreate.mutate(
       { name: data.groupName },
       {
-        onSuccess(data, variables, context) {
-          utils.store.get.invalidate();
+        onSuccess() {
+          void utils.store.get.invalidate();
           form.reset();
           setOpen(false);
         },

@@ -2,8 +2,8 @@
 
 export default function Page({
   children,
-  params,
-}: {
+} // params,
+: {
   params: { storeId: string };
   children: React.ReactNode;
 }) {

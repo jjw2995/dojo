@@ -1,10 +1,8 @@
 import Link from "next/link";
 
-import { CreatePost } from "~/app/_components/create-post";
 import { getServerAuthSession } from "~/server/auth";
-import { api } from "~/trpc/server";
+// import { api } from "~/trpc/server";
 
-import { signIn } from "next-auth/react";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
@@ -39,24 +37,24 @@ export default async function Home() {
   );
 }
 
-async function CrudShowcase() {
-  const session = await getServerAuthSession();
-  if (!session?.user) return null;
+// async function CrudShowcase() {
+//   const session = await getServerAuthSession();
+//   if (!session?.user) return null;
 
-  const latestPost = await api.post.getLatest.query();
+//   const latestPost = await api.post.getLatest.query();
 
-  return (
-    <div className="w-full max-w-xs">
-      {latestPost ? (
-        <div>
-          <p className="truncate">Your most recent post: {latestPost.name}</p>
-          <img src={session.user.image || undefined} alt="" />
-        </div>
-      ) : (
-        <p>You have no posts yet.</p>
-      )}
+//   return (
+//     <div className="w-full max-w-xs">
+//       {latestPost ? (
+//         <div>
+//           <p className="truncate">Your most recent post: {latestPost.name}</p>
+//           <img src={session.user.image ?? undefined} alt="" />
+//         </div>
+//       ) : (
+//         <p>You have no posts yet.</p>
+//       )}
 
-      <CreatePost />
-    </div>
-  );
-}
+//       <CreatePost />
+//     </div>
+//   );
+// }

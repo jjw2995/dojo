@@ -1,11 +1,9 @@
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import {
   createTRPCRouter,
   storeProcedure,
-  protectedProcedure,
-  publicProcedure,
   passcodeProcedure,
 } from "~/server/api/trpc";
 import { stations, categories, itemsToStations } from "~/server/db/schema";
@@ -37,10 +35,7 @@ export const categoryRouter = createTRPCRouter({
     .input(z.object({ stationId: z.number() }))
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.transaction(async (tx) => {
-        let a = await tx
-          .delete(stations)
-          .where(eq(stations.id, input.stationId));
-        console.log(a);
+        await tx.delete(stations).where(eq(stations.id, input.stationId));
 
         return await tx
           .delete(itemsToStations)
@@ -52,7 +47,7 @@ export const categoryRouter = createTRPCRouter({
     .input(z.object({ name: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.transaction(async (tx) => {
-        let { insertId } = await tx
+        const { insertId } = await tx
           .insert(stations)
           .values({ name: input.name, storeId: ctx.storeId });
 

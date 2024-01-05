@@ -34,21 +34,21 @@ export default function StoreLayout({
   );
 }
 
-function Nav({ storeId }: { storeId: string }) {
-  return (
-    <div className="lg:fix fixed bottom-0 right-[50%] flex w-[100%] translate-x-[50%] justify-around outline">
-      <Link className={`m-2 p-2`} href={`/stores/${storeId}/home`}>
-        Home
-      </Link>
-      <Link className={`m-2 p-2`} href={`/stores/${storeId}/order`}>
-        Order
-      </Link>
-      <Link className={`m-2 p-2`} href={`/stores/${storeId}/kitchen`}>
-        Kitchen
-      </Link>
-      <Link className={`m-2 p-2`} href={`/stores/${storeId}/items`}>
-        Items
-      </Link>
-    </div>
-  );
-}
+// function Nav({ storeId }: { storeId: string }) {
+//   return (
+//     <div className="lg:fix fixed bottom-0 right-[50%] flex w-[100%] translate-x-[50%] justify-around outline">
+//       <Link className={`m-2 p-2`} href={`/stores/${storeId}/home`}>
+//         Home
+//       </Link>
+//       <Link className={`m-2 p-2`} href={`/stores/${storeId}/order`}>
+//         Order
+//       </Link>
+//       <Link className={`m-2 p-2`} href={`/stores/${storeId}/kitchen`}>
+//         Kitchen
+//       </Link>
+//       <Link className={`m-2 p-2`} href={`/stores/${storeId}/items`}>
+//         Items
+//       </Link>
+//     </div>
+//   );
+// }

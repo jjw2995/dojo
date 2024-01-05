@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { type SubmitHandler, useForm } from "react-hook-form";
 import { api } from "~/trpc/react";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { RouterOutputs } from "~/trpc/shared";
+import type { RouterOutputs } from "~/trpc/shared";
 import Link from "next/link";
 
 export default function Page({
@@ -47,7 +47,7 @@ function Category({
   category: Category;
   storeId: string;
 }) {
-  const [addItemModOpen, setAddItemModOpen] = useState(false);
+  // const [addItemModOpen, setAddItemModOpen] = useState(false);
 
   return (
     <div className="m-2 flex justify-between" key={category.id}>
@@ -68,8 +68,8 @@ function CreateCategory() {
     stationCreate.mutate(
       { name: data.categoryName },
       {
-        onSuccess(data, variables, context) {
-          utils.category.get.invalidate();
+        onSuccess() {
+          void utils.category.get.invalidate();
           form.reset();
           setOpen(false);
         },
@@ -134,7 +134,7 @@ function CategoryMenu({
               create item link
             </Link>
           </DropdownMenu.Item>
-          <DropdownMenu.Item onClick={() => {}}>delete</DropdownMenu.Item>
+          <DropdownMenu.Item>delete</DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>

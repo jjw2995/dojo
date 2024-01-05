@@ -1,9 +1,9 @@
 "use client";
 
-import * as Dialog from "@radix-ui/react-dialog";
-import * as Tabs from "@radix-ui/react-tabs";
-import { useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+// import * as Dialog from "@radix-ui/react-dialog";
+// import * as Tabs from "@radix-ui/react-tabs";
+import { type ChangeEvent, useState } from "react";
+import { type SubmitHandler, useForm } from "react-hook-form";
 import { api } from "~/trpc/react";
 
 type Input = { itemName: string; itemPriceInCent: string };
@@ -27,28 +27,26 @@ export default function Page({
 }: {
   params: { storeId: string; categoryId: string };
 }) {
-  const [open, setOpen] = useState(true);
   const form = useForm<Input>();
   const stationCreate = api.category.create.useMutation();
 
   const [toggledStations, toggleStation] = useMultiSelect();
-  const [toggledOptions, toggleOption] = useMultiSelect();
-  const [toggledTaxes, toggleTax] = useMultiSelect();
+  // const [toggledOptions, toggleOption] = useMultiSelect();
+  // const [toggledTaxes, toggleTax] = useMultiSelect();
+  console.log(toggledStations, params);
 
   const utils = api.useUtils();
   const onSubmit: SubmitHandler<Input> = (data) => {
     stationCreate.mutate(
       { name: data.itemName },
       {
-        onSuccess(data, variables, context) {
-          utils.category.get.invalidate();
+        onSuccess() {
+          void utils.category.get.invalidate();
           form.reset();
-          setOpen(false);
         },
       },
     );
   };
-  // console.log(form.watch());
 
   return (
     <div className="text-2xl">
@@ -74,15 +72,14 @@ export default function Page({
             {...form.register("itemPriceInCent", {
               required: true,
               min: 0,
-              onBlur: (e) => {
+              onBlur: (e: ChangeEvent<HTMLInputElement>) => {
                 form.setValue(
                   "itemPriceInCent",
-                  Number(e.target.value || "0").toFixed(2),
+                  Number(e?.target?.value || "0").toFixed(2),
                 );
               },
-              onChange: (e) => {
-                // console.log(e.target.value);
-                const str = (e.target.value as string) || "";
+              onChange: (e: ChangeEvent<HTMLInputElement>) => {
+                const str = e.target.value || "";
                 const fixed = Number(str).toFixed(2);
                 if (fixed.length < str.length) {
                   form.setValue("itemPriceInCent", Number(fixed).toString());
@@ -93,7 +90,7 @@ export default function Page({
 
           <PrintTo toggleStation={toggleStation} />
 
-          <Options toggleOption={toggleOption} />
+          {/* <Options toggleOption={toggleOption} /> */}
 
           <div>
             <p>tax</p>
@@ -137,76 +134,86 @@ function PrintTo({ toggleStation }: { toggleStation: (id: string) => void }) {
   );
 }
 
-function Options({ toggleOption }: { toggleOption: (id: string) => void }) {
-  const [] = useState({ numChoices: 1, minSelect: 0, maxSelect: 1 });
+// function Options({ toggleOption }: { toggleOption: (id: string) => void }) {
+//   const [] = useState({ numChoices: 1, minSelect: 0, maxSelect: 1 });
 
-  return (
-    <div>
-      <p>options</p>
-      <Dialog.Root
-        // open={open}
-        onOpenChange={(isOpen) => {
-          // abstract dialog & call "confirm close dialog"
-        }}
-      >
-        <Dialog.Trigger asChild>
-          <button className=" m-2 rounded-full p-2 text-xl outline">+</button>
-        </Dialog.Trigger>
-        <Dialog.Portal>
-          <Dialog.Overlay className="z-50">
-            <Dialog.Content className="fixed left-[50%] top-[50%] z-40 h-[70%] w-[90%] translate-x-[-50%] translate-y-[-50%] overflow-hidden rounded-sm bg-white p-2 text-text outline">
-              <Tabs.Root defaultValue="tab1">
-                <Tabs.List className="flex justify-around">
-                  <Tabs.Trigger
-                    value="tab1"
-                    className="data-[state=active]:underline"
-                  >
-                    new
-                  </Tabs.Trigger>
-                  <Tabs.Trigger
-                    value="tab2"
-                    className="data-[state=active]:underline"
-                  >
-                    assign
-                  </Tabs.Trigger>
-                </Tabs.List>
+//   return (
+//     <div>
+//       <p>options</p>
+//       <Dialog.Root
+//         // open={open}
+//         onOpenChange={(isOpen) => {
+//           // abstract dialog & call "confirm close dialog"
+//         }}
+//       >
+//         <Dialog.Trigger asChild>
+//           <button className=" m-2 rounded-full p-2 text-xl outline">+</button>
+//         </Dialog.Trigger>
+//         <Dialog.Portal>
+//           <Dialog.Overlay className="z-50">
+//             <Dialog.Content className="fixed left-[50%] top-[50%] z-40 h-[70%] w-[90%] translate-x-[-50%] translate-y-[-50%] overflow-hidden rounded-sm bg-white p-2 text-text outline">
+//               <Tabs.Root defaultValue="tab1">
+//                 <Tabs.List className="flex justify-around">
+//                   <Tabs.Trigger
+//                     value="tab1"
+//                     className="data-[state=active]:underline"
+//                   >
+//                     new
+//                   </Tabs.Trigger>
+//                   <Tabs.Trigger
+//                     value="tab2"
+//                     className="data-[state=active]:underline"
+//                   >
+//                     assign
+//                   </Tabs.Trigger>
+//                 </Tabs.List>
 
-                <Tabs.Content value="tab1">
-                  <OptionCreate />
-                </Tabs.Content>
+//                 <Tabs.Content value="tab1">
+//                   <OptionCreate />
+//                 </Tabs.Content>
 
-                <Tabs.Content value="tab2">
-                  <TaxCreate />
-                </Tabs.Content>
-              </Tabs.Root>
-            </Dialog.Content>
-          </Dialog.Overlay>
-        </Dialog.Portal>
-      </Dialog.Root>
-    </div>
-  );
-}
+//                 <Tabs.Content value="tab2">
+//                   <TaxCreate />
+//                 </Tabs.Content>
+//               </Tabs.Root>
+//             </Dialog.Content>
+//           </Dialog.Overlay>
+//         </Dialog.Portal>
+//       </Dialog.Root>
+//     </div>
+//   );
+// }
 
-type OptionInput = { optionName: string };
-function OptionCreate() {
-  const form = useForm<OptionInput>();
+// type OptionInput = { optionName: string };
+// function OptionCreate() {
+//   const form = useForm<OptionInput>();
 
-  return (
-    <div>
-      option create
-      <input type="text" />
-      <input
-        className="m-2 rounded p-2 outline"
-        placeholder="option name"
-        {...form.register("optionName", { required: true })}
-      />
-    </div>
-  );
-}
+//   return (
+//     <div>
+//       option create
+//       <input type="text" />
+//       <input
+//         className="m-2 rounded p-2 outline"
+//         placeholder="option name"
+//         {...form.register("optionName", { required: true })}
+//       />
+//     </div>
+//   );
+// }
 
-type TaxInput = { TaxName: string };
-function TaxCreate() {
-  const form = useForm<TaxInput>();
+// type TaxInput = { taxName: string };
+// function TaxCreate() {
+//   const form = useForm<TaxInput>();
 
-  return <div>Tax create</div>;
-}
+//   return (
+//     <div>
+//       tax create
+//       <input type="text" />
+//       <input
+//         className="m-2 rounded p-2 outline"
+//         placeholder="option name"
+//         {...form.register("taxName", { required: true })}
+//       />
+//     </div>
+//   );
+// }
