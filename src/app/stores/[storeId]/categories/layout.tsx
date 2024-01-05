@@ -33,8 +33,7 @@ export default function Page({
         </div>
         <CreateCategory />
       </div>
-      <div className="fixed lg:relative lg:flex-1">{children}</div>
-      {/* {children} */}
+      <div className="fixed w-full lg:relative lg:flex-1">{children}</div>
     </div>
   );
 }

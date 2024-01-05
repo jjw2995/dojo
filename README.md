@@ -53,3 +53,5 @@ cloud POS for your stores bootstrapped with [T3 Stack](https://create.t3.gg/)
 - [ ] "Eats" integration
 - [ ] printer
 - [ ]
+
+\*\*\* REMOVE CATEGORY base "NOTHING" layout page to simple static page (no need)

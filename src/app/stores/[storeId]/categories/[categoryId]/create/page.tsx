@@ -49,7 +49,7 @@ export default function Page({
   };
 
   return (
-    <div className="text-2xl">
+    <div className="w-full bg-black text-2xl">
       <button
         onClick={() => {
           window.history.back();
