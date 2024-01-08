@@ -6,13 +6,16 @@ import * as RadioGroup from "@radix-ui/react-radio-group";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { useState } from "react";
 
+const Kind = [
+  { value: "single", desc: "sg desc" },
+  { value: "multiple", desc: "ml desc" },
+];
+
 export default function Options({
   toggleOption,
 }: {
   toggleOption: (id: string) => void;
 }) {
-  const [] = useState({ numChoices: 1, minSelect: 0, maxSelect: 1 });
-
   const [container, setContainer] = useState(null);
   return (
     <Dialog.Root
@@ -57,6 +60,12 @@ export default function Options({
 
 type OptionInput = { optionName: string };
 function OptionCreate() {
+  // minSelect 0 === not mandatory
+  const [option, setOption] = useState({
+    numChoices: 1,
+    minSelect: 0,
+    maxSelect: 1,
+  });
   const form = useForm<OptionInput>();
 
   return (
@@ -68,60 +77,77 @@ function OptionCreate() {
         {...form.register("optionName", { required: true })}
       />
 
-      <RadioGroupDemo />
+      {/* modifier mode select */}
+      <RadioGroup.Root
+        className=""
+        onValueChange={(v) => {
+          console.log(v);
+        }}
+      >
+        {Kind.map((v) => {
+          return (
+            <div className="flex items-center" key={v.value}>
+              <RadioGroup.Item value={v.value} className="flex" id={v.value}>
+                <RadioGroup.Indicator className="absolute z-50 h-4 w-4 bg-black" />
+              </RadioGroup.Item>
+              <label className="pl-10" htmlFor={v.value}>
+                {v.value}
+              </label>
+            </div>
+          );
+        })}
+      </RadioGroup.Root>
+
+      <div>
+        <label htmlFor="">number of choices</label>
+        <input
+          type="number"
+          value={option.numChoices}
+          name=""
+          id=""
+          className="m-2 rounded p-2 outline"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="">min selection</label>
+        <input
+          type="number"
+          value={option.minSelect}
+          name=""
+          id=""
+          className="m-2 rounded p-2 outline"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="">max selection</label>
+        <input
+          type="number"
+          value={option.maxSelect}
+          name=""
+          id=""
+          className="m-2 rounded p-2 outline"
+        />
+      </div>
+
+      {/*  */}
     </form>
   );
 }
 
-const RadioGroupDemo = () => (
-  <form>
-    <RadioGroup.Root
-      className="flex flex-col gap-2.5"
-      defaultValue="default"
-      aria-label="View density"
-      onValueChange={(e) => {
-        console.log(e);
-      }}
-    >
-      <div className="flex items-center">
-        <RadioGroup.Item
-          className="shadow-blackA4 hover:bg-violet3 h-[25px] w-[25px] cursor-default rounded-full bg-white shadow-[0_2px_10px] outline-none focus:shadow-[0_0_0_2px] focus:shadow-black"
+{
+  /* <RadioGroup.Item
+          className="bg-white w-[25px] h-[25px] rounded-full shadow-[0_2px_10px] shadow-blackA4 hover:bg-violet3 focus:shadow-[0_0_0_2px] focus:shadow-black outline-none cursor-default"
           value="default"
           id="r1"
         >
-          <RadioGroup.Indicator className="after:bg-violet11 relative flex h-full w-full items-center justify-center after:block after:h-[11px] after:w-[11px] after:rounded-[50%] after:content-['']" />
+          <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-[11px] after:h-[11px] after:rounded-[50%] after:bg-violet11" />
         </RadioGroup.Item>
-        <label className="pl-[15px] text-[15px] leading-none" htmlFor="r1">
+        <label className="text-white text-[15px] leading-none pl-[15px]" htmlFor="r1">
           Default
-        </label>
-      </div>
-      <div className="flex items-center">
-        <RadioGroup.Item
-          className="shadow-blackA4 hover:bg-violet3 h-[25px] w-[25px] cursor-default rounded-full bg-white shadow-[0_2px_10px] outline-none focus:shadow-[0_0_0_2px] focus:shadow-black"
-          value="comfortable"
-          id="r2"
-        >
-          <RadioGroup.Indicator className="after:bg-violet11 relative flex h-full w-full items-center justify-center after:block after:h-[11px] after:w-[11px] after:rounded-[50%] after:content-['']" />
-        </RadioGroup.Item>
-        <label className="pl-[15px] text-[15px] leading-none" htmlFor="r2">
-          Comfortable
-        </label>
-      </div>
-      <div className="flex items-center">
-        <RadioGroup.Item
-          className="shadow-blackA4 hover:bg-violet3 h-[25px] w-[25px] cursor-default rounded-full bg-white shadow-[0_2px_10px] outline-none focus:shadow-[0_0_0_2px] focus:shadow-black"
-          value="compact"
-          id="r3"
-        >
-          <RadioGroup.Indicator className="after:bg-violet11 relative flex h-full w-full items-center justify-center after:block after:h-[11px] after:w-[11px] after:rounded-[50%] after:content-['']" />
-        </RadioGroup.Item>
-        <label className="pl-[15px] text-[15px] leading-none" htmlFor="r3">
-          Compact
-        </label>
-      </div>
-    </RadioGroup.Root>
-  </form>
-);
+        </label> */
+}
 
 {
   /* <form onSubmit={form.handleSubmit(onSubmit)}>
