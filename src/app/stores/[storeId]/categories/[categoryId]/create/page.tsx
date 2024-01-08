@@ -89,7 +89,10 @@ export default function Page({
 
           <PrintTo toggleStation={toggleStation} />
 
-          <Options toggleOption={toggleOption} />
+          <div>
+            <p>Options</p>
+            <Options toggleOption={toggleOption} />
+          </div>
 
           <div>
             <p>tax</p>
