@@ -4,6 +4,7 @@ import { type ChangeEvent, useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { api } from "~/trpc/react";
 import Options from "./options";
+import Taxes from "./taxes";
 
 type Input = { itemName: string; itemPriceInCent: string };
 
@@ -48,7 +49,7 @@ export default function Page({
   };
 
   return (
-    <div className="w-full bg-white text-2xl">
+    <div className="h-screen w-full bg-white text-2xl">
       <button
         onClick={() => {
           window.history.back();
@@ -89,13 +90,14 @@ export default function Page({
 
           <PrintTo toggleStation={toggleStation} />
 
-          <div>
+          {/* <div>
             <p>Options</p>
             <Options toggleOption={toggleOption} />
-          </div>
+          </div> */}
 
           <div>
             <p>tax</p>
+            <Taxes toggleOption={toggleOption} />
           </div>
 
           <div className="m-2 flex flex-row justify-around">

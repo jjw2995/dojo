@@ -11,12 +11,11 @@ const Kind = [
   { value: "multiple", desc: "ml desc" },
 ];
 
-export default function Options({
+export default function Taxes({
   toggleOption,
 }: {
   toggleOption: (id: string) => void;
 }) {
-  const [container, setContainer] = useState(null);
   return (
     <Dialog.Root
       // open={open}
@@ -61,6 +60,7 @@ export default function Options({
 type OptionInput = { optionName: string };
 function OptionCreate() {
   // minSelect 0 === not mandatory
+  const [] = useState();
   const [option, setOption] = useState({
     numChoices: 1,
     minSelect: 0,
@@ -83,7 +83,7 @@ function OptionCreate() {
         onValueChange={(v) => {
           console.log(v);
         }}
-        value={Kind[0]!.value}
+        // value={Kind[0]!.value}
       >
         {Kind.map((v) => {
           return (
