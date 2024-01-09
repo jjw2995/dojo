@@ -1,6 +1,7 @@
 import { relations, sql } from "drizzle-orm";
 import {
   bigint,
+  decimal,
   index,
   int,
   mysqlEnum,
@@ -191,7 +192,7 @@ export const itemsToStationsRelations = relations(
   }),
 );
 
-export const categories = mysqlTable("categories", {
+export const categories = mysqlTable("category", {
   id: serial("id").primaryKey(),
   storeId: int("storeId").notNull(),
   name: varchar("name", { length: 256 }).notNull(),
@@ -200,6 +201,15 @@ export const categories = mysqlTable("categories", {
 export const categoriesRelations = relations(categories, ({ many }) => ({
   items: many(items),
 }));
+
+export const taxes = mysqlTable("tax", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 256 }).notNull(),
+  percent: decimal("percent").$type<number>().notNull(),
+});
+
+export const taxesRelations = relations(taxes, ({}) => {});
+
 // export const stations = mysqlTable("station", {
 //   id: serial("id").primaryKey(),
 //   name: varchar("name", { length: 256 }).notNull(),
