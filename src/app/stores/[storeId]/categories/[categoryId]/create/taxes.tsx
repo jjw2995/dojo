@@ -144,8 +144,15 @@ function TaxAssign({
             <p>
               {v.name} - {v.percent}
             </p>
-            <button onClick={() => {}}>delete</button>
-            <button>edit</button>
+            <button
+              className="m-2 rounded p-2 outline"
+              onClick={() => deleteHandler(v)}
+            >
+              {/* dialog to tell user items referencing will lose it */}
+              delete
+            </button>
+            <button className="m-2 rounded p-2 outline">edit</button>
+            {/* <div className="flex justify-around"></div> */}
           </div>
         );
       })}

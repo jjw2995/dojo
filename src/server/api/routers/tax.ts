@@ -40,7 +40,13 @@ export const taxRouter = createTRPCRouter({
 
   delete: passcodeProcedure
     .input(z.object({ taxId: z.number() }))
-    .mutation(async ({}) => {}),
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.transaction(async (tx) => {
+        // await tx.delete(item)
+        // del item ref
+        // del tax
+      });
+    }),
 
   // delete if owner is only member
   // delete: protectedProcedure.input({storeId: z.string().min(1)}).mutation(async ({ctx, input})=>{
