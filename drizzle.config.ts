@@ -6,7 +6,7 @@ import { env } from "~/env.mjs";
 // pscale database dump [database] [branch]
 export default {
   schema: "./src/server/db/schema.ts",
-  // out:"./drizzle",
+  out: "./drizzle",
   driver: "mysql2",
   dbCredentials: {
     connectionString: env.DATABASE_URL,
