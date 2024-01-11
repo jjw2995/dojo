@@ -5,22 +5,26 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import { api } from "~/trpc/react";
 import Options from "./options";
 import Taxes from "./taxes";
+import { RouterOutputs } from "~/trpc/shared";
 
 type Input = { itemName: string; itemPriceInCent: string };
 
-function useMultiSelect() {
-  const [arr, setArr] = useState<string[]>([]);
-  function toggle(id: string) {
-    const index = arr.findIndex((v) => v === id);
+function useToggle<T extends { id: Number }>() {
+  const [arr, setArr] = useState<T[]>([]);
+  function toggle(obj: T) {
+    const index = arr.findIndex((v) => v.id === obj.id);
     if (index < 0) {
-      setArr((pre) => [...pre, id]);
+      setArr((pre) => [...pre, obj]);
     } else {
-      setArr((pre) => pre.filter((elem) => elem !== id));
+      setArr((pre) => pre.filter((v) => v.id !== obj.id));
     }
   }
 
   return [arr, toggle] as const;
 }
+
+type Station = RouterOutputs["station"]["get"][number];
+type Tax = RouterOutputs["tax"]["get"][number];
 
 export default function Page({
   params,
@@ -30,23 +34,23 @@ export default function Page({
   const form = useForm<Input>();
   const stationCreate = api.category.create.useMutation();
 
-  const [toggledStations, toggleStation] = useMultiSelect();
-  const [toggledOptions, toggleOption] = useMultiSelect();
-  // const [toggledTaxes, toggleTax] = useMultiSelect();
-  console.log(toggledStations, params);
+  const [toggledStations, toggleStation] = useToggle<Station>();
+  // const [toggledOptions, toggleOption] = useToggle();
+  const [toggledTaxes, toggleTax] = useToggle<Tax>();
+  console.log(toggledStations, toggledTaxes, params);
 
-  const utils = api.useUtils();
-  const onSubmit: SubmitHandler<Input> = (data) => {
-    stationCreate.mutate(
-      { name: data.itemName },
-      {
-        onSuccess() {
-          void utils.category.get.invalidate();
-          form.reset();
-        },
-      },
-    );
-  };
+  // const utils = api.useUtils();
+  // const onSubmit: SubmitHandler<Input> = (data) => {
+  //   stationCreate.mutate(
+  //     { name: data.itemName },
+  //     {
+  //       onSuccess() {
+  //         void utils.category.get.invalidate();
+  //         form.reset();
+  //       },
+  //     },
+  //   );
+  // };
 
   return (
     <div className="h-screen w-full bg-white text-2xl">
@@ -59,7 +63,10 @@ export default function Page({
         back
       </button>
       <div className="">
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          // onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4"
+        >
           <input
             className="m-2 rounded p-2 outline"
             placeholder="item name"
@@ -97,7 +104,14 @@ export default function Page({
 
           <div>
             <p>tax</p>
-            <Taxes toggleOption={toggleOption} />
+            <Taxes toggleTax={toggleTax} toggledTaxes={toggledTaxes} />
+            {toggledTaxes.map((v) => {
+              return (
+                <div key={v.id}>
+                  {v.name}-{v.percent}
+                </div>
+              );
+            })}
           </div>
 
           <div className="m-2 flex flex-row justify-around">
@@ -112,7 +126,7 @@ export default function Page({
   );
 }
 
-function PrintTo({ toggleStation }: { toggleStation: (id: string) => void }) {
+function PrintTo({ toggleStation }: { toggleStation: (obj: Station) => void }) {
   const stations = api.station.get.useQuery();
   return (
     <div className="p-2">
@@ -127,7 +141,7 @@ function PrintTo({ toggleStation }: { toggleStation: (id: string) => void }) {
               className="h-6 w-6"
               id={v.id.toString()}
               onClick={(e) => {
-                toggleStation(e.currentTarget.id);
+                toggleStation(v);
               }}
             />
             {v.name}

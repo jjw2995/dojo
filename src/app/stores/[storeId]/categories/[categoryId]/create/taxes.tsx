@@ -5,16 +5,21 @@ import * as RadioGroup from "@radix-ui/react-radio-group";
 
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { ChangeEvent, useState } from "react";
+import { api } from "~/trpc/react";
+import { RouterOutputs } from "~/trpc/shared";
 
 const Kind = [
   { value: "single", desc: "sg desc" },
   { value: "multiple", desc: "ml desc" },
 ];
 
+type Tax = RouterOutputs["tax"]["get"][number];
 export default function Taxes({
-  toggleOption,
+  toggleTax,
+  toggledTaxes,
 }: {
-  toggleOption: (id: string) => void;
+  toggleTax: (tax: Tax) => void;
+  toggledTaxes: Tax[];
 }) {
   return (
     <Dialog.Root
@@ -48,7 +53,14 @@ export default function Taxes({
               <Tabs.Content value="tab1">
                 <TaxCreate />
               </Tabs.Content>
-              <Tabs.Content value="tab2">{/* <OptionAssign /> */}</Tabs.Content>
+              <Tabs.Content value="tab2">
+                {
+                  <TaxAssign
+                    toggleTax={toggleTax}
+                    toggledTaxes={toggledTaxes}
+                  />
+                }
+              </Tabs.Content>
             </Tabs.Root>
           </Dialog.Content>
         </Dialog.Overlay>
@@ -61,23 +73,21 @@ type TaxInput = { taxName: string; taxPercent: string };
 function TaxCreate() {
   const [] = useState();
   const form = useForm<TaxInput>();
+  const taxCreate = api.tax.create.useMutation();
 
-  // const onSubmit: SubmitHandler<TaxInput> = (data) => {
-  //   stationCreate.mutate(
-  //     { name: data.itemName },
-  //     {
-  //       onSuccess() {
-  //         // void utils.category.get.invalidate();
-  //         form.reset();
-  //       },
-  //     },
-  //   );
-  // };
-
-  console.log(form.watch());
+  const onSubmit: SubmitHandler<TaxInput> = (data) => {
+    taxCreate.mutate(
+      { taxName: data.taxName, taxPercent: Number(data.taxPercent) },
+      {
+        onSuccess() {
+          form.reset();
+        },
+      },
+    );
+  };
 
   return (
-    <form>
+    <form onSubmit={form.handleSubmit(onSubmit)}>
       <div className="flex flex-col">
         <label htmlFor="">Tax Name</label>
         <input
@@ -96,19 +106,6 @@ function TaxCreate() {
           {...form.register("taxPercent", {
             required: true,
             min: 0,
-            // onBlur: (e: ChangeEvent<HTMLInputElement>) => {
-            //   form.setValue(
-            //     "taxPercent",
-            //     Number(e?.target?.value || "0").toFixed(2),
-            //   );
-            // },
-            // onChange: (e: ChangeEvent<HTMLInputElement>) => {
-            //   const str = e.target.value || "";
-            //   const fixed = Number(str).toFixed(2);
-            //   if (fixed.length < str.length) {
-            //     form.setValue("taxPercent", Number(fixed).toString());
-            //   }
-            // },
           })}
         />
       </div>
@@ -119,20 +116,39 @@ function TaxCreate() {
   );
 }
 
-{
-  /* <form onSubmit={form.handleSubmit(onSubmit)}>
+function TaxAssign({
+  toggleTax,
+  toggledTaxes,
+}: {
+  toggleTax: (tax: Tax) => void;
+  toggledTaxes: Tax[];
+}) {
+  const taxes = api.tax.get.useQuery();
+  // const deleteTax = api.tax.delete
+  const deleteHandler = (tax: Tax) => {};
+
+  return (
+    <div>
+      {taxes.data?.map((v) => {
+        return (
+          <div key={v.id}>
             <input
-              className="text-black"
-              placeholder="Station Name"
-              {...form.register("categoryName", { required: true })}
+              onChange={() => {
+                toggleTax(v);
+              }}
+              type="checkbox"
+              name=""
+              id=""
+              checked={!!toggledTaxes.find((r) => r.id === v.id)}
             />
-            <div className="m-2 flex flex-row justify-around">
-              <button className="p-2 outline" type="submit">
-                create
-              </button>
-              <Dialog.Close asChild>
-                <button className="p-2 outline">cancel</button>
-              </Dialog.Close>
-            </div>
-          </form> */
+            <p>
+              {v.name} - {v.percent}
+            </p>
+            <button onClick={() => {}}>delete</button>
+            <button>edit</button>
+          </div>
+        );
+      })}
+    </div>
+  );
 }

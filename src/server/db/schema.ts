@@ -155,7 +155,8 @@ export const items = mysqlTable("item", {
   storeId: int("storeId").notNull(),
   categoryId: int("categoryId").notNull(),
 
-  // options ? simple json obj or db relation? idk
+  // options ? db relation M-M
+  // taxes ? db relation M-M
 });
 export const itemsRelations = relations(items, ({ many, one }) => ({
   itemsToStations: many(itemsToStations),
@@ -204,11 +205,12 @@ export const categoriesRelations = relations(categories, ({ many }) => ({
 
 export const taxes = mysqlTable("tax", {
   id: serial("id").primaryKey(),
+  storeId: int("storeId").notNull(),
   name: varchar("name", { length: 256 }).notNull(),
   percent: decimal("percent").$type<number>().notNull(),
 });
 
-export const taxesRelations = relations(taxes, ({}) => {});
+// export const taxesRelations = relations(taxes, ({}) => {});
 
 // export const stations = mysqlTable("station", {
 //   id: serial("id").primaryKey(),

@@ -10,7 +10,7 @@ import {
 import { taxes, stores, members } from "~/server/db/schema";
 
 export const taxRouter = createTRPCRouter({
-  create: storeProcedure
+  create: passcodeProcedure
     .input(
       z.object({
         taxName: z.string().min(1),
@@ -19,20 +19,28 @@ export const taxRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.transaction(async (tx) => {
-        const { insertId } = await tx
-          .insert(taxes)
-          .values({ name: input.taxName, percent: input.taxPercent });
-        await tx.insert(members).values({
-          userId: ctx.session.user.id,
-          storeId: Number(insertId),
-          authority: "owner",
+        const d = await tx.insert(taxes).values({
+          name: input.taxName,
+          percent: input.taxPercent,
+          storeId: ctx.storeId,
         });
         return await tx
           .selectDistinct()
-          .from(stores)
-          .where(eq(stores.id, Number(insertId)));
+          .from(taxes)
+          .where(eq(taxes.id, Number(d.insertId)));
       });
     }),
+
+  get: storeProcedure.query(async ({ ctx }) => {
+    return await ctx.db
+      .select()
+      .from(taxes)
+      .where(eq(taxes.storeId, ctx.storeId));
+  }),
+
+  delete: passcodeProcedure
+    .input(z.object({ taxId: z.number() }))
+    .mutation(async ({}) => {}),
 
   // delete if owner is only member
   // delete: protectedProcedure.input({storeId: z.string().min(1)}).mutation(async ({ctx, input})=>{
