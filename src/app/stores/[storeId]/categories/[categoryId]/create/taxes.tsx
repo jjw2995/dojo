@@ -2,11 +2,17 @@ import * as Dialog from "@radix-ui/react-dialog";
 import * as Tabs from "@radix-ui/react-tabs";
 
 import * as RadioGroup from "@radix-ui/react-radio-group";
+// import { Tabs as Tb, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input"
+
+
 
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { ChangeEvent, useState } from "react";
 import { api } from "~/trpc/react";
 import { RouterOutputs } from "~/trpc/shared";
+import { Label } from "~/@/components/ui/label";
 
 const Kind = [
   { value: "single", desc: "sg desc" },
@@ -24,9 +30,9 @@ export default function Taxes({
   return (
     <Dialog.Root
       // open={open}
-      onOpenChange={(isOpen) => {
-        // abstract dialog & call "confirm close dialog"
-      }}
+      // onOpenChange={(isOpen) => {
+      //   // abstract dialog & call "confirm close dialog"
+      // }}
     >
       <Dialog.Trigger asChild>
         <button className=" m-2 rounded-full p-2 text-xl outline">+</button>
@@ -54,12 +60,10 @@ export default function Taxes({
                 <TaxCreate />
               </Tabs.Content>
               <Tabs.Content value="tab2">
-                {
-                  <TaxAssign
-                    toggleTax={toggleTax}
-                    toggledTaxes={toggledTaxes}
-                  />
-                }
+                <TaxAssign
+                  toggleTax={toggleTax}
+                  toggledTaxes={toggledTaxes}
+                />
               </Tabs.Content>
             </Tabs.Root>
           </Dialog.Content>
@@ -88,6 +92,8 @@ function TaxCreate() {
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
+
+
       <div className="flex flex-col">
         <label htmlFor="">Tax Name</label>
         <input
@@ -127,23 +133,27 @@ function TaxAssign({
   // const deleteTax = api.tax.delete
   const deleteHandler = (tax: Tax) => {};
 
+  console.log(toggledTaxes);
+  
+
   return (
     <div>
       {taxes.data?.map((v) => {
         return (
           <div key={v.id}>
-            <input
-              onChange={() => {
+            
+            <Checkbox
+              onCheckedChange={() => {
                 toggleTax(v);
               }}
-              type="checkbox"
-              name=""
-              id=""
+              id={"tax"+v.id}
+
               checked={!!toggledTaxes.find((r) => r.id === v.id)}
             />
-            <p>
+            <Label htmlFor={"tax"+v.id}>
+
               {v.name} - {v.percent}
-            </p>
+            </Label>
             <button
               className="m-2 rounded p-2 outline"
               onClick={() => deleteHandler(v)}
