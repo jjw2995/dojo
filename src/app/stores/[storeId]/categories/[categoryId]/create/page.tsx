@@ -39,18 +39,18 @@ export default function Page({
   const [toggledTaxes, toggleTax] = useToggle<Tax>();
   console.log(toggledStations, toggledTaxes, params);
 
-  // const utils = api.useUtils();
-  // const onSubmit: SubmitHandler<Input> = (data) => {
-  //   stationCreate.mutate(
-  //     { name: data.itemName },
-  //     {
-  //       onSuccess() {
-  //         void utils.category.get.invalidate();
-  //         form.reset();
-  //       },
-  //     },
-  //   );
-  // };
+  const utils = api.useUtils();
+  const onSubmit: SubmitHandler<Input> = (data) => {
+    stationCreate.mutate(
+      { name: data.itemName },
+      {
+        onSuccess() {
+          void utils.category.get.invalidate();
+          form.reset();
+        },
+      },
+    );
+  };
 
   return (
     <div className="h-screen w-full bg-white text-2xl">
@@ -63,10 +63,7 @@ export default function Page({
         back
       </button>
       <div className="">
-        <form
-          // onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <input
             className="m-2 rounded p-2 outline"
             placeholder="item name"
@@ -151,20 +148,3 @@ function PrintTo({ toggleStation }: { toggleStation: (obj: Station) => void }) {
     </div>
   );
 }
-
-// type TaxInput = { taxName: string };
-// function TaxCreate() {
-//   const form = useForm<TaxInput>();
-
-//   return (
-//     <div>
-//       tax create
-//       <input type="text" />
-//       <input
-//         className="m-2 rounded p-2 outline"
-//         placeholder="option name"
-//         {...form.register("taxName", { required: true })}
-//       />
-//     </div>
-//   );
-// }

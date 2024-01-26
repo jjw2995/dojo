@@ -52,6 +52,7 @@ export const users = mysqlTable("user", {
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
+  members: many(members),
 }));
 
 export const accounts = mysqlTable(
@@ -113,13 +114,6 @@ export const verificationTokens = mysqlTable(
 
 // ===============================
 
-export const stores = mysqlTable("store", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 256 }).notNull(),
-  // location: str || geohash
-  // tax
-});
-
 export const members = mysqlTable(
   "member",
   {
@@ -134,10 +128,31 @@ export const members = mysqlTable(
     compoundKey: primaryKey(member.userId, member.storeId),
   }),
 );
-
 export const membersRelations = relations(members, ({ one }) => ({
   user: one(users, { fields: [members.userId], references: [users.id] }),
   store: one(stores, { fields: [members.storeId], references: [stores.id] }),
+}));
+
+export const stores = mysqlTable("store", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 256 }).notNull(),
+  // location: str || geohash
+  // tax
+});
+export const storesRelations = relations(stores, ({ many }) => ({
+  members: many(members),
+  stations: many(stations),
+  categories: many(categories),
+}));
+
+export const categories = mysqlTable("category", {
+  id: serial("id").primaryKey(),
+  storeId: int("storeId").notNull(),
+  name: varchar("name", { length: 256 }).notNull(),
+});
+export const categoriesRelations = relations(categories, ({ many, one }) => ({
+  store: one(stores, { fields: [categories.storeId], references: [stores.id] }),
+  items: many(items),
 }));
 
 export const stations = mysqlTable("station", {
@@ -145,8 +160,9 @@ export const stations = mysqlTable("station", {
   name: varchar("name", { length: 256 }).notNull(),
   storeId: int("storeId").notNull(),
 });
-export const stationsRelations = relations(stations, ({ many }) => ({
-  stationsToItems: many(itemsToStations),
+export const stationsRelations = relations(stations, ({ many, one }) => ({
+  // stationsToItems: many(itemsToStations),
+  store: one(stores, { fields: [stations.storeId], references: [stores.id] }),
 }));
 
 export const items = mysqlTable("item", {
@@ -154,12 +170,11 @@ export const items = mysqlTable("item", {
   name: varchar("name", { length: 256 }).notNull(),
   storeId: int("storeId").notNull(),
   categoryId: int("categoryId").notNull(),
-
   // options ? db relation M-M
   // taxes ? db relation M-M
 });
 export const itemsRelations = relations(items, ({ many, one }) => ({
-  itemsToStations: many(itemsToStations),
+  // itemsToStations: many(itemsToStations),
   category: one(categories, {
     fields: [items.categoryId],
     references: [categories.id],
@@ -178,7 +193,6 @@ export const itemsToStations = mysqlTable(
     pk: primaryKey(t.itemId, t.stationId),
   }),
 );
-
 export const itemsToStationsRelations = relations(
   itemsToStations,
   ({ one }) => ({
@@ -192,16 +206,6 @@ export const itemsToStationsRelations = relations(
     }),
   }),
 );
-
-export const categories = mysqlTable("category", {
-  id: serial("id").primaryKey(),
-  storeId: int("storeId").notNull(),
-  name: varchar("name", { length: 256 }).notNull(),
-});
-
-export const categoriesRelations = relations(categories, ({ many }) => ({
-  items: many(items),
-}));
 
 export const taxes = mysqlTable("tax", {
   id: serial("id").primaryKey(),
