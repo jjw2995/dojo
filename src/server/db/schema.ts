@@ -161,7 +161,7 @@ export const stations = mysqlTable("station", {
   storeId: int("storeId").notNull(),
 });
 export const stationsRelations = relations(stations, ({ many, one }) => ({
-  // stationsToItems: many(itemsToStations),
+  itemsToStations: many(itemsToStations),
   store: one(stores, { fields: [stations.storeId], references: [stores.id] }),
 }));
 
@@ -174,11 +174,22 @@ export const items = mysqlTable("item", {
   // taxes ? db relation M-M
 });
 export const itemsRelations = relations(items, ({ many, one }) => ({
-  // itemsToStations: many(itemsToStations),
+  itemsToStations: many(itemsToStations),
+  itemsToTaxes: many(itemsToTaxes),
+  options: many(options),
   category: one(categories, {
     fields: [items.categoryId],
     references: [categories.id],
   }),
+}));
+
+export const options = mysqlTable("options", {
+  id: serial("id").primaryKey(),
+  itemId: int("itemId").notNull(),
+});
+export const optionsRelations = relations(options, ({ many, one }) => ({
+  item: one(items, { fields: [options.itemId], references: [items.id] }),
+  // optElems: many(,{})
 }));
 
 export const itemsToStations = mysqlTable(
@@ -213,19 +224,30 @@ export const taxes = mysqlTable("tax", {
   name: varchar("name", { length: 256 }).notNull(),
   percent: decimal("percent").$type<number>().notNull(),
 });
+export const taxeesRelations = relations(taxes, ({ many }) => ({
+  itemsToTaxes: many(itemsToTaxes),
+}));
 
-// export const taxesRelations = relations(taxes, ({}) => {});
-
-// export const stations = mysqlTable("station", {
-//   id: serial("id").primaryKey(),
-//   name: varchar("name", { length: 256 }).notNull(),
-//   storeId: bigint("storeId", { mode: "number" }).notNull(),
-// });
-// export const stationsRelations = relations(stations, ({ many }) => ({
-//   stationsToItems: many(itemsToStations),
-// }));
-
-// export const modifiers = mysqlTable("modifier", {})
+export const itemsToTaxes = mysqlTable(
+  "itemsToTaxes",
+  {
+    itemId: int("itemId").notNull(),
+    taxId: int("itemId").notNull(),
+  },
+  (t) => ({
+    pk: primaryKey(t.itemId, t.taxId),
+  }),
+);
+export const itemsToTaxesRelations = relations(itemsToTaxes, ({ one }) => ({
+  item: one(items, {
+    fields: [itemsToTaxes.itemId],
+    references: [items.id],
+  }),
+  tax: one(taxes, {
+    fields: [itemsToTaxes.taxId],
+    references: [taxes.id],
+  }),
+}));
 
 /**
  *
