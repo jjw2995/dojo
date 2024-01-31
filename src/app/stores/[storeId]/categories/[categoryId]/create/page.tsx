@@ -6,8 +6,12 @@ import { api } from "~/trpc/react";
 import Options from "./options";
 import Taxes from "./taxes";
 import { RouterOutputs } from "~/trpc/shared";
+import { Input } from "~/@/components/ui/input";
+import { Label } from "~/@/components/ui/label";
+import { Button } from "~/@/components/ui/button";
+import { Checkbox } from "~/@/components/ui/checkbox";
 
-type Input = { itemName: string; itemPriceInCent: string };
+type Input = { itemName: string; itemPrice: string };
 
 function useToggle<T extends { id: Number }>() {
   const [arr, setArr] = useState<T[]>([]);
@@ -32,7 +36,7 @@ export default function Page({
   params: { storeId: string; categoryId: string };
 }) {
   const form = useForm<Input>();
-  const stationCreate = api.category.create.useMutation();
+  const itemCreate = api.item.create.useMutation();
 
   const [toggledStations, toggleStation] = useToggle<Station>();
   // const [toggledOptions, toggleOption] = useToggle();
@@ -41,8 +45,13 @@ export default function Page({
 
   const utils = api.useUtils();
   const onSubmit: SubmitHandler<Input> = (data) => {
-    stationCreate.mutate(
-      { name: data.itemName },
+    itemCreate.mutate(
+      {
+        itemName: data.itemName,
+        itemPrice: Number(data.itemPrice),
+        taxIds: toggledTaxes.map((r) => r.id),
+        stationIds: toggledStations.map((r) => r.id),
+      },
       {
         onSuccess() {
           void utils.category.get.invalidate();
@@ -52,45 +61,55 @@ export default function Page({
     );
   };
 
+  console.log(form.watch());
+
   return (
-    <div className="h-screen w-full bg-white text-2xl">
-      <button
-        onClick={() => {
-          window.history.back();
-        }}
-        className="m-2 rounded p-1 outline"
-      >
-        back
-      </button>
-      <div className="">
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <input
-            className="m-2 rounded p-2 outline"
-            placeholder="item name"
-            {...form.register("itemName", { required: true })}
-          />
-          <input
-            placeholder="price"
-            className="m-2 rounded p-2 outline"
-            type="number"
-            {...form.register("itemPriceInCent", {
-              required: true,
-              min: 0,
-              onBlur: (e: ChangeEvent<HTMLInputElement>) => {
-                form.setValue(
-                  "itemPriceInCent",
-                  Number(e?.target?.value || "0").toFixed(2),
-                );
-              },
-              onChange: (e: ChangeEvent<HTMLInputElement>) => {
-                const str = e.target.value || "";
-                const fixed = Number(str).toFixed(2);
-                if (fixed.length < str.length) {
-                  form.setValue("itemPriceInCent", Number(fixed).toString());
-                }
-              },
-            })}
-          />
+    <div className="flex h-screen w-full justify-center bg-white text-2xl">
+      <div className="w-96 px-4">
+        <Button
+          onClick={() => {
+            window.history.back();
+          }}
+          className="m-2"
+        >
+          back
+        </Button>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+          <h1 className="text-center">Create Item</h1>
+          <div>
+            <Label htmlFor="itemName">Name</Label>
+            <Input
+              id="itemName"
+              placeholder="item name"
+              {...form.register("itemName", { required: true })}
+            />
+          </div>
+          <div>
+            <Label htmlFor="itemPrice">Price</Label>
+            <Input
+              id="itemPrice"
+              placeholder="price"
+              type="number"
+              step="any"
+              {...form.register("itemPrice", {
+                required: true,
+                // min: 0,
+                onBlur: (e: ChangeEvent<HTMLInputElement>) => {
+                  form.setValue(
+                    "itemPrice",
+                    Number(e?.target?.value || "0").toFixed(2),
+                  );
+                },
+                onChange: (e: ChangeEvent<HTMLInputElement>) => {
+                  const str = e.target.value || "";
+                  const fixed = Number(str).toFixed(2);
+                  if (fixed.length < str.length) {
+                    form.setValue("itemPrice", Number(fixed).toString());
+                  }
+                },
+              })}
+            />
+          </div>
 
           <PrintTo toggleStation={toggleStation} />
 
@@ -100,7 +119,7 @@ export default function Page({
           </div> */}
 
           <div>
-            <p>tax</p>
+            <Label>Tax</Label>
             <Taxes toggleTax={toggleTax} toggledTaxes={toggledTaxes} />
             {toggledTaxes.map((v) => {
               return (
@@ -112,13 +131,10 @@ export default function Page({
           </div>
 
           <div className="m-2 flex flex-row justify-around">
-            <button className="p-2 outline" type="submit">
-              create item
-            </button>
+            <Button type="submit">create item</Button>
           </div>
         </form>
       </div>
-      create item
     </div>
   );
 }
@@ -126,22 +142,21 @@ export default function Page({
 function PrintTo({ toggleStation }: { toggleStation: (obj: Station) => void }) {
   const stations = api.station.get.useQuery();
   return (
-    <div className="p-2">
-      <p>Print To</p>
-
+    <div>
+      <Label>Print To</Label>
       <div className="flex ">
         {stations.data?.map((v) => (
-          <div className="m-2" key={v.id}>
-            <input
-              type="checkbox"
+          <div className="mx-2" key={v.id}>
+            {/* <Checkbox /> */}
+            <Checkbox
               name=""
-              className="h-6 w-6"
+              // className="h-6 w-6"
               id={v.id.toString()}
               onClick={(e) => {
                 toggleStation(v);
               }}
             />
-            {v.name}
+            <Label htmlFor={v.id.toString()}>{v.name}</Label>
           </div>
         ))}
       </div>

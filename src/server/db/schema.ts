@@ -183,13 +183,24 @@ export const itemsRelations = relations(items, ({ many, one }) => ({
   }),
 }));
 
-export const options = mysqlTable("options", {
+export const options = mysqlTable("option", {
   id: serial("id").primaryKey(),
   itemId: int("itemId").notNull(),
 });
 export const optionsRelations = relations(options, ({ many, one }) => ({
   item: one(items, { fields: [options.itemId], references: [items.id] }),
-  // optElems: many(,{})
+  optionElements: many(optionElements),
+}));
+
+export const optionElements = mysqlTable("optionElement", {
+  id: serial("id").primaryKey(),
+  optionId: int("optionId").notNull(),
+});
+export const optionElementsRelations = relations(optionElements, ({ one }) => ({
+  option: one(options, {
+    fields: [optionElements.optionId],
+    references: [options.id],
+  }),
 }));
 
 export const itemsToStations = mysqlTable(
@@ -229,10 +240,10 @@ export const taxeesRelations = relations(taxes, ({ many }) => ({
 }));
 
 export const itemsToTaxes = mysqlTable(
-  "itemsToTaxes",
+  "itemToTax",
   {
     itemId: int("itemId").notNull(),
-    taxId: int("itemId").notNull(),
+    taxId: int("taxId").notNull(),
   },
   (t) => ({
     pk: primaryKey(t.itemId, t.taxId),

@@ -4,15 +4,14 @@ import * as Tabs from "@radix-ui/react-tabs";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 // import { Tabs as Tb, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input"
-
-
+import { Input } from "@/components/ui/input";
 
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { ChangeEvent, useState } from "react";
 import { api } from "~/trpc/react";
 import { RouterOutputs } from "~/trpc/shared";
 import { Label } from "~/@/components/ui/label";
+import { Button } from "~/@/components/ui/button";
 
 const Kind = [
   { value: "single", desc: "sg desc" },
@@ -29,17 +28,17 @@ export default function Taxes({
 }) {
   return (
     <Dialog.Root
-      // open={open}
-      // onOpenChange={(isOpen) => {
-      //   // abstract dialog & call "confirm close dialog"
-      // }}
+    // open={open}
+    // onOpenChange={(isOpen) => {
+    //   // abstract dialog & call "confirm close dialog"
+    // }}
     >
       <Dialog.Trigger asChild>
-        <button className=" m-2 rounded-full p-2 text-xl outline">+</button>
+        <Button className=" m-2 p-2 text-xl">+</Button>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="z-50">
-          <Dialog.Content className="fixed left-[50%] top-[50%] z-40 h-[70%] w-[90%] translate-x-[-50%] translate-y-[-50%] overflow-hidden rounded-sm bg-white p-2 text-text outline">
+          <Dialog.Content className="text-text fixed left-[50%] top-[50%] z-40 h-[70%] w-[90%] translate-x-[-50%] translate-y-[-50%] overflow-hidden rounded-sm bg-white p-2 outline">
             <Tabs.Root defaultValue="tab1">
               <p className="text-center">Taxes</p>
               <Tabs.List className="flex justify-around">
@@ -60,10 +59,7 @@ export default function Taxes({
                 <TaxCreate />
               </Tabs.Content>
               <Tabs.Content value="tab2">
-                <TaxAssign
-                  toggleTax={toggleTax}
-                  toggledTaxes={toggledTaxes}
-                />
+                <TaxAssign toggleTax={toggleTax} toggledTaxes={toggledTaxes} />
               </Tabs.Content>
             </Tabs.Root>
           </Dialog.Content>
@@ -92,8 +88,6 @@ function TaxCreate() {
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
-
-
       <div className="flex flex-col">
         <label htmlFor="">Tax Name</label>
         <input
@@ -134,24 +128,20 @@ function TaxAssign({
   const deleteHandler = (tax: Tax) => {};
 
   console.log(toggledTaxes);
-  
 
   return (
     <div>
       {taxes.data?.map((v) => {
         return (
           <div key={v.id}>
-            
             <Checkbox
               onCheckedChange={() => {
                 toggleTax(v);
               }}
-              id={"tax"+v.id}
-
+              id={"tax" + v.id}
               checked={!!toggledTaxes.find((r) => r.id === v.id)}
             />
-            <Label htmlFor={"tax"+v.id}>
-
+            <Label htmlFor={"tax" + v.id}>
               {v.name} - {v.percent}
             </Label>
             <button
