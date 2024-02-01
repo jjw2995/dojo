@@ -38,7 +38,7 @@ export default function Taxes({
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="z-50">
-          <Dialog.Content className="text-text fixed left-[50%] top-[50%] z-40 h-[70%] w-[90%] translate-x-[-50%] translate-y-[-50%] overflow-hidden rounded-sm bg-white p-2 outline">
+          <Dialog.Content className="text-text fixed left-[50%] top-[50%] z-40 h-[70%] w-[90%] translate-x-[-50%] translate-y-[-50%] overflow-hidden rounded-sm bg-white p-2 outline sm:w-96">
             <Tabs.Root defaultValue="tab1">
               <p className="text-center">Taxes</p>
               <Tabs.List className="flex justify-around">
@@ -88,30 +88,30 @@ function TaxCreate() {
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
-      <div className="flex flex-col">
-        <label htmlFor="">Tax Name</label>
-        <input
-          className="m-2 rounded p-2 outline"
-          placeholder="tax name"
-          type="text"
-          {...form.register("taxName", { required: true })}
-        />
+      <div className="space-y-4">
+        <div className="flex flex-col">
+          <Label htmlFor="">Tax Name</Label>
+          <Input
+            placeholder="tax name"
+            type="text"
+            {...form.register("taxName", { required: true })}
+          />
+        </div>
+        <div className="flex flex-col">
+          <Label htmlFor="">Tax Percentage</Label>
+          <Input
+            placeholder="tax percent"
+            type="number"
+            {...form.register("taxPercent", {
+              required: true,
+              min: 0,
+            })}
+          />
+        </div>
+        <div className="flex justify-center">
+          <Button type="submit">create tax</Button>
+        </div>
       </div>
-      <div className="flex flex-col">
-        <label htmlFor="">Tax Percentage</label>
-        <input
-          className="m-2 rounded p-2 outline"
-          placeholder="tax percent"
-          type="number"
-          {...form.register("taxPercent", {
-            required: true,
-            min: 0,
-          })}
-        />
-      </div>
-      <button className="m-2 rounded p-2 outline" type="submit">
-        create tax
-      </button>
     </form>
   );
 }
@@ -127,7 +127,7 @@ function TaxAssign({
   // const deleteTax = api.tax.delete
   const deleteHandler = (tax: Tax) => {};
 
-  console.log(toggledTaxes);
+  // console.log(toggledTaxes);
 
   return (
     <div>

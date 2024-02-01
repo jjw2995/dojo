@@ -24,7 +24,11 @@ function useToggle<T extends { id: Number }>() {
     }
   }
 
-  return [arr, toggle] as const;
+  function reset() {
+    setArr([]);
+  }
+
+  return [arr, toggle, reset] as const;
 }
 
 type Station = RouterOutputs["station"]["get"][number];
@@ -38,10 +42,10 @@ export default function Page({
   const form = useForm<Input>();
   const itemCreate = api.item.create.useMutation();
 
-  const [toggledStations, toggleStation] = useToggle<Station>();
+  const [toggledStations, toggleStation, stationsReset] = useToggle<Station>();
   // const [toggledOptions, toggleOption] = useToggle();
-  const [toggledTaxes, toggleTax] = useToggle<Tax>();
-  console.log(toggledStations, toggledTaxes, params);
+  const [toggledTaxes, toggleTax, taxesReset] = useToggle<Tax>();
+  console.log(toggledStations, toggledTaxes);
 
   const utils = api.useUtils();
   const onSubmit: SubmitHandler<Input> = (data) => {
@@ -51,17 +55,18 @@ export default function Page({
         itemPrice: Number(data.itemPrice),
         taxIds: toggledTaxes.map((r) => r.id),
         stationIds: toggledStations.map((r) => r.id),
+        categoryId: Number(params.categoryId),
       },
       {
         onSuccess() {
           void utils.category.get.invalidate();
+          stationsReset();
+          taxesReset();
           form.reset();
         },
       },
     );
   };
-
-  console.log(form.watch());
 
   return (
     <div className="flex h-screen w-full justify-center bg-white text-2xl">
@@ -131,7 +136,9 @@ export default function Page({
           </div>
 
           <div className="m-2 flex flex-row justify-around">
-            <Button type="submit">create item</Button>
+            <Button type="submit" disabled={itemCreate.isLoading}>
+              create item
+            </Button>
           </div>
         </form>
       </div>
