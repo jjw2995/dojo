@@ -1,12 +1,24 @@
 "use client";
 
-import { useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { api } from "~/trpc/react";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { MoreVertical, Plus } from "lucide-react";
+
+import { useState } from "react";
 import type { RouterOutputs } from "~/trpc/shared";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Button } from "~/@/components/ui/button";
+import { Input } from "~/@/components/ui/input";
+import { Label } from "~/@/components/ui/label";
 
 export default function Page({
   children,
@@ -16,42 +28,37 @@ export default function Page({
   children: React.ReactNode;
 }) {
   const a = api.category.get.useQuery();
+  const searchParams = useSearchParams();
+  searchParams.get("id");
+
+  console.log(searchParams.get("id"));
 
   return (
     <div className="flex">
       <div className="flex-1 lg:relative">
-        <div className="flex flex-col">
-          {a.data?.map((category) => {
-            return (
-              <Category
-                storeId={params.storeId}
-                category={category}
-                key={category.id}
-              />
-            );
-          })}
-        </div>
-        <CreateCategory />
+        {/* <div className="flex flex-col"> */}
+        {a.data?.map((category) => {
+          return (
+            <Accordion className="" type="multiple">
+              <AccordionItem value="item-1">
+                <AccordionTrigger>
+                  {category.category.name}
+                  <CategoryMenu
+                    categoryId={category.category.id}
+                    storeId={params.storeId}
+                  />
+                </AccordionTrigger>
+                <AccordionContent>
+                  Yes. It adheres to the WAI-ARIA design pattern.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          );
+        })}
       </div>
+      <CreateCategory />
+      {/* </div> */}
       <div className="fixed w-full lg:relative lg:flex-1">{children}</div>
-    </div>
-  );
-}
-
-type Category = RouterOutputs["category"]["get"][number];
-function Category({
-  category,
-  storeId,
-}: {
-  category: Category;
-  storeId: string;
-}) {
-  // const [addItemModOpen, setAddItemModOpen] = useState(false);
-
-  return (
-    <div className="m-2 flex justify-between" key={category.id}>
-      {category.name}
-      <CategoryMenu categoryId={category.id} storeId={storeId} />
     </div>
   );
 }
@@ -79,28 +86,25 @@ function CreateCategory() {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <button className="fixed bottom-[10%] left-[90%] m-2 rounded-full p-2 outline lg:left-[45%]">
-          +
-        </button>
+        <Button
+          className="fixed bottom-[10%] left-[85%] -translate-x-1/2 rounded-full p-2 lg:left-[50%]"
+          // className="fixed bottom-[10%] left-[90%] m-2 rounded-full p-2 outline lg:left-[45%]"
+        >
+          <Plus />
+        </Button>
       </Dialog.Trigger>
 
       <Dialog.Portal>
         <Dialog.Overlay />
-        <Dialog.Content className="fixed left-1/2 top-1/2 z-10 -translate-y-1/2 translate-x-1/2 rounded-sm bg-background p-2 text-text outline lg:left-1/4">
-          <Dialog.Title>add category</Dialog.Title>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <input
-              className="text-black"
+        <Dialog.Content className="text-text fixed left-1/2 top-1/2 z-10 w-[20rem] -translate-x-1/2 -translate-y-1/2 rounded-sm bg-background p-2 outline lg:left-1/4">
+          <Dialog.Title className="text-center">Add Category</Dialog.Title>
+          <form className="py-2" onSubmit={form.handleSubmit(onSubmit)}>
+            <Input
               placeholder="Station Name"
               {...form.register("categoryName", { required: true })}
             />
-            <div className="m-2 flex flex-row justify-around">
-              <button className="p-2 outline" type="submit">
-                create
-              </button>
-              <Dialog.Close asChild>
-                <button className="p-2 outline">cancel</button>
-              </Dialog.Close>
+            <div className="mt-2 flex flex-row justify-around">
+              <Button type="submit">create</Button>
             </div>
           </form>
           <Dialog.Description />
@@ -119,17 +123,18 @@ function CategoryMenu({
 }) {
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger>...</DropdownMenu.Trigger>
+      <DropdownMenu.Trigger>
+        <MoreVertical className="h-4 w-4" />
+      </DropdownMenu.Trigger>
 
       <DropdownMenu.Portal>
-        <DropdownMenu.Content className="bg-white ">
-          {/* <DropdownMenu.Arrow className="fill-white" /> */}
-
+        <DropdownMenu.Content className="bg-white outline">
           <DropdownMenu.Item asChild>
             <Link
-              className={`m-2 p-2 text-lg`}
+              className={`my-2 flex py-2 text-lg`}
               href={`/stores/${storeId}/categories/${categoryId}/create`}
             >
+              <Plus />
               create item link
             </Link>
           </DropdownMenu.Item>

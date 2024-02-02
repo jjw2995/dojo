@@ -10,6 +10,7 @@ import { Input } from "~/@/components/ui/input";
 import { Label } from "~/@/components/ui/label";
 import { Button } from "~/@/components/ui/button";
 import { Checkbox } from "~/@/components/ui/checkbox";
+import { useRouter } from "next/navigation";
 
 type Input = { itemName: string; itemPrice: string };
 
@@ -39,6 +40,7 @@ export default function Page({
 }: {
   params: { storeId: string; categoryId: string };
 }) {
+  const router = useRouter();
   const form = useForm<Input>();
   const itemCreate = api.item.create.useMutation();
 
@@ -73,7 +75,8 @@ export default function Page({
       <div className="w-96 px-4">
         <Button
           onClick={() => {
-            window.history.back();
+            // window.history.back();
+            router.back();
           }}
           className="m-2"
         >

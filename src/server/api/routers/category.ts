@@ -6,7 +6,15 @@ import {
   storeProcedure,
   passcodeProcedure,
 } from "~/server/api/trpc";
-import { stations, categories, itemsToStations } from "~/server/db/schema";
+import {
+  stations,
+  categories,
+  itemsToStations,
+  items,
+} from "~/server/db/schema";
+
+type Category = typeof categories.$inferSelect;
+type Item = typeof items.$inferSelect;
 
 export const categoryRouter = createTRPCRouter({
   create: passcodeProcedure
@@ -18,10 +26,28 @@ export const categoryRouter = createTRPCRouter({
     }),
 
   get: passcodeProcedure.query(async ({ ctx }) => {
-    return await ctx.db
+    const rows = await ctx.db
       .select()
       .from(categories)
-      .where(eq(categories.storeId, ctx.storeId));
+      .where(eq(categories.storeId, ctx.storeId))
+      .leftJoin(items, eq(categories.id, items.categoryId));
+    const res = rows.reduce<
+      Record<number, { category: Category; items: Item[] }>
+    >((acc, row) => {
+      const category = row.category;
+      const item = row.item;
+
+      if (!acc[category.id]) {
+        acc[category.id] = { category, items: [] };
+      }
+
+      if (item) {
+        acc[category.id]!.items.push(item);
+      }
+      return acc;
+    }, {});
+
+    return Object.values(res);
   }),
 
   getOrders: storeProcedure

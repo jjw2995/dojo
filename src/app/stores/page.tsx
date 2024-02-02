@@ -4,8 +4,11 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
+// import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/react";
 import type { RouterOutputs } from "~/trpc/shared";
+
+import { ExitIcon } from "@radix-ui/react-icons";
 
 export default function Stores() {
   const stores = api.store.get.useQuery();
@@ -14,8 +17,16 @@ export default function Stores() {
 
   return (
     <div>
+      <div className="m-2 flex items-end justify-between">
+        <ExitIcon className="h-8 w-8" />
+        <h1 className="text-4xl font-semibold tracking-wide">Dojo</h1>
+        <img
+          className="h-8 w-8 rounded-full"
+          src={ses.data?.user.image ?? undefined}
+          alt=""
+        />
+      </div>
       <div className="flex flex-col items-center">
-        <img src={ses.data?.user.image ?? undefined} alt="" />
         {stores.data ? (
           stores.data.map((store) => {
             return <Store store={store.store} key={store.store.id} />;
@@ -67,14 +78,14 @@ function Create() {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <button className="fixed left-[80%] top-[90%] z-10 m-2 translate-x-[-50%] translate-y-[-50%] rounded-full bg-background p-2 leading-none text-text outline">
+        <button className="text-text fixed left-[80%] top-[90%] z-10 m-2 translate-x-[-50%] translate-y-[-50%] rounded-full bg-background p-2 leading-none outline">
           +
         </button>
       </Dialog.Trigger>
 
       <Dialog.Portal>
         <Dialog.Overlay />
-        <Dialog.Content className="fixed left-[50%] top-[50%] z-10 w-[70%] translate-x-[-50%] translate-y-[-50%] rounded-sm bg-background p-2 text-text outline">
+        <Dialog.Content className="text-text fixed left-[50%] top-[50%] z-10 w-[70%] translate-x-[-50%] translate-y-[-50%] rounded-sm bg-background p-2 outline">
           <Dialog.Title>create group</Dialog.Title>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <input

@@ -1,22 +1,16 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Tabs from "@radix-ui/react-tabs";
 
-import * as RadioGroup from "@radix-ui/react-radio-group";
 // import { Tabs as Tb, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 
 import { type SubmitHandler, useForm } from "react-hook-form";
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
 import { api } from "~/trpc/react";
 import { RouterOutputs } from "~/trpc/shared";
 import { Label } from "~/@/components/ui/label";
 import { Button } from "~/@/components/ui/button";
-
-const Kind = [
-  { value: "single", desc: "sg desc" },
-  { value: "multiple", desc: "ml desc" },
-];
 
 type Tax = RouterOutputs["tax"]["get"][number];
 export default function Taxes({
