@@ -1,6 +1,10 @@
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { createTRPCRouter, passcodeProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  memberProcedure,
+  passcodeProcedure,
+} from "~/server/api/trpc";
 import {
   stations,
   items,
@@ -8,6 +12,8 @@ import {
   itemsToStations,
   itemsToTaxes,
 } from "~/server/db/schema";
+
+// type;
 
 export const itemRouter = createTRPCRouter({
   create: passcodeProcedure
@@ -20,9 +26,9 @@ export const itemRouter = createTRPCRouter({
         categoryId: z.number(),
       }),
     )
-    .mutation(({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       //   console.log(input);
-      ctx.db.transaction(async (tx) => {
+      return ctx.db.transaction(async (tx) => {
         const { insertId } = await tx.insert(items).values({
           categoryId: input.categoryId,
           name: input.itemName,
@@ -48,5 +54,33 @@ export const itemRouter = createTRPCRouter({
           .leftJoin(itemsToTaxes, eq(items.id, itemsToTaxes.itemId));
         // a.
       });
+    }),
+
+  get: memberProcedure
+    .input(z.object({ itemId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const rows = await ctx.db
+        .select()
+        .from(items)
+        .where(eq(items.id, Number(input.itemId)))
+        .leftJoin(itemsToStations, eq(items.id, itemsToStations.itemId))
+        .leftJoin(itemsToTaxes, eq(items.id, itemsToTaxes.itemId));
+
+      // const res = rows.reduce<
+      //   Record<number, { category: Category; items: Item[] }>
+      // >((acc, row) => {
+      //   const category = row.category;
+      //   const item = row.item;
+
+      //   if (!acc[category.id]) {
+      //     acc[category.id] = { category, items: [] };
+      //   }
+
+      //   if (item) {
+      //     acc[category.id]!.items.push(item);
+      //   }
+      //   return acc;
+      // }, {});
+      return rows;
     }),
 });

@@ -15,7 +15,7 @@ import { MoreVertical, Plus } from "lucide-react";
 import { useState } from "react";
 import type { RouterOutputs } from "~/trpc/shared";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Button } from "~/@/components/ui/button";
 import { Input } from "~/@/components/ui/input";
 import { Label } from "~/@/components/ui/label";
@@ -28,37 +28,59 @@ export default function Page({
   children: React.ReactNode;
 }) {
   const a = api.category.get.useQuery();
-  const searchParams = useSearchParams();
-  searchParams.get("id");
+  // const searchParams = useSearchParams();
+  // searchParams.get("id");
+  // const pathName = usePathname();
 
-  console.log(searchParams.get("id"));
+  // console.log(pathName);
+
+  // console.log(searchParams.get("id"));
 
   return (
     <div className="flex">
-      <div className="flex-1 lg:relative">
-        {/* <div className="flex flex-col"> */}
-        {a.data?.map((category) => {
-          return (
-            <Accordion className="" type="multiple">
-              <AccordionItem value="item-1">
-                <AccordionTrigger>
-                  {category.category.name}
-                  <CategoryMenu
-                    categoryId={category.category.id}
-                    storeId={params.storeId}
-                  />
-                </AccordionTrigger>
-                <AccordionContent>
-                  Yes. It adheres to the WAI-ARIA design pattern.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          );
-        })}
+      <div className="max-h-screen flex-1 overflow-auto">
+        <div className="relative mb-20 md:mb-0">
+          {a.data?.map(({ category, items }, idx) => {
+            return (
+              <Accordion
+                className=""
+                key={"cat" + idx.toString()}
+                type="multiple"
+              >
+                <AccordionItem value={"category" + category.id.toString()}>
+                  <div className="sticky top-0 bg-slate-200">
+                    <AccordionTrigger className="" disabled={items.length < 1}>
+                      {category.name}
+                      <CategoryMenu
+                        categoryId={category.id}
+                        storeId={params.storeId}
+                      />
+                    </AccordionTrigger>
+                  </div>
+                  <div className="">
+                    {items.map((item, idx) => {
+                      return (
+                        <Link
+                          key={"item" + idx.toString()}
+                          href={`/stores/${params.storeId}/categories/${category.id}/items/${item.id}`}
+                        >
+                          <AccordionContent className="px-4 py-2 text-lg">
+                            {item.name}
+                          </AccordionContent>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </AccordionItem>
+              </Accordion>
+            );
+          })}
+        </div>
       </div>
       <CreateCategory />
-      {/* </div> */}
-      <div className="fixed w-full lg:relative lg:flex-1">{children}</div>
+      <div className="fixed w-full lg:relative lg:h-full lg:flex-1">
+        {children}
+      </div>
     </div>
   );
 }
@@ -86,10 +108,7 @@ function CreateCategory() {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <Button
-          className="fixed bottom-[10%] left-[85%] -translate-x-1/2 rounded-full p-2 lg:left-[50%]"
-          // className="fixed bottom-[10%] left-[90%] m-2 rounded-full p-2 outline lg:left-[45%]"
-        >
+        <Button className="fixed bottom-[5rem] right-[1rem] -translate-x-1/2 rounded-full p-2 lg:bottom-[2rem] lg:right-[47%]">
           <Plus />
         </Button>
       </Dialog.Trigger>

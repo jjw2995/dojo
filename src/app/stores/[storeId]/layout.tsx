@@ -11,25 +11,16 @@ export default function StoreLayout({
   };
 }) {
   return (
-    <div className="flex w-screen">
-      <div className="fixed bottom-0 z-20 flex w-[100%] justify-around outline lg:relative lg:bottom-auto lg:flex lg:w-[10%] lg:flex-col lg:justify-normal">
-        <Link className={`m-2 p-2`} href={`/stores/${params.storeId}/home`}>
-          Home
-        </Link>
-        <Link className={`m-2 p-2`} href={`/stores/${params.storeId}/order`}>
-          Order
-        </Link>
-        <Link className={`m-2 p-2`} href={`/stores/${params.storeId}/kitchen`}>
-          Kitchen
-        </Link>
-        <Link
-          className={`m-2 p-2`}
-          href={`/stores/${params.storeId}/categories`}
-        >
-          Items
-        </Link>
-      </div>
+    <div className="flex lg:flex-row-reverse">
       <div className="w-full">{children}</div>
+
+      <div className="fixed bottom-0 z-20 flex w-[100%] justify-around bg-background p-2 outline lg:relative lg:bottom-auto lg:flex lg:w-[10%] lg:flex-col lg:justify-normal lg:space-y-4">
+        {/* <div className="fixed bottom-0 z-20 flex w-[100%] justify-around bg-background outline lg:relative lg:bottom-auto lg:flex lg:w-[10%] lg:flex-col lg:justify-normal"> */}
+        <Link href={`/stores/${params.storeId}/home`}>Home</Link>
+        <Link href={`/stores/${params.storeId}/order`}>Order</Link>
+        <Link href={`/stores/${params.storeId}/kitchen`}>Kitchen</Link>
+        <Link href={`/stores/${params.storeId}/categories`}>Items</Link>
+      </div>
     </div>
   );
 }

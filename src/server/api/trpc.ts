@@ -133,7 +133,7 @@ export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
 
 // TODO: add admin access
 // check store member OR admin
-export const storeProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+export const memberProcedure = protectedProcedure.use(async ({ ctx, next }) => {
   const urlArr = ctx.headers.get("referer")?.split("/");
   const storesIndex = urlArr?.findIndex((v) => {
     return v === "stores";
@@ -175,4 +175,4 @@ export const storeProcedure = protectedProcedure.use(async ({ ctx, next }) => {
 });
 
 // add passcode verification OR admin
-export const passcodeProcedure = storeProcedure;
+export const passcodeProcedure = memberProcedure;

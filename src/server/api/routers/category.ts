@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import {
   createTRPCRouter,
-  storeProcedure,
+  memberProcedure,
   passcodeProcedure,
 } from "~/server/api/trpc";
 import {
@@ -50,7 +50,7 @@ export const categoryRouter = createTRPCRouter({
     return Object.values(res);
   }),
 
-  getOrders: storeProcedure
+  getOrders: memberProcedure
     .input(z.object({ stationId: z.number() }))
     .query(async ({}) => {
       // websocket, real time order prints

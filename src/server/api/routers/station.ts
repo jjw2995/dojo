@@ -3,20 +3,20 @@ import { z } from "zod";
 
 import {
   createTRPCRouter,
-  storeProcedure,
+  memberProcedure,
   passcodeProcedure,
 } from "~/server/api/trpc";
 import { stations, itemsToStations } from "~/server/db/schema";
 
 export const stationRouter = createTRPCRouter({
-  get: storeProcedure.query(async ({ ctx }) => {
+  get: memberProcedure.query(async ({ ctx }) => {
     return await ctx.db
       .select()
       .from(stations)
       .where(eq(stations.storeId, ctx.storeId));
   }),
 
-  getOrders: storeProcedure
+  getOrders: memberProcedure
     .input(z.object({ stationId: z.number() }))
     .query(async ({}) => {
       // websocket, real time order prints

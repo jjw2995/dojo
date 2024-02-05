@@ -4,7 +4,7 @@ import { z } from "zod";
 import {
   createTRPCRouter,
   protectedProcedure,
-  storeProcedure,
+  memberProcedure,
   passcodeProcedure,
 } from "~/server/api/trpc";
 import { taxes, stores, members } from "~/server/db/schema";
@@ -31,7 +31,7 @@ export const taxRouter = createTRPCRouter({
       });
     }),
 
-  get: storeProcedure.query(async ({ ctx }) => {
+  get: memberProcedure.query(async ({ ctx }) => {
     return await ctx.db
       .select()
       .from(taxes)
