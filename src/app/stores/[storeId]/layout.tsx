@@ -16,6 +16,7 @@ export default function StoreLayout({
 
       <div className="fixed bottom-0 z-20 flex w-[100%] justify-around bg-background p-2 outline lg:relative lg:bottom-auto lg:flex lg:w-[10%] lg:flex-col lg:justify-normal lg:space-y-4">
         {/* <div className="fixed bottom-0 z-20 flex w-[100%] justify-around bg-background outline lg:relative lg:bottom-auto lg:flex lg:w-[10%] lg:flex-col lg:justify-normal"> */}
+        <Link href={`/stores`}>Stores</Link>
         <Link href={`/stores/${params.storeId}/home`}>Home</Link>
         <Link href={`/stores/${params.storeId}/order`}>Order</Link>
         <Link href={`/stores/${params.storeId}/kitchen`}>Kitchen</Link>

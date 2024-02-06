@@ -1,14 +1,15 @@
 "use client";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 // import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/react";
 import type { RouterOutputs } from "~/trpc/shared";
+import Link from "next/link";
 
 import { ExitIcon } from "@radix-ui/react-icons";
+import { Button } from "~/@/components/ui/button";
 
 export default function Stores() {
   const stores = api.store.get.useQuery();
@@ -18,7 +19,11 @@ export default function Stores() {
   return (
     <div>
       <div className="m-2 flex items-end justify-between">
-        <ExitIcon className="h-8 w-8" />
+        <Button onClick={() => {}}>
+          <Link href={"/api/auth/signout"}>
+            <ExitIcon className="h-8 w-8" />
+          </Link>
+        </Button>
         <h1 className="text-4xl font-semibold tracking-wide">Dojo</h1>
         <img
           className="h-8 w-8 rounded-full"

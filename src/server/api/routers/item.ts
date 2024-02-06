@@ -8,9 +8,9 @@ import {
 import {
   stations,
   items,
-  taxes,
   itemsToStations,
   itemsToTaxes,
+  taxes,
 } from "~/server/db/schema";
 
 // type;
@@ -57,14 +57,25 @@ export const itemRouter = createTRPCRouter({
     }),
 
   get: memberProcedure
-    .input(z.object({ itemId: z.string() }))
+    .input(z.object({ itemId: z.number() }))
     .query(async ({ ctx, input }) => {
       const rows = await ctx.db
         .select()
         .from(items)
-        .where(eq(items.id, Number(input.itemId)))
+        .where(eq(items.id, input.itemId))
         .leftJoin(itemsToStations, eq(items.id, itemsToStations.itemId))
         .leftJoin(itemsToTaxes, eq(items.id, itemsToTaxes.itemId));
+
+      ctx.db.transaction(async (tx) => {
+        const item = tx.select().from(items).where(eq(items.id, input.itemId));
+
+        const ts = await tx
+          .select()
+          .from(itemsToTaxes)
+          .where(eq(itemsToTaxes.itemId, input.itemId))
+          // .leftJoin(taxes, eq(taxes.id, itemsToTaxes.taxId));
+          .leftJoin(taxes, eq(itemsToTaxes.taxId, taxes.id));
+      });
 
       // const res = rows.reduce<
       //   Record<number, { category: Category; items: Item[] }>
@@ -81,6 +92,8 @@ export const itemRouter = createTRPCRouter({
       //   }
       //   return acc;
       // }, {});
+
+      // JUST GET THEM SEPARATE
       return rows;
     }),
 });
