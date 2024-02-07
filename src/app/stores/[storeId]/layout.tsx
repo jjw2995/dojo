@@ -24,6 +24,7 @@ export default function StoreLayout({
         {navRoutes.map((r) => {
           return (
             <Link
+              key={r}
               className="active:bg-slate-500"
               href={`/stores/${params.storeId}/${r}`}
             >

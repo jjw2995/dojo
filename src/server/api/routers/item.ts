@@ -66,7 +66,7 @@ export const itemRouter = createTRPCRouter({
         .leftJoin(itemsToStations, eq(items.id, itemsToStations.itemId))
         .leftJoin(itemsToTaxes, eq(items.id, itemsToTaxes.itemId));
 
-      ctx.db.transaction(async (tx) => {
+      await ctx.db.transaction(async (tx) => {
         const item = tx.select().from(items).where(eq(items.id, input.itemId));
 
         const ts = await tx

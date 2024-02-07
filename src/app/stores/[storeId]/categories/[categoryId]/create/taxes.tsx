@@ -119,7 +119,9 @@ function TaxAssign({
 }) {
   const taxes = api.tax.get.useQuery();
   // const deleteTax = api.tax.delete
-  const deleteHandler = (tax: Tax) => {};
+  const deleteHandler = (tax: Tax) => {
+    console.log("");
+  };
 
   // console.log(toggledTaxes);
 

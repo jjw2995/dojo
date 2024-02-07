@@ -12,7 +12,7 @@ export default async function Page({
 }) {
   // export default function Page({ params }: { params: { storeId: string } }) {
   // api.item.
-  api.item.get.query({ itemId: Number(params.itemId) });
+  await api.item.get.query({ itemId: Number(params.itemId) });
   console.log(params);
 
   return (

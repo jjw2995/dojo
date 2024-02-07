@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 
 type Input = { itemName: string; itemPrice: string };
 
-function useToggle<T extends { id: Number }>() {
+function useToggle<T extends { id: number }>() {
   const [arr, setArr] = useState<T[]>([]);
   function toggle(obj: T) {
     const index = arr.findIndex((v) => v.id === obj.id);
