@@ -12,10 +12,8 @@ export default async function Page({
 }) {
   // export default function Page({ params }: { params: { storeId: string } }) {
   // api.item.
-  const i = await api.item.get.query({ itemId: Number(params.itemId) });
-  console.log(i);
-
-  // console.log(params);
+  api.item.get.query({ itemId: Number(params.itemId) });
+  console.log(params);
 
   return (
     <div className="block h-screen bg-background">
