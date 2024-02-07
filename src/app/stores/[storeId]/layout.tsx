@@ -1,6 +1,8 @@
 // "use client";
 import Link from "next/link";
 
+const navRoutes = ["home", "order", "kitchen", "categories"];
+
 export default function StoreLayout({
   children,
   params,
@@ -16,11 +18,19 @@ export default function StoreLayout({
 
       <div className="fixed bottom-0 z-20 flex w-[100%] justify-around bg-background p-2 outline lg:relative lg:bottom-auto lg:flex lg:w-[10%] lg:flex-col lg:justify-normal lg:space-y-4">
         {/* <div className="fixed bottom-0 z-20 flex w-[100%] justify-around bg-background outline lg:relative lg:bottom-auto lg:flex lg:w-[10%] lg:flex-col lg:justify-normal"> */}
-        <Link href={`/stores`}>Stores</Link>
-        <Link href={`/stores/${params.storeId}/home`}>Home</Link>
-        <Link href={`/stores/${params.storeId}/order`}>Order</Link>
-        <Link href={`/stores/${params.storeId}/kitchen`}>Kitchen</Link>
-        <Link href={`/stores/${params.storeId}/categories`}>Items</Link>
+        <Link className="active:bg-slate-500" href={`/stores`}>
+          Stores
+        </Link>
+        {navRoutes.map((r) => {
+          return (
+            <Link
+              className="active:bg-slate-500"
+              href={`/stores/${params.storeId}/${r}`}
+            >
+              {r}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
