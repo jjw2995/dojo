@@ -6,7 +6,6 @@ import {
   passcodeProcedure,
 } from "~/server/api/trpc";
 import {
-  stations,
   items,
   itemsToStations,
   itemsToTaxes,
@@ -66,32 +65,16 @@ export const itemRouter = createTRPCRouter({
         .leftJoin(itemsToStations, eq(items.id, itemsToStations.itemId))
         .leftJoin(itemsToTaxes, eq(items.id, itemsToTaxes.itemId));
 
-      await ctx.db.transaction(async (tx) => {
-        const item = tx.select().from(items).where(eq(items.id, input.itemId));
+      // await ctx.db.transaction(async (tx) => {
+      //   const item = tx.select().from(items).where(eq(items.id, input.itemId));
 
-        const ts = await tx
-          .select()
-          .from(itemsToTaxes)
-          .where(eq(itemsToTaxes.itemId, input.itemId))
-          // .leftJoin(taxes, eq(taxes.id, itemsToTaxes.taxId));
-          .leftJoin(taxes, eq(itemsToTaxes.taxId, taxes.id));
-      });
-
-      // const res = rows.reduce<
-      //   Record<number, { category: Category; items: Item[] }>
-      // >((acc, row) => {
-      //   const category = row.category;
-      //   const item = row.item;
-
-      //   if (!acc[category.id]) {
-      //     acc[category.id] = { category, items: [] };
-      //   }
-
-      //   if (item) {
-      //     acc[category.id]!.items.push(item);
-      //   }
-      //   return acc;
-      // }, {});
+      //   const ts = await tx
+      //     .select()
+      //     .from(itemsToTaxes)
+      //     .where(eq(itemsToTaxes.itemId, input.itemId))
+      //     // .leftJoin(taxes, eq(taxes.id, itemsToTaxes.taxId));
+      //     .leftJoin(taxes, eq(itemsToTaxes.taxId, taxes.id));
+      // });
 
       // JUST GET THEM SEPARATE
       return rows;

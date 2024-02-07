@@ -3,11 +3,10 @@ import { z } from "zod";
 
 import {
   createTRPCRouter,
-  protectedProcedure,
   memberProcedure,
   passcodeProcedure,
 } from "~/server/api/trpc";
-import { taxes, stores, members } from "~/server/db/schema";
+import { taxes } from "~/server/db/schema";
 
 export const taxRouter = createTRPCRouter({
   create: passcodeProcedure
@@ -38,15 +37,15 @@ export const taxRouter = createTRPCRouter({
       .where(eq(taxes.storeId, ctx.storeId));
   }),
 
-  delete: passcodeProcedure
-    .input(z.object({ taxId: z.number() }))
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.transaction(async (tx) => {
-        // await tx.delete(item)
-        // del item ref
-        // del tax
-      });
-    }),
+  // delete: passcodeProcedure
+  //   .input(z.object({ taxId: z.number() }))
+  //   .mutation(async ({ ctx, input }) => {
+  //     return await ctx.db.transaction(async (tx) => {
+  //       // await tx.delete(item)
+  //       // del item ref
+  //       // del tax
+  //     });
+  //   }),
 
   // delete if owner is only member
   // delete: protectedProcedure.input({storeId: z.string().min(1)}).mutation(async ({ctx, input})=>{

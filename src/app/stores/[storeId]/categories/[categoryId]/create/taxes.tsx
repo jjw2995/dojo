@@ -8,9 +8,9 @@ import { Input } from "@/components/ui/input";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { useState } from "react";
 import { api } from "~/trpc/react";
-import { RouterOutputs } from "~/trpc/shared";
-import { Label } from "~/@/components/ui/label";
-import { Button } from "~/@/components/ui/button";
+import type { RouterOutputs } from "~/trpc/shared";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 type Tax = RouterOutputs["tax"]["get"][number];
 export default function Taxes({
@@ -120,7 +120,7 @@ function TaxAssign({
   const taxes = api.tax.get.useQuery();
   // const deleteTax = api.tax.delete
   const deleteHandler = (tax: Tax) => {
-    console.log("");
+    console.log(tax);
   };
 
   // console.log(toggledTaxes);

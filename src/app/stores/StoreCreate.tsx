@@ -5,7 +5,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { api } from "~/trpc/react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Plus } from "lucide-react";
-import { Button } from "~/@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 type Input = { groupName: string };
 

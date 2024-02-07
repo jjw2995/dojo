@@ -3,16 +3,15 @@
 import { type ChangeEvent, useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { api } from "~/trpc/react";
-import Options from "./options";
 import Taxes from "./taxes";
 import { RouterOutputs } from "~/trpc/shared";
-import { Input } from "~/@/components/ui/input";
-import { Label } from "~/@/components/ui/label";
-import { Button } from "~/@/components/ui/button";
-import { Checkbox } from "~/@/components/ui/checkbox";
-import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useRouter } from "next/dist/client/router";
 
-type Input = { itemName: string; itemPrice: string };
+type CategoryInput = { itemName: string; itemPrice: string };
 
 function useToggle<T extends { id: number }>() {
   const [arr, setArr] = useState<T[]>([]);
@@ -41,7 +40,7 @@ export default function Page({
   params: { storeId: string; categoryId: string };
 }) {
   const router = useRouter();
-  const form = useForm<Input>();
+  const form = useForm<CategoryInput>();
   const itemCreate = api.item.create.useMutation();
 
   const [toggledStations, toggleStation, stationsReset] = useToggle<Station>();
@@ -50,7 +49,7 @@ export default function Page({
   console.log(toggledStations, toggledTaxes);
 
   const utils = api.useUtils();
-  const onSubmit: SubmitHandler<Input> = (data) => {
+  const onSubmit: SubmitHandler<CategoryInput> = (data) => {
     itemCreate.mutate(
       {
         itemName: data.itemName,
