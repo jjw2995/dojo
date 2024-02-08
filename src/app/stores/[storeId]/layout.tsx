@@ -21,7 +21,7 @@ export default function StoreLayout({
         <Link className="active:bg-slate-500" href={`/stores`}>
           Stores
         </Link>
-        {navRoutes.map((r) => {
+        {/* {navRoutes.map((r) => {
           return (
             <Link
               key={r}
@@ -31,7 +31,22 @@ export default function StoreLayout({
               {r}
             </Link>
           );
-        })}
+        })} */}
+        <Link className={`m-2 p-2`} href={`/stores/${params.storeId}/home`}>
+          Home
+        </Link>
+        <Link className={`m-2 p-2`} href={`/stores/${params.storeId}/order`}>
+          Order
+        </Link>
+        <Link className={`m-2 p-2`} href={`/stores/${params.storeId}/kitchen`}>
+          Kitchen
+        </Link>
+        <Link
+          className={`m-2 p-2`}
+          href={`/stores/${params.storeId}/categories`}
+        >
+          Items
+        </Link>
       </div>
     </div>
   );
