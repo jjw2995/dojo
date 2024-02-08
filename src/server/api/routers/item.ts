@@ -5,7 +5,13 @@ import {
   memberProcedure,
   passcodeProcedure,
 } from "~/server/api/trpc";
-import { items, itemsToStations, itemsToTaxes } from "~/server/db/schema";
+import {
+  itemTable,
+  itemToStationTable,
+  itemToTaxTable,
+  stationTable,
+  taxTable,
+} from "~/server/db/schema";
 
 // type;
 
@@ -23,18 +29,18 @@ export const itemRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       //   console.log(input);
       return ctx.db.transaction(async (tx) => {
-        const { insertId } = await tx.insert(items).values({
+        const { insertId } = await tx.insert(itemTable).values({
           categoryId: input.categoryId,
           name: input.itemName,
           storeId: ctx.storeId,
         });
-        await tx.insert(itemsToStations).values(
+        await tx.insert(itemToStationTable).values(
           input.stationIds.map((v) => {
             return { itemId: Number(insertId), stationId: v };
           }),
         );
 
-        await tx.insert(itemsToTaxes).values(
+        await tx.insert(itemToTaxTable).values(
           input.taxIds.map((v) => {
             return { itemId: Number(insertId), taxId: v };
           }),
@@ -42,10 +48,13 @@ export const itemRouter = createTRPCRouter({
 
         return await tx
           .select()
-          .from(items)
-          .where(eq(items.id, Number(insertId)))
-          .leftJoin(itemsToStations, eq(items.id, itemsToStations.itemId))
-          .leftJoin(itemsToTaxes, eq(items.id, itemsToTaxes.itemId));
+          .from(itemTable)
+          .where(eq(itemTable.id, Number(insertId)))
+          .leftJoin(
+            itemToStationTable,
+            eq(itemTable.id, itemToStationTable.itemId),
+          )
+          .leftJoin(itemToTaxTable, eq(itemTable.id, itemToTaxTable.itemId));
         // a.
       });
     }),
@@ -53,25 +62,51 @@ export const itemRouter = createTRPCRouter({
   get: memberProcedure
     .input(z.object({ itemId: z.number() }))
     .query(async ({ ctx, input }) => {
-      const rows = await ctx.db
-        .select()
-        .from(items)
-        .where(eq(items.id, input.itemId))
-        .leftJoin(itemsToStations, eq(items.id, itemsToStations.itemId))
-        .leftJoin(itemsToTaxes, eq(items.id, itemsToTaxes.itemId));
+      // const rows = await ctx.db
+      //   .select()
+      //   .from(items)
+      //   .where(eq(items.id, input.itemId))
+      //   .leftJoin(itemsToStations, eq(items.id, itemsToStations.itemId))
+      //   .leftJoin(itemsToTaxes, eq(items.id, itemsToTaxes.itemId));
 
-      // await ctx.db.transaction(async (tx) => {
-      //   const item = tx.select().from(items).where(eq(items.id, input.itemId));
+      return await ctx.db.transaction(async (tx) => {
+        let item = tx
+          .selectDistinct()
+          .from(itemTable)
+          .where(eq(itemTable.id, input.itemId));
 
-      //   const ts = await tx
-      //     .select()
-      //     .from(itemsToTaxes)
-      //     .where(eq(itemsToTaxes.itemId, input.itemId))
-      //     // .leftJoin(taxes, eq(taxes.id, itemsToTaxes.taxId));
-      //     .leftJoin(taxes, eq(itemsToTaxes.taxId, taxes.id));
-      // });
+        let itemTaxes = tx
+          .select({
+            id: taxTable.id,
+            name: taxTable.name,
+            percent: taxTable.percent,
+          })
+          .from(itemToTaxTable)
+          .where(eq(itemToTaxTable.itemId, input.itemId))
+          // .leftJoin(taxes, eq(taxes.id, itemsToTaxes.taxId));
+          .leftJoin(taxTable, eq(itemToTaxTable.taxId, taxTable.id));
 
-      // JUST GET THEM SEPARATE
-      return rows;
+        let itemStations = tx
+          .select({ id: stationTable.id, name: stationTable.name })
+          .from(itemToStationTable)
+          .where(eq(itemToStationTable.itemId, input.itemId))
+          .leftJoin(
+            stationTable,
+            eq(itemToStationTable.stationId, stationTable.id),
+          );
+
+        // const a
+        const [itemRes, itemTaxesRes, itemStationsRes] = await Promise.all([
+          item,
+          itemTaxes,
+          itemStations,
+        ]);
+
+        return {
+          item: itemRes[0],
+          taxes: itemTaxesRes,
+          stations: itemStationsRes,
+        };
+      });
     }),
 });

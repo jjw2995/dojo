@@ -6,7 +6,7 @@ import {
   memberProcedure,
   passcodeProcedure,
 } from "~/server/api/trpc";
-import { taxes } from "~/server/db/schema";
+import { taxTable } from "~/server/db/schema";
 
 export const taxRouter = createTRPCRouter({
   create: passcodeProcedure
@@ -18,23 +18,23 @@ export const taxRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.transaction(async (tx) => {
-        const d = await tx.insert(taxes).values({
+        const d = await tx.insert(taxTable).values({
           name: input.taxName,
           percent: input.taxPercent,
           storeId: ctx.storeId,
         });
         return await tx
           .selectDistinct()
-          .from(taxes)
-          .where(eq(taxes.id, Number(d.insertId)));
+          .from(taxTable)
+          .where(eq(taxTable.id, Number(d.insertId)));
       });
     }),
 
   get: memberProcedure.query(async ({ ctx }) => {
     return await ctx.db
       .select()
-      .from(taxes)
-      .where(eq(taxes.storeId, ctx.storeId));
+      .from(taxTable)
+      .where(eq(taxTable.storeId, ctx.storeId));
   }),
 
   // delete: passcodeProcedure

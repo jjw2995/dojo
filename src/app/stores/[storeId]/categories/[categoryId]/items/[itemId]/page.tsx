@@ -1,8 +1,9 @@
-import { ChevronLeft } from "lucide-react";
-import { getServerAuthSession } from "~/server/auth";
-import { api } from "~/trpc/server";
+"use client";
 
-export default async function Page({
+import { ChevronLeft } from "lucide-react";
+import { api } from "~/trpc/react";
+
+export default function Page({
   params,
 }: {
   params: {
@@ -13,15 +14,20 @@ export default async function Page({
 }) {
   // export default function Page({ params }: { params: { storeId: string } }) {
   // api.item.
-  const session = await getServerAuthSession();
-  const asd = await api.item.get.query({ itemId: Number(params.itemId) });
+  const item = api.item.get.useQuery({ itemId: Number(params.itemId) });
   // console.log(params);
+  console.log(item.data);
 
   return (
     <div className="block h-screen bg-background">
       <ChevronLeft className="h-8 w-8 lg:hidden" />
-      <div>{params.itemId}</div>
-      {/* <div>{asd}</div> */}
+      {/* {item.data?.map((r, i) => {
+        return (
+          <div key={i}>
+            <div>{r.item.name} </div>
+          </div>
+        );
+      })} */}
     </div>
   );
 }

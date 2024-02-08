@@ -7,30 +7,30 @@ import {
   passcodeProcedure,
 } from "~/server/api/trpc";
 import {
-  stations,
-  categories,
-  itemsToStations,
-  items,
+  stationTable,
+  categoryTable,
+  itemToStationTable,
+  itemTable,
 } from "~/server/db/schema";
 
-type Category = typeof categories.$inferSelect;
-type Item = typeof items.$inferSelect;
+type Category = typeof categoryTable.$inferSelect;
+type Item = typeof itemTable.$inferSelect;
 
 export const categoryRouter = createTRPCRouter({
   create: passcodeProcedure
     .input(z.object({ name: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
       return await ctx.db
-        .insert(categories)
+        .insert(categoryTable)
         .values({ name: input.name, storeId: ctx.storeId });
     }),
 
   get: passcodeProcedure.query(async ({ ctx }) => {
     const rows = await ctx.db
       .select()
-      .from(categories)
-      .where(eq(categories.storeId, ctx.storeId))
-      .leftJoin(items, eq(categories.id, items.categoryId));
+      .from(categoryTable)
+      .where(eq(categoryTable.storeId, ctx.storeId))
+      .leftJoin(itemTable, eq(categoryTable.id, itemTable.categoryId));
     const res = rows.reduce<
       Record<number, { category: Category; items: Item[] }>
     >((acc, row) => {
@@ -61,11 +61,13 @@ export const categoryRouter = createTRPCRouter({
     .input(z.object({ stationId: z.number() }))
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.transaction(async (tx) => {
-        await tx.delete(stations).where(eq(stations.id, input.stationId));
+        await tx
+          .delete(stationTable)
+          .where(eq(stationTable.id, input.stationId));
 
         return await tx
-          .delete(itemsToStations)
-          .where(eq(itemsToStations.stationId, input.stationId));
+          .delete(itemToStationTable)
+          .where(eq(itemToStationTable.stationId, input.stationId));
       });
     }),
 
@@ -74,13 +76,13 @@ export const categoryRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.transaction(async (tx) => {
         const { insertId } = await tx
-          .insert(stations)
+          .insert(stationTable)
           .values({ name: input.name, storeId: ctx.storeId });
 
         return await tx
           .selectDistinct()
-          .from(stations)
-          .where(eq(stations.id, Number(insertId)));
+          .from(stationTable)
+          .where(eq(stationTable.id, Number(insertId)));
       });
     }),
 });

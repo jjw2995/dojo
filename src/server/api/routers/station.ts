@@ -6,14 +6,14 @@ import {
   memberProcedure,
   passcodeProcedure,
 } from "~/server/api/trpc";
-import { stations, itemsToStations } from "~/server/db/schema";
+import { stationTable, itemToStationTable } from "~/server/db/schema";
 
 export const stationRouter = createTRPCRouter({
   get: memberProcedure.query(async ({ ctx }) => {
     return await ctx.db
       .select()
-      .from(stations)
-      .where(eq(stations.storeId, ctx.storeId));
+      .from(stationTable)
+      .where(eq(stationTable.storeId, ctx.storeId));
   }),
 
   getOrders: memberProcedure
@@ -27,13 +27,13 @@ export const stationRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.transaction(async (tx) => {
         const { insertId } = await tx
-          .insert(stations)
+          .insert(stationTable)
           .values({ name: input.name, storeId: ctx.storeId });
 
         return await tx
           .selectDistinct()
-          .from(stations)
-          .where(eq(stations.id, Number(insertId)));
+          .from(stationTable)
+          .where(eq(stationTable.id, Number(insertId)));
       });
     }),
 
@@ -42,11 +42,13 @@ export const stationRouter = createTRPCRouter({
     .input(z.object({ stationId: z.number() }))
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.transaction(async (tx) => {
-        await tx.delete(stations).where(eq(stations.id, input.stationId));
+        await tx
+          .delete(stationTable)
+          .where(eq(stationTable.id, input.stationId));
 
         return await tx
-          .delete(itemsToStations)
-          .where(eq(itemsToStations.stationId, input.stationId));
+          .delete(itemToStationTable)
+          .where(eq(itemToStationTable.stationId, input.stationId));
       });
     }),
 
@@ -55,13 +57,13 @@ export const stationRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.transaction(async (tx) => {
         const { insertId } = await tx
-          .insert(stations)
+          .insert(stationTable)
           .values({ name: input.name, storeId: ctx.storeId });
 
         return await tx
           .selectDistinct()
-          .from(stations)
-          .where(eq(stations.id, Number(insertId)));
+          .from(stationTable)
+          .where(eq(stationTable.id, Number(insertId)));
       });
     }),
 });
