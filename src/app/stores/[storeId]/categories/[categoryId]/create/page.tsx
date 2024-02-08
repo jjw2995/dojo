@@ -5,10 +5,10 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import { api } from "~/trpc/react";
 import Taxes from "./taxes";
 import { RouterOutputs } from "~/trpc/shared";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { Button } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
 import { useRouter } from "next/dist/client/router";
 
 type CategoryInput = { itemName: string; itemPrice: string };

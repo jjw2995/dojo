@@ -7,7 +7,7 @@ import { getServerAuthSession } from "~/server/auth";
 // import { api } from "~/trpc/server";
 
 import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { Button } from "~/components/ui/button";
 
 export default async function Landing() {
   // const hello = await api.post.hello.query({ text: "from tRPC" });

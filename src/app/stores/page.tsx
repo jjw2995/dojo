@@ -1,7 +1,3 @@
-import { useSession } from "next-auth/react";
-// import { getServerAuthSession } from "~/server/auth";
-// import { api } from "~/trpc/react";
-import type { RouterOutputs } from "~/trpc/shared";
 import Link from "next/link";
 
 import { LogOut } from "lucide-react";
@@ -10,8 +6,6 @@ import { api } from "~/trpc/server";
 
 export default async function Stores() {
   const stores = await api.store.get.query();
-  // const session = await getServerAuthSession();
-  // const ses = useSession();
 
   return (
     <div className="mx-2 flex flex-col items-center justify-center">
@@ -29,8 +23,16 @@ export default async function Stores() {
         </div>
         <div className="m-4 flex flex-col">
           {stores ? (
-            stores.map((store) => {
-              return <Store store={store.store} key={store.store.id} />;
+            stores.map(({ store }) => {
+              return (
+                <Link
+                  href={`/stores/${store.id}/home`}
+                  key={store.id}
+                  className="m-1 rounded p-2 text-2xl outline"
+                >
+                  {store.name}
+                </Link>
+              );
             })
           ) : (
             <div>create store</div>
@@ -39,19 +41,5 @@ export default async function Stores() {
         <CreateStore />
       </div>
     </div>
-  );
-}
-
-type Store = RouterOutputs["store"]["get"][number]["store"];
-
-function Store({ store }: { store: Store }) {
-  return (
-    <Link
-      href={`/stores/${store.id}/home`}
-      key={store.id}
-      className="m-1 rounded p-2 text-2xl outline"
-    >
-      {store.name}
-    </Link>
   );
 }
