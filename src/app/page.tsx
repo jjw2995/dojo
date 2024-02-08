@@ -1,16 +1,9 @@
-import Link from "next/link";
-
 import { getServerAuthSession } from "~/server/auth";
-// import {  } from "lucide-react";
-// import { g } from "@radix-ui/react-icons";
-
-// import { api } from "~/trpc/server";
 
 import { redirect } from "next/navigation";
 import { Button } from "~/components/ui/button";
 
 export default async function Landing() {
-  // const hello = await api.post.hello.query({ text: "from tRPC" });
   const session = await getServerAuthSession();
 
   if (session) {
