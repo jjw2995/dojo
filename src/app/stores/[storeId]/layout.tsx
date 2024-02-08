@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 
-const navRoutes = ["home", "order", "kitchen", "categories"];
+const navRoutes = ["order", "kitchen", "categories"];
 
 export default function StoreLayout({
   children,
@@ -12,27 +13,35 @@ export default function StoreLayout({
     storeId: string;
   };
 }) {
+  const curPath = usePathname();
+  function isWordInPath(word: string) {
+    return curPath.includes(word);
+  }
+
   return (
     <div className="flex lg:flex-row-reverse">
       <div className="w-full">{children}</div>
 
-      <div className="fixed bottom-0 z-20 flex w-[100%] justify-around bg-background p-2 outline lg:relative lg:bottom-auto lg:flex lg:w-[10%] lg:flex-col lg:justify-normal lg:space-y-4">
+      <div className="fixed bottom-0 z-20 flex w-[100%] justify-around bg-slate-200 p-4 lg:relative lg:bottom-auto lg:flex lg:w-[10%] lg:flex-col lg:justify-normal lg:space-y-4">
         {/* <div className="fixed bottom-0 z-20 flex w-[100%] justify-around bg-background outline lg:relative lg:bottom-auto lg:flex lg:w-[10%] lg:flex-col lg:justify-normal"> */}
-        <Link className="active:bg-slate-500" href={`/stores`}>
-          Stores
+        <Link
+          // className={isWordInPath("stores") ? "underline underline-offset-4" : ""}
+          href={`/stores`}
+        >
+          stores
         </Link>
-        {/* {navRoutes.map((r) => {
+        {navRoutes.map((r) => {
           return (
             <Link
               key={r}
-              className="active:bg-slate-500"
+              className={isWordInPath(r) ? "underline underline-offset-4" : ""}
               href={`/stores/${params.storeId}/${r}`}
             >
-              {r}
+              {r === "categories" ? "items" : r}
             </Link>
           );
-        })} */}
-        <Link className={`m-2 p-2`} href={`/stores/${params.storeId}/home`}>
+        })}
+        {/* <Link className={`m-2 p-2`} href={`/stores/${params.storeId}/home`}>
           Home
         </Link>
         <Link className={`m-2 p-2`} href={`/stores/${params.storeId}/order`}>
@@ -46,7 +55,7 @@ export default function StoreLayout({
           href={`/stores/${params.storeId}/categories`}
         >
           Items
-        </Link>
+        </Link> */}
       </div>
     </div>
   );
