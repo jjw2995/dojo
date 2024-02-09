@@ -3,7 +3,6 @@
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { api } from "~/trpc/react";
 import * as Dialog from "@radix-ui/react-dialog";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import {
   Accordion,
   AccordionContent,
@@ -13,12 +12,18 @@ import {
 import { MoreVertical, Plus } from "lucide-react";
 
 import { useState } from "react";
-import type { RouterOutputs } from "~/trpc/shared";
+// import type { RouterOutputs } from "~/trpc/shared";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+// import { usePathname, useSearchParams } from "next/navigation";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
+// import { Separator } from "~/components/ui/separator";
 
 export default function Page({
   children,
@@ -28,49 +33,42 @@ export default function Page({
   children: React.ReactNode;
 }) {
   const a = api.category.get.useQuery();
-  // const searchParams = useSearchParams();
-  // searchParams.get("id");
-  // const pathName = usePathname();
-
-  // console.log(pathName);
-
-  // console.log(searchParams.get("id"));
 
   return (
-    <div className="flex">
+    <div className="flex ">
       <div className="max-h-screen flex-1 overflow-auto">
         <div className="relative mb-20 md:mb-0">
           {a.data?.map(({ category, items }, idx) => {
             return (
               <Accordion
-                className=""
+                className="lg:mx-4"
                 key={"cat" + idx.toString()}
                 type="multiple"
               >
                 <AccordionItem value={"category" + category.id.toString()}>
-                  <div className="sticky top-0 bg-slate-200">
-                    <AccordionTrigger className="" disabled={items.length < 1}>
-                      {category.name}
-                      <CategoryMenu
-                        categoryId={category.id}
-                        storeId={params.storeId}
-                      />
+                  <div className="sticky top-0 bg-background p-2">
+                    <AccordionTrigger disabled={items.length < 1} asChild>
+                      <div>
+                        {category.name}
+                        <CategoryMenu
+                          categoryId={category.id}
+                          storeId={params.storeId}
+                        />
+                      </div>
                     </AccordionTrigger>
                   </div>
-                  <div className="">
-                    {items.map((item, idx) => {
-                      return (
-                        <Link
-                          key={"item" + idx.toString()}
-                          href={`/stores/${params.storeId}/categories/${category.id}/items/${item.id}`}
-                        >
-                          <AccordionContent className="px-4 py-2 text-lg">
-                            {item.name}
-                          </AccordionContent>
-                        </Link>
-                      );
-                    })}
-                  </div>
+                  {items.map((item, idx) => {
+                    return (
+                      <Link
+                        key={"item" + idx.toString()}
+                        href={`/stores/${params.storeId}/categories/${category.id}/items/${item.id}`}
+                      >
+                        <AccordionContent className="py-2 pl-8 text-lg">
+                          {item.name}
+                        </AccordionContent>
+                      </Link>
+                    );
+                  })}
                 </AccordionItem>
               </Accordion>
             );
@@ -78,6 +76,7 @@ export default function Page({
         </div>
       </div>
       <CreateCategory />
+      {/* <Separator className="z-30 w-3 bg-slate-950" orientation="vertical" /> */}
       <div className="fixed w-full lg:relative lg:h-full lg:flex-1">
         {children}
       </div>
@@ -141,25 +140,19 @@ function CategoryMenu({
   storeId: string;
 }) {
   return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger>
+    <Popover>
+      <PopoverTrigger>
         <MoreVertical className="h-4 w-4" />
-      </DropdownMenu.Trigger>
-
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content className="bg-white outline">
-          <DropdownMenu.Item asChild>
-            <Link
-              className={`my-2 flex py-2 text-lg`}
-              href={`/stores/${storeId}/categories/${categoryId}/create`}
-            >
-              <Plus />
-              create item link
-            </Link>
-          </DropdownMenu.Item>
-          <DropdownMenu.Item>delete</DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
+      </PopoverTrigger>
+      <PopoverContent>
+        <Link
+          className={`flex items-center`}
+          href={`/stores/${storeId}/categories/${categoryId}/create`}
+        >
+          <Plus />
+          create item link
+        </Link>
+      </PopoverContent>
+    </Popover>
   );
 }

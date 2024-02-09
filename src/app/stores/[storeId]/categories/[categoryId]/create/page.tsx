@@ -9,7 +9,8 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
-import { useRouter } from "next/dist/client/router";
+import { useRouter } from "next/navigation";
+import { ChevronLeft } from "lucide-react";
 
 type CategoryInput = { itemName: string; itemPrice: string };
 
@@ -71,16 +72,13 @@ export default function Page({
 
   return (
     <div className="flex h-screen w-full justify-center bg-white text-2xl">
-      <div className="w-96 px-4">
-        <Button
-          onClick={() => {
-            // window.history.back();
-            router.back();
-          }}
-          className="m-2"
-        >
-          back
-        </Button>
+      <ChevronLeft
+        className="fixed left-2 top-2 h-8 w-8 lg:hidden"
+        onClick={() => {
+          router.back();
+        }}
+      />
+      <div className="mt-4 w-96 px-4">
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
           <h1 className="text-center">Create Item</h1>
           <div>

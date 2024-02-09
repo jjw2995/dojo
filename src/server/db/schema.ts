@@ -179,6 +179,7 @@ export const itemTable = mysqlTable("item", {
   name: varchar("name", { length: 256 }).notNull(),
   storeId: int("storeId").notNull(),
   categoryId: int("categoryId").notNull(),
+  price: decimal("price").$type<number>().notNull(),
   // options ? db relation M-M
   // taxes ? db relation M-M
 });

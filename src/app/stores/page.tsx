@@ -1,16 +1,12 @@
-// "use client";
+"use client";
 import Link from "next/link";
 
 import { LogOut } from "lucide-react";
 import CreateStore from "./StoreCreate";
-import { api } from "~/trpc/server";
-import { getServerAuthSession } from "~/server/auth";
-// import { api } from "~/trpc/react";
+import { api } from "~/trpc/react";
 
-export default async function Stores() {
-  const ses = await getServerAuthSession();
-  if (!ses?.user) return null;
-  const stores = await api.store.get.query();
+export default function Stores() {
+  const stores = api.store.get.useQuery();
 
   return (
     <div className="mx-2 flex flex-col items-center justify-center">
@@ -27,8 +23,8 @@ export default async function Stores() {
           /> */}
         </div>
         <div className="m-4 flex flex-col">
-          {stores ? (
-            stores.map(({ store }) => {
+          {stores.data ? (
+            stores.data.map(({ store }) => {
               return (
                 <Link
                   href={`/stores/${store.id}/home`}

@@ -22,8 +22,7 @@ export default function StoreLayout({
     <div className="flex lg:flex-row-reverse">
       <div className="w-full">{children}</div>
 
-      <div className="fixed bottom-0 z-20 flex w-[100%] justify-around bg-slate-200 p-4 lg:relative lg:bottom-auto lg:flex lg:w-[10%] lg:flex-col lg:justify-normal lg:space-y-4">
-        {/* <div className="fixed bottom-0 z-20 flex w-[100%] justify-around bg-background outline lg:relative lg:bottom-auto lg:flex lg:w-[10%] lg:flex-col lg:justify-normal"> */}
+      <div className="fixed bottom-0 z-20 flex  w-[100%] justify-around bg-slate-200 p-4 lg:relative lg:bottom-auto lg:flex lg:w-[10%] lg:flex-col lg:justify-normal lg:space-y-5 lg:text-2xl">
         <Link
           // className={isWordInPath("stores") ? "underline underline-offset-4" : ""}
           href={`/stores`}

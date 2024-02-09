@@ -33,6 +33,7 @@ export const itemRouter = createTRPCRouter({
           categoryId: input.categoryId,
           name: input.itemName,
           storeId: ctx.storeId,
+          price: input.itemPrice,
         });
         await tx.insert(itemToStationTable).values(
           input.stationIds.map((v) => {

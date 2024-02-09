@@ -11,6 +11,7 @@ import { api } from "~/trpc/react";
 import type { RouterOutputs } from "~/trpc/shared";
 import { Label } from "~/components/ui/label";
 import { Button } from "~/components/ui/button";
+import { Plus } from "lucide-react";
 
 type Tax = RouterOutputs["tax"]["get"][number];
 export default function Taxes({
@@ -28,7 +29,9 @@ export default function Taxes({
     // }}
     >
       <Dialog.Trigger asChild>
-        <Button className=" m-2 p-2 text-xl">+</Button>
+        <Button className=" m-2 p-2">
+          <Plus className="h-4 w-4" />
+        </Button>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="z-50">
