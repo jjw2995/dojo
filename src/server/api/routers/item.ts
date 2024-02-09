@@ -70,12 +70,12 @@ export const itemRouter = createTRPCRouter({
       //   .leftJoin(itemsToTaxes, eq(items.id, itemsToTaxes.itemId));
 
       return await ctx.db.transaction(async (tx) => {
-        let item = tx
+        const item = tx
           .selectDistinct()
           .from(itemTable)
           .where(eq(itemTable.id, input.itemId));
 
-        let itemTaxes = tx
+        const itemTaxes = tx
           .select({
             id: taxTable.id,
             name: taxTable.name,
@@ -86,7 +86,7 @@ export const itemRouter = createTRPCRouter({
           // .leftJoin(taxes, eq(taxes.id, itemsToTaxes.taxId));
           .leftJoin(taxTable, eq(itemToTaxTable.taxId, taxTable.id));
 
-        let itemStations = tx
+        const itemStations = tx
           .select({ id: stationTable.id, name: stationTable.name })
           .from(itemToStationTable)
           .where(eq(itemToStationTable.itemId, input.itemId))
