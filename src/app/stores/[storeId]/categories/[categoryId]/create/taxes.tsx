@@ -38,7 +38,7 @@ export default function Taxes({
           <Dialog.Content className="text-text fixed left-[50%] top-[50%] z-40 h-[70%] w-[90%] translate-x-[-50%] translate-y-[-50%] overflow-hidden rounded-sm bg-white p-2 outline sm:w-96">
             <Tabs.Root defaultValue="tab1">
               <p className="text-center">Taxes</p>
-              <Tabs.List className="flex justify-around">
+              <Tabs.List className="mb-8 flex justify-around">
                 <Tabs.Trigger
                   value="tab1"
                   className="data-[state=active]:underline"
@@ -94,7 +94,7 @@ function TaxCreate() {
             {...form.register("taxName", { required: true })}
           />
         </div>
-        <div className="flex flex-col">
+        <div className="">
           <Label htmlFor="">Tax Percentage</Label>
           <Input
             placeholder="tax percent"

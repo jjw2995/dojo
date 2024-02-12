@@ -134,7 +134,7 @@ export const membersRelations = relations(members, ({ one }) => ({
 }));
 
 export const stores = mysqlTable("store", {
-  id: serial("id").primaryKey(),
+  id: serial("id").primaryKey().autoincrement(),
   name: varchar("name", { length: 256 }).notNull(),
   // location: str || geohash
   // tax
@@ -251,7 +251,7 @@ export const taxTable = mysqlTable("tax", {
   name: varchar("name", { length: 256 }).notNull(),
   percent: decimal("percent").$type<number>().notNull(),
 });
-export const taxeesRelations = relations(taxTable, ({ many }) => ({
+export const taxesRelations = relations(taxTable, ({ many }) => ({
   itemsToTaxes: many(itemToTaxTable),
 }));
 

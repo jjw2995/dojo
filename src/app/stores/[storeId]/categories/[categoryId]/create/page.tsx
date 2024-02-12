@@ -78,70 +78,80 @@ export default function Page({
           router.back();
         }}
       />
-      <div className="mt-4 w-96 px-4">
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-          <h1 className="text-center">Create Item</h1>
-          <div>
-            <Label htmlFor="itemName">Name</Label>
-            <Input
-              id="itemName"
-              placeholder="item name"
-              {...form.register("itemName", { required: true })}
-            />
-          </div>
-          <div>
-            <Label htmlFor="itemPrice">Price</Label>
-            <Input
-              id="itemPrice"
-              placeholder="price"
-              type="number"
-              step="any"
-              {...form.register("itemPrice", {
-                required: true,
-                // min: 0,
-                onBlur: (e: ChangeEvent<HTMLInputElement>) => {
-                  form.setValue(
-                    "itemPrice",
-                    Number(e?.target?.value || "0").toFixed(2),
-                  );
-                },
-                onChange: (e: ChangeEvent<HTMLInputElement>) => {
-                  const str = e.target.value || "";
-                  const fixed = Number(str).toFixed(2);
-                  if (fixed.length < str.length) {
-                    form.setValue("itemPrice", Number(fixed).toString());
-                  }
-                },
-              })}
-            />
-          </div>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="mx-8 mt-4 flex w-full flex-col space-y-4"
+      >
+        <h1 className="text-center">Create Item</h1>
+        <div className="px-4">
+          <Label htmlFor="itemName">Name</Label>
+          <Input
+            id="itemName"
+            placeholder="item name"
+            {...form.register("itemName", { required: true })}
+          />
+        </div>
+        <div className="px-4">
+          <Label htmlFor="itemPrice">Price</Label>
+          <Input
+            id="itemPrice"
+            placeholder="price"
+            type="number"
+            step="any"
+            {...form.register("itemPrice", {
+              required: true,
+              // min: 0,
+              onBlur: (e: ChangeEvent<HTMLInputElement>) => {
+                form.setValue(
+                  "itemPrice",
+                  Number(e?.target?.value || "0").toFixed(2),
+                );
+              },
+              onChange: (e: ChangeEvent<HTMLInputElement>) => {
+                const str = e.target.value || "";
+                const fixed = Number(str).toFixed(2);
+                if (fixed.length < str.length) {
+                  form.setValue("itemPrice", Number(fixed).toString());
+                }
+              },
+            })}
+          />
+        </div>
 
+        <div className="px-4">
           <PrintTo toggleStation={toggleStation} />
+        </div>
 
-          {/* <div>
+        {/* <div>
             <p>Options</p>
             <Options toggleOption={toggleOption} />
           </div> */}
 
-          <div>
+        <div>
+          <div className="px-4">
             <Label>Tax</Label>
             <Taxes toggleTax={toggleTax} toggledTaxes={toggledTaxes} />
+          </div>
+          <div className="no-scrollbar flex overflow-x-scroll px-4">
             {toggledTaxes.map((v) => {
               return (
-                <div key={v.id}>
-                  {v.name}-{v.percent}
+                <div
+                  key={v.id}
+                  className="m-1 flex-shrink-0 rounded p-2 outline"
+                >
+                  {v.name}-{v.percent}%
                 </div>
               );
             })}
           </div>
+        </div>
 
-          <div className="m-2 flex flex-row justify-around">
-            <Button type="submit" disabled={itemCreate.isLoading}>
-              create item
-            </Button>
-          </div>
-        </form>
-      </div>
+        <div className="m-2 flex flex-row justify-around">
+          <Button type="submit" disabled={itemCreate.isLoading}>
+            create item
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }
@@ -153,7 +163,10 @@ function PrintTo({ toggleStation }: { toggleStation: (obj: Station) => void }) {
       <Label>Print To</Label>
       <div className="flex ">
         {stations.data?.map((v) => (
-          <div className="mx-2" key={v.id}>
+          <div
+            className="mx-3 flex place-items-center items-center text-center"
+            key={v.id}
+          >
             {/* <Checkbox /> */}
             <Checkbox
               name=""

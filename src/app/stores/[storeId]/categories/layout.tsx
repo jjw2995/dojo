@@ -23,6 +23,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
 // import { Separator } from "~/components/ui/separator";
 
 export default function Page({
@@ -36,7 +44,7 @@ export default function Page({
 
   return (
     <div className="flex ">
-      <div className="max-h-screen flex-1 overflow-auto">
+      <div className="no-scrollbar max-h-screen flex-1 overflow-auto">
         <div className="relative mb-20 md:mb-0">
           {a.data?.map(({ category, items }, idx) => {
             return (
@@ -77,7 +85,7 @@ export default function Page({
       </div>
       <CreateCategory />
       {/* <Separator className="z-30 w-3 bg-slate-950" orientation="vertical" /> */}
-      <div className="fixed w-full lg:relative lg:h-full lg:flex-1">
+      <div className="fixed w-full lg:relative lg:h-full lg:flex-1 lg:border-l-2">
         {children}
       </div>
     </div>
@@ -140,19 +148,21 @@ function CategoryMenu({
   storeId: string;
 }) {
   return (
-    <Popover>
-      <PopoverTrigger>
-        <MoreVertical className="h-4 w-4" />
-      </PopoverTrigger>
-      <PopoverContent>
-        <Link
-          className={`flex items-center`}
-          href={`/stores/${storeId}/categories/${categoryId}/create`}
-        >
-          <Plus />
-          create item link
-        </Link>
-      </PopoverContent>
-    </Popover>
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <MoreVertical className="" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem asChild>
+          <Link
+            className="flex items-center justify-center text-lg"
+            href={`/stores/${storeId}/categories/${categoryId}/create`}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            create item
+          </Link>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
