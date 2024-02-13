@@ -12,6 +12,17 @@ import type { RouterOutputs } from "~/trpc/shared";
 import { Label } from "~/components/ui/label";
 import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "~/components/ui/alert-dialog";
 
 type Tax = RouterOutputs["tax"]["get"][number];
 export default function Taxes({
@@ -121,12 +132,7 @@ function TaxAssign({
   toggledTaxes: Tax[];
 }) {
   const taxes = api.tax.get.useQuery();
-  // const deleteTax = api.tax.delete
-  const deleteHandler = (tax: Tax) => {
-    console.log(tax);
-  };
-
-  // console.log(toggledTaxes);
+  const deleteTax = api.tax.delete.useMutation();
 
   return (
     <div>
@@ -143,15 +149,30 @@ function TaxAssign({
             <Label htmlFor={"tax" + v.id}>
               {v.name} - {v.percent}
             </Label>
-            <button
-              className="m-2 rounded p-2 outline"
-              onClick={() => deleteHandler(v)}
-            >
-              {/* dialog to tell user items referencing will lose it */}
-              delete
-            </button>
-            <button className="m-2 rounded p-2 outline">edit</button>
-            {/* <div className="flex justify-around"></div> */}
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button className="m-2 rounded p-2 outline">delete</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="w-80">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    All items referencing this tax will be affected.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      deleteTax.mutate({ taxId: Number(v.id) });
+                    }}
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         );
       })}

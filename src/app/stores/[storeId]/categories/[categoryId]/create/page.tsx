@@ -45,7 +45,6 @@ export default function Page({
   const itemCreate = api.item.create.useMutation();
 
   const [toggledStations, toggleStation, stationsReset] = useToggle<Station>();
-  // const [toggledOptions, toggleOption] = useToggle();
   const [toggledTaxes, toggleTax, taxesReset] = useToggle<Tax>();
   console.log(toggledStations, toggledTaxes);
 
@@ -121,11 +120,6 @@ export default function Page({
         <div className="px-4">
           <PrintTo toggleStation={toggleStation} />
         </div>
-
-        {/* <div>
-            <p>Options</p>
-            <Options toggleOption={toggleOption} />
-          </div> */}
 
         <div>
           <div className="px-4">

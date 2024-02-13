@@ -24,6 +24,7 @@ import { Label } from "~/components/ui/label";
 // import Link from "next/link";
 import { api } from "~/trpc/react";
 import { RouterOutputs } from "~/trpc/shared";
+import Options from "./options";
 
 export default function Page({
   params,
@@ -53,6 +54,7 @@ export default function Page({
         <div>
           <Item item={details.data.item} />
           <Taxes taxes={details.data.taxes} />
+          <Options />
         </div>
       ) : null}
     </div>
@@ -74,20 +76,19 @@ function Item({ item }: { item: Details["item"] }) {
 
 function Taxes({ taxes }: { taxes: Details["taxes"] }) {
   return (
-    <div>
+    <div className="no-scrollbar flex overflow-x-scroll px-4">
       {taxes.map(({ id, name, percent }) => {
         return (
-          <div className="outline" key={"tax" + id?.toString()}>
+          <div
+            className="m-1 flex-shrink-0 rounded p-2 outline"
+            key={"tax" + id?.toString()}
+          >
             {name}-{percent}%
           </div>
         );
       })}
     </div>
   );
-}
-
-function Options() {
-  return <div></div>;
 }
 
 function ItemMenu({
