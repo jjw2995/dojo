@@ -2,7 +2,6 @@ import { getServerAuthSession } from "~/server/auth";
 
 import { redirect } from "next/navigation";
 import { Button } from "~/components/ui/button";
-import { hand } from "lucide-react";
 
 export default async function Landing() {
   const session = await getServerAuthSession();

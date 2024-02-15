@@ -2,7 +2,13 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 
-import { ChefHat } from "lucide-react";
+import {
+  ChefHat,
+  ClipboardList,
+  ClipboardPen,
+  CookingPot,
+  Soup,
+} from "lucide-react";
 
 const navRoutes = ["order", "kitchen", "categories"];
 
@@ -23,40 +29,41 @@ export default function StoreLayout({
   return (
     <div className="flex lg:flex-row-reverse">
       <div className="w-full">{children}</div>
-
-      <div className="fixed bottom-0 z-20 flex  w-[100%] justify-around bg-slate-200 p-4 lg:relative lg:bottom-auto lg:flex lg:w-[10%] lg:flex-col lg:justify-normal lg:space-y-5 lg:text-2xl">
+      <div className="fixed bottom-0 z-20 flex w-[100%] justify-around p-4 text-sm tracking-tight decoration-2 underline-offset-2 lg:relative lg:bottom-auto lg:flex lg:w-auto lg:flex-col lg:justify-normal lg:space-y-10 lg:p-8 lg:text-lg lg:leading-4">
         <Link href={`/stores`}>Stores</Link>
 
         {/* <Link
-          className={isWordInPath("home") ? "underline underline-offset-4" : ""}
+          className={isWordInPath("home") ? "underline underline-offset-2" : ""}
           href={`/stores/${params.storeId}/home`}
         >
           Home
         </Link> */}
         <Link
-          className={
-            isWordInPath("order") ? "underline underline-offset-4" : ""
-          }
+          className={`flex flex-col items-center ${
+            isWordInPath("order") ? "stroke-2 font-medium underline" : ""
+          }`}
           href={`/stores/${params.storeId}/order`}
         >
-          Order
+          <ClipboardPen className="lg:h-8 lg:w-8" />
+          order
         </Link>
         <Link
-          className={
-            isWordInPath("kitchen") ? "underline underline-offset-4" : ""
-          }
+          className={`flex flex-col items-center ${
+            isWordInPath("kitchen") ? "stroke-2 font-medium underline" : ""
+          }`}
           href={`/stores/${params.storeId}/kitchen`}
         >
-          <ChefHat />
-          Kitchen
+          <CookingPot className="lg:h-8 lg:w-8" />
+          cook
         </Link>
         <Link
-          className={
-            isWordInPath("categories") ? "underline underline-offset-4" : ""
-          }
+          className={`flex flex-col items-center ${
+            isWordInPath("categories") ? "stroke-2 font-medium underline" : ""
+          }`}
           href={`/stores/${params.storeId}/categories`}
         >
-          Items
+          <Soup className="lg:h-8 lg:w-8" />
+          items
         </Link>
       </div>
     </div>
