@@ -29,7 +29,7 @@ export default function StoreLayout({
   return (
     <div className="flex lg:flex-row-reverse">
       <div className="w-full">{children}</div>
-      <div className="fixed bottom-0 z-20 flex w-[100%] justify-around p-4 text-sm tracking-tight decoration-2 underline-offset-2 lg:relative lg:bottom-auto lg:flex lg:w-auto lg:flex-col lg:justify-normal lg:space-y-10 lg:p-8 lg:text-lg lg:leading-4">
+      <div className="fixed bottom-0 z-20 flex w-[100%] justify-around p-4 text-sm leading-4 tracking-tight decoration-2 underline-offset-2 lg:relative lg:bottom-auto lg:flex lg:w-auto lg:flex-col lg:justify-normal lg:space-y-10 lg:p-8 lg:text-lg lg:leading-4">
         <Link href={`/stores`}>Stores</Link>
 
         {/* <Link
@@ -39,7 +39,7 @@ export default function StoreLayout({
           Home
         </Link> */}
         <Link
-          className={`flex flex-col items-center ${
+          className={`m-1 flex flex-col items-center p-1 text-center ${
             isWordInPath("order") ? "stroke-2 font-medium underline" : ""
           }`}
           href={`/stores/${params.storeId}/order`}
@@ -48,7 +48,7 @@ export default function StoreLayout({
           order
         </Link>
         <Link
-          className={`flex flex-col items-center ${
+          className={`m-1 flex flex-col items-center p-1 text-center ${
             isWordInPath("kitchen") ? "stroke-2 font-medium underline" : ""
           }`}
           href={`/stores/${params.storeId}/kitchen`}
@@ -57,7 +57,7 @@ export default function StoreLayout({
           cook
         </Link>
         <Link
-          className={`flex flex-col items-center ${
+          className={`m-1 flex flex-col items-center p-1 text-center ${
             isWordInPath("categories") ? "stroke-2 font-medium underline" : ""
           }`}
           href={`/stores/${params.storeId}/categories`}
