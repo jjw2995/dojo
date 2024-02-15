@@ -2,6 +2,7 @@
 
 import { Plus } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
@@ -10,18 +11,29 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
  * - type [table, togo]
  * - isPaid
  *
+ *
  * ?tab= &
  *  new=1 &
  *  orderId=125
  *
+ * order is togo | table
+ * orderID exists | NULL
+ *
+ * https://nextjs.org/docs/app/api-reference/functions/use-search-params
+ * https://developer.mozilla.org/ko/docs/Web/API/URLSearchParams/set
  */
 
 export default function Page({ params }: { params: { storeId: string } }) {
   const searchParams = useSearchParams();
-  console.log(searchParams.getAll("tab"));
+  // const router = useRouter();
+  // console.log(router.);
+
+  console.log(searchParams.get("tab"));
 
   return (
-    <Tabs defaultValue="togo">
+    <Tabs
+      defaultValue={searchParams.get("tab") ? searchParams.get("tab")! : "togo"}
+    >
       <div className="mt-2 flex justify-center lg:mt-4">
         <TabsList className="w-full lg:w-96">
           <TabsTrigger className="text-xl lg:text-2xl" value="table" disabled>
@@ -54,4 +66,6 @@ function Togo() {
   );
 }
 
-// funtion
+function OrderScreen() {
+  return <div>OrderScreen</div>;
+}

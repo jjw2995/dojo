@@ -12,8 +12,8 @@ export default async function Landing() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center">
-      <h1 className="mb-1 text-8xl font-bold">Dojo</h1>
-      <div className="pt-20">
+      <h1 className="pr-2 text-7xl font-bold text-slate-800">Dojo</h1>
+      <div className="py-16 pb-20">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -21,9 +21,9 @@ export default async function Landing() {
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          className="lucide lucide-hand-platter h-[18rem] w-[18rem] stroke-[1.2]"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="lucide lucide-hand-platter h-[16rem] w-[16rem] stroke-1 text-slate-600"
         >
           <path d="M12 3V2" />
           <path d="M5 10a7.1 7.1 0 0 1 14 0" />
@@ -33,7 +33,7 @@ export default async function Landing() {
           <path d="M5 14v7H2" />
         </svg>
       </div>
-      <div className="mb-12 pt-20">
+      <div className="">
         <form action="/api/auth/signin/google" method="post">
           <Button
             variant="outline"
