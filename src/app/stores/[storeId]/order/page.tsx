@@ -1,10 +1,19 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { Plus, ChevronLeft } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
 
 /**
  * order
@@ -58,14 +67,30 @@ export default function Page({ params }: { params: { storeId: string } }) {
 
 function Togo() {
   return (
-    <div>
-      <Button className="fixed bottom-[6rem] right-[1rem] h-[3rem] w-[3rem] -translate-x-1/2 rounded-full p-2 lg:bottom-[2rem] lg:right-[47%]">
+    <OrderView>
+      <Button className="fixed bottom-[6rem] right-[1rem] h-[3rem] w-[3rem] -translate-x-1/2 rounded-full p-2 lg:bottom-[6rem] lg:right-[6rem] lg:h-[4rem] lg:w-[4rem]  ">
         <Plus />
       </Button>
-    </div>
+    </OrderView>
   );
 }
 
-function OrderScreen() {
-  return <div>OrderScreen</div>;
+function OrderView({ children }: { children: React.ReactNode }) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="max-w-screen m-0 h-screen w-screen gap-0 p-0">
+        <div className="mt-12"></div>
+        <div className="flex h-screen w-screen bg-slate-200">
+          <div className="flex flex-col">
+            <div className="h-[50%] w-[90%] bg-orange-200 lg:w-[50%]">
+              orderList
+            </div>
+            <div>actionButtons</div>
+          </div>
+          <div>itemList</div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 }

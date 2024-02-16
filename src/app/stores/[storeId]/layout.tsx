@@ -8,6 +8,7 @@ import {
   ClipboardPen,
   CookingPot,
   Soup,
+  Store,
 } from "lucide-react";
 
 const navRoutes = ["order", "kitchen", "categories"];
@@ -29,8 +30,14 @@ export default function StoreLayout({
   return (
     <div className="flex lg:flex-row-reverse">
       <div className="w-full">{children}</div>
-      <div className="fixed bottom-0 z-20 flex w-[100%] justify-around p-4 text-sm leading-4 tracking-tight decoration-2 underline-offset-2 lg:relative lg:bottom-auto lg:flex lg:w-auto lg:flex-col lg:justify-normal lg:space-y-10 lg:p-8 lg:text-lg lg:leading-4">
-        <Link href={`/stores`}>Stores</Link>
+      <div className="fixed bottom-0 z-20 flex w-[100%] justify-around p-6 text-sm font-medium leading-4 tracking-tight text-muted-foreground decoration-2 underline-offset-2 lg:relative lg:bottom-auto lg:flex lg:w-auto lg:flex-col lg:justify-normal lg:space-y-10 lg:p-8 lg:text-lg lg:leading-4">
+        <Link
+          className={`flex flex-col items-center text-center`}
+          href={`/stores`}
+        >
+          <Store className="lg:h-8 lg:w-8" />
+          stores
+        </Link>
 
         {/* <Link
           className={isWordInPath("home") ? "underline underline-offset-2" : ""}
@@ -39,8 +46,8 @@ export default function StoreLayout({
           Home
         </Link> */}
         <Link
-          className={`m-1 flex flex-col items-center p-1 text-center ${
-            isWordInPath("order") ? "stroke-2 font-medium underline" : ""
+          className={`flex flex-col items-center text-center ${
+            isWordInPath("order") ? "text-foreground" : ""
           }`}
           href={`/stores/${params.storeId}/order`}
         >
@@ -48,8 +55,8 @@ export default function StoreLayout({
           order
         </Link>
         <Link
-          className={`m-1 flex flex-col items-center p-1 text-center ${
-            isWordInPath("kitchen") ? "stroke-2 font-medium underline" : ""
+          className={`flex flex-col items-center text-center ${
+            isWordInPath("kitchen") ? "text-foreground" : ""
           }`}
           href={`/stores/${params.storeId}/kitchen`}
         >
@@ -57,8 +64,8 @@ export default function StoreLayout({
           cook
         </Link>
         <Link
-          className={`m-1 flex flex-col items-center p-1 text-center ${
-            isWordInPath("categories") ? "stroke-2 font-medium underline" : ""
+          className={`flex flex-col items-center text-center ${
+            isWordInPath("categories") ? "text-foreground" : ""
           }`}
           href={`/stores/${params.storeId}/categories`}
         >
