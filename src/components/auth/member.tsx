@@ -19,7 +19,7 @@ export default function MemberAuth({
   const router = useRouter();
 
   useEffect(() => {
-    if (!isMember) {
+    if (isMember === false) {
       router.push("/stores");
     }
   }, [isLoading]);
