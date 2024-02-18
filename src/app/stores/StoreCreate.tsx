@@ -15,7 +15,6 @@ export default function CreateStore() {
   const storeCreate = api.store.create.useMutation();
   const utils = api.useUtils();
   const onSubmit: SubmitHandler<Input> = (data) => {
-    // console.log(data);
     storeCreate.mutate(
       { name: data.groupName },
       {

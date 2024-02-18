@@ -1,11 +1,11 @@
 "use client";
 
-import { SessionProvider } from "next-auth/react";
+import BaseAuth from "~/components/auth/base";
 
-export default function DashboardLayout({
+export default function StoresLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <SessionProvider>{children}</SessionProvider>;
+  return <BaseAuth>{children}</BaseAuth>;
 }

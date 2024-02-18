@@ -11,9 +11,16 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
+  DialogPortal,
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "~/components/ui/accordion";
 
 /**
  * order
@@ -37,7 +44,7 @@ export default function Page({ params }: { params: { storeId: string } }) {
   // const router = useRouter();
   // console.log(router.);
 
-  console.log(searchParams.get("tab"));
+  // console.log(searchParams.get("tab"));
 
   return (
     <Tabs
@@ -81,14 +88,25 @@ function OrderView({ children }: { children: React.ReactNode }) {
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="max-w-screen m-0 h-screen w-screen gap-0 p-0">
         <div className="mt-12"></div>
-        <div className="flex h-screen w-screen bg-slate-200">
-          <div className="flex flex-col">
-            <div className="h-[50%] w-[90%] bg-orange-200 lg:w-[50%]">
-              orderList
-            </div>
+        <div className="flex h-screen w-screen flex-col lg:flex-row">
+          <div
+            className="flex-1 flex-col"
+            onBlur={() => {
+              // console.log("focus out");
+            }}
+          >
+            <div className="h-[50%] bg-orange-200 lg:h-[50%]">orderList</div>
             <div>actionButtons</div>
+            <Accordion type="single" collapsible>
+              <AccordionItem value="item-1">
+                <AccordionTrigger>Is it accessible?</AccordionTrigger>
+                <AccordionContent>
+                  Yes. It adheres to the WAI-ARIA design pattern.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
-          <div>itemList</div>
+          <div className="flex-1 bg-green-300">itemList</div>
         </div>
       </DialogContent>
     </Dialog>

@@ -5,16 +5,6 @@
 await import("./src/env.mjs");
 
 /** @type {import("next").NextConfig} */
-const config = {
-  // compiler: { styledComponents: true },
-  // async rewrites() {
-  //   return [
-  //     {
-  //       source: "/stores/[storeId]/categories",
-  //       destination: "/stores/[storeId]/categories/[categoryId]",
-  //     },
-  //   ];
-  // },
-};
+const config = {};
 
 export default config;

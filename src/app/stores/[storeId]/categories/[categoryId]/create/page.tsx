@@ -46,7 +46,7 @@ export default function Page({
 
   const [toggledStations, toggleStation, stationsReset] = useToggle<Station>();
   const [toggledTaxes, toggleTax, taxesReset] = useToggle<Tax>();
-  console.log(toggledStations, toggledTaxes);
+  // console.log(toggledStations, toggledTaxes);
 
   const utils = api.useUtils();
   const onSubmit: SubmitHandler<CategoryInput> = (data) => {

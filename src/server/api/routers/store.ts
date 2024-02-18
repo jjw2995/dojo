@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import {
@@ -9,6 +9,26 @@ import {
 import { stores, members } from "~/server/db/schema";
 
 export const storeRouter = createTRPCRouter({
+  isMember: protectedProcedure
+    .input(z.object({ storeId: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      const userArr = await ctx.db
+        .select()
+        .from(members)
+        .where(
+          and(
+            eq(members.storeId, Number(input.storeId)),
+            eq(members.userId, ctx.session.user.id),
+          ),
+        );
+
+      if (userArr.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    }),
+
   get: protectedProcedure.query(async ({ ctx }) => {
     // https://orm.drizzle.team/docs/select#select-from-subquery
     const sq = ctx.db

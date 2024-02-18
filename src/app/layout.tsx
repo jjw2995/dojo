@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { headers } from "next/headers";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import SessionCC from "~/components/provider/session";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,7 +25,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="">
       <body className={`font-sans ${inter.variable}`}>
-        <TRPCReactProvider headers={headers()}>{children}</TRPCReactProvider>
+        <TRPCReactProvider headers={headers()}>
+          <SessionCC>{children}</SessionCC>
+        </TRPCReactProvider>
       </body>
     </html>
   );
