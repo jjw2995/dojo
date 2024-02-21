@@ -1,5 +1,8 @@
+"use client";
+
 import MemberAuth from "~/components/auth/member";
 import Nav from "~/components/nav";
+// import { api } from "~/trpc/react";
 
 export default function StoreLayout({
   children,

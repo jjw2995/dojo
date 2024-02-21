@@ -42,7 +42,6 @@ async function getItemDetails(db: typeof DB, itemId: number) {
         eq(itemToStationTable.stationId, stationTable.id),
       );
 
-    // const a
     const [itemRes, itemTaxesRes, itemStationsRes] = await Promise.all([
       item,
       itemTaxes,
@@ -69,7 +68,6 @@ export const itemRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      //   console.log(input);
       const itemId = await ctx.db.transaction(async (tx) => {
         const { insertId } = await tx.insert(itemTable).values({
           categoryId: input.categoryId,
@@ -93,15 +91,6 @@ export const itemRouter = createTRPCRouter({
             }),
           );
         }
-        // return await tx
-        //   .select()
-        //   .from(itemTable)
-        //   .where(eq(itemTable.id, Number(insertId)))
-        //   .leftJoin(
-        //     itemToStationTable,
-        //     eq(itemTable.id, itemToStationTable.itemId),
-        //   )
-        //   .leftJoin(itemToTaxTable, eq(itemTable.id, itemToTaxTable.itemId));
         return insertId;
       });
 

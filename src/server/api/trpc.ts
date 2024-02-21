@@ -10,7 +10,7 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import { type NextRequest } from "next/server";
 import superjson from "superjson";
-import { ZodError } from "zod";
+import { ZodError, z } from "zod";
 
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
@@ -136,46 +136,54 @@ export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
 
 // TODO: add admin access
 // check store member OR admin
-export const memberProcedure = protectedProcedure.use(async ({ ctx, next }) => {
-  const urlArr = ctx.headers.get("referer")?.split("/");
-  const storesIndex = urlArr?.findIndex((v) => {
-    return v === "stores";
-  });
+export const memberProcedure = protectedProcedure
+  // .input(z.object({ storeId: z.string().optional() }))
+  .use(async ({ ctx, next, input }) => {
+    const urlArr = ctx.headers.get("referer")?.split("/");
 
-  //  looks for storeId, Error if not found
-  //  potentially flakey
-  if (urlArr === undefined || !storesIndex || urlArr.length < storesIndex + 2) {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: "wrong url or missing storeId",
+    const storesIndex = urlArr?.findIndex((v) => {
+      return v === "stores";
     });
-  }
+    // console.log("\n\n", urlArr, storesIndex, "\n\n");
 
-  const storeId = Number(urlArr[storesIndex + 1]);
-  if (Number.isNaN(storeId)) {
-    throw new TRPCError({ code: "BAD_REQUEST", message: "storeId is NaN" });
-  }
+    //  looks for storeId, Error if not found
+    //  potentially flakey
+    if (
+      urlArr === undefined ||
+      !storesIndex ||
+      urlArr.length < storesIndex + 2
+    ) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "wrong url or missing storeId",
+      });
+    }
 
-  const member = await ctx.db
-    .select()
-    .from(members)
-    .where(
-      and(
-        eq(members.storeId, storeId),
-        eq(members.userId, ctx.session.user.id),
-      ),
-    );
+    const storeId = Number(urlArr[storesIndex + 1]);
+    if (Number.isNaN(storeId)) {
+      throw new TRPCError({ code: "BAD_REQUEST", message: "storeId is NaN" });
+    }
 
-  if (member.length < 1) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-  return next({
-    ctx: {
-      ...ctx,
-      storeId,
-    },
+    const member = await ctx.db
+      .select()
+      .from(members)
+      .where(
+        and(
+          eq(members.storeId, storeId),
+          eq(members.userId, ctx.session.user.id),
+        ),
+      );
+
+    if (member.length < 1) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+    return next({
+      ctx: {
+        ...ctx,
+        storeId,
+      },
+    });
   });
-});
 
 // add passcode verification OR admin
 export const passcodeProcedure = memberProcedure;

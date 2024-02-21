@@ -69,7 +69,7 @@ function Create() {
 
       <Dialog.Portal>
         <Dialog.Overlay />
-        <Dialog.Content className="fixed left-[50%] top-[50%] z-10 w-[70%] translate-x-[-50%] translate-y-[-50%] rounded-sm bg-background p-2 text-text outline">
+        <Dialog.Content className="text-text fixed left-[50%] top-[50%] z-10 w-[70%] translate-x-[-50%] translate-y-[-50%] rounded-sm bg-background p-2 outline">
           <Dialog.Title>add station</Dialog.Title>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <input

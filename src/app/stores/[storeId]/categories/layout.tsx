@@ -46,7 +46,9 @@ export default function Page({
     <div className="flex ">
       <div className="no-scrollbar max-h-screen flex-1 overflow-auto">
         <div className="relative mb-20 md:mb-0">
-          {a.data?.map(({ category, items }, idx) => {
+          {a.data?.map((category, idx) => {
+            const items = category.items;
+
             return (
               <Accordion
                 className="lg:mx-4"

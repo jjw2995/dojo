@@ -11,6 +11,8 @@ import {
   categoryTable,
   itemToStationTable,
   itemTable,
+  taxTable,
+  itemToTaxTable,
 } from "~/server/db/schema";
 
 type Category = typeof categoryTable.$inferSelect;
@@ -26,28 +28,54 @@ export const categoryRouter = createTRPCRouter({
     }),
 
   get: passcodeProcedure.query(async ({ ctx }) => {
-    const rows = await ctx.db
-      .select()
-      .from(categoryTable)
-      .where(eq(categoryTable.storeId, ctx.storeId))
-      .leftJoin(itemTable, eq(categoryTable.id, itemTable.categoryId));
-    const res = rows.reduce<
-      Record<number, { category: Category; items: Item[] }>
-    >((acc, row) => {
-      const category = row.category;
-      const item = row.item;
+    // ctx.db.transaction(async (tx) => {
 
-      if (!acc[category.id]) {
-        acc[category.id] = { category, items: [] };
-      }
+    // });
+    const a = await ctx.db.query.categoryTable.findMany({
+      with: {
+        items: {
+          with: {
+            itemsToTaxes: { with: { tax: { columns: { storeId: false } } } },
+            itemsToStations: {
+              with: { station: { columns: { storeId: false } } },
+            },
+          },
+        },
+      },
+    });
+    // const b = a.map((x) => {
+    //   return { ...x, items: x.items.map((y) => {}) };
+    // });
 
-      if (item) {
-        acc[category.id]!.items.push(item);
-      }
-      return acc;
-    }, {});
+    return a;
 
-    return Object.values(res);
+    // const rows = await ctx.db
+    //   .select()
+    //   .from(categoryTable)
+    //   .where(eq(categoryTable.storeId, ctx.storeId))
+    //   .leftJoin(itemTable, eq(categoryTable.id, itemTable.categoryId))
+    //   .leftJoin(itemToTaxTable, eq(itemTable.id, itemToTaxTable.itemId))
+    //   .leftJoin(taxTable, eq(itemToTaxTable.taxId, taxTable.id));
+
+    // // console.log(rows);
+
+    // const res = rows.reduce<
+    //   Record<number, { category: Category; items: Item[] }>
+    // >((acc, row) => {
+    //   const category = row.category;
+    //   const item = row.item;
+
+    //   if (!acc[category.id]) {
+    //     acc[category.id] = { category, items: [] };
+    //   }
+
+    //   if (item) {
+    //     acc[category.id]!.items.push(item);
+    //   }
+    //   return acc;
+    // }, {});
+
+    // return Object.values(res);
   }),
 
   getOrders: memberProcedure

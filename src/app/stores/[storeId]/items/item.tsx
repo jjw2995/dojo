@@ -24,9 +24,9 @@ import { Label } from "~/components/ui/label";
 // import Link from "next/link";
 import { api } from "~/trpc/react";
 import { RouterOutputs } from "~/trpc/shared";
-import Options from "../../../../items/options";
+import Options from "./options";
 
-export default function Page({
+export default function ItemView({
   params,
 }: {
   params: {
