@@ -8,20 +8,20 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "~/components/ui/accordion";
+} from "~/components/shadcn/accordion";
 import { MoreVertical, Plus } from "lucide-react";
 
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
+import { Button } from "~/components/shadcn/button";
+import { Input } from "~/components/shadcn/input";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
+} from "~/components/shadcn/dropdown-menu";
 import { RouterOutputs } from "~/trpc/shared";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -40,26 +40,6 @@ function CategoryView({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  // Get a new searchParams string by merging the current
-  // searchParams with a provided key/value pair
-  const addQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
-      return params.toString();
-    },
-    [searchParams],
-  );
-
-  const removeQueryString = useCallback(
-    (name: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete(name);
-      return params.toString();
-    },
-    [searchParams],
-  );
 
   const cateId = searchParams.get("itemId");
   const createID = searchParams.get("itemCreateCategoryId");

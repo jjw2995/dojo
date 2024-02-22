@@ -1,7 +1,7 @@
 import { getServerAuthSession } from "~/server/auth";
 
 import { redirect } from "next/navigation";
-import { Button } from "~/components/ui/button";
+import { Button } from "~/components/shadcn/button";
 
 export default async function Landing() {
   const session = await getServerAuthSession();

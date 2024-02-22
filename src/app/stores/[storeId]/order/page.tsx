@@ -3,8 +3,13 @@
 import { Plus, ChevronLeft } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { Button } from "~/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { Button } from "~/components/shadcn/button";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "~/components/shadcn/tabs";
 import {
   Dialog,
   DialogClose,
@@ -14,13 +19,13 @@ import {
   DialogPortal,
   DialogTitle,
   DialogTrigger,
-} from "~/components/ui/dialog";
+} from "~/components/shadcn/dialog";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "~/components/ui/accordion";
+} from "~/components/shadcn/accordion";
 
 /**
  * order

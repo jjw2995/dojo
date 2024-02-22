@@ -4,7 +4,7 @@ import { LogOut } from "lucide-react";
 import CreateStore from "./StoreCreate";
 import { api } from "~/trpc/server";
 
-import { Card, CardHeader, CardTitle } from "~/components/ui/card";
+import { Card, CardHeader, CardTitle } from "~/components/shadcn/card";
 
 export default async function Stores() {
   const stores = await api.store.get.query();
