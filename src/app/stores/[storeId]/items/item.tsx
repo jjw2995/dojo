@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronLeft, MoreVertical } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,31 +12,24 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "~/components/ui/alert-dialog";
-import { Button } from "~/components/ui/button";
+} from "~/components/shadcn/alert-dialog";
+import { Button } from "~/components/shadcn/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
-import { Label } from "~/components/ui/label";
+} from "~/components/shadcn/dropdown-menu";
+import { Label } from "~/components/shadcn/label";
 // import Link from "next/link";
 import { api } from "~/trpc/react";
 import { RouterOutputs } from "~/trpc/shared";
 import Options from "./options";
 
-export default function ItemView({
-  params,
-}: {
-  params: {
-    storeId: string;
-    categoryId: string;
-    itemId: string;
-  };
-}) {
+export default function ItemView({ itemId }: { itemId: string }) {
   const router = useRouter();
-  const details = api.item.get.useQuery({ itemId: Number(params.itemId) });
+  const details = api.item.get.useQuery({ itemId: Number(itemId) });
+  const pathname = usePathname();
 
   return (
     <div className="h-screen w-full flex-col bg-background">
@@ -44,10 +37,10 @@ export default function ItemView({
         <ChevronLeft
           className="m-2 h-8 w-8 lg:hidden"
           onClick={() => {
-            router.back();
+            router.replace(pathname);
           }}
         />
-        <ItemMenu className="m-2 h-8 w-8" itemId={params.itemId} />
+        <ItemMenu className="m-2 h-8 w-8" itemId={itemId} />
       </div>
       <h3 className="text-center text-2xl font-semibold">Item</h3>
       {details.data ? (

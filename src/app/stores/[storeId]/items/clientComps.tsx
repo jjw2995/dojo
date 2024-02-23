@@ -24,9 +24,17 @@ import {
 } from "~/components/shadcn/dropdown-menu";
 import { RouterOutputs } from "~/trpc/shared";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import ItemView from "./item";
+import Loading from "~/components/loading";
+import CreateItem from "./createItem";
 
 type Category = RouterOutputs["category"]["get"][number];
 type Item = Category["items"][number];
+
+const QPARAM = {
+  itemId: "itemId",
+  createItemCategoryId: "createItemCategoryId",
+};
 
 function CategoryView({
   categories,
@@ -41,8 +49,9 @@ function CategoryView({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const cateId = searchParams.get("itemId");
-  const createID = searchParams.get("itemCreateCategoryId");
+  const itemId = searchParams.get(QPARAM.itemId);
+  const createID = searchParams.get(QPARAM.createItemCategoryId);
+  console.log("itemid, createId", itemId, createID);
 
   return (
     <div className="flex">
@@ -89,12 +98,36 @@ function CategoryView({
         </div>
       </Accordion>
       <CreateCategory />
-      <div className="fixed w-full lg:relative lg:h-full lg:flex-1 lg:border-l-2">
-        cateId-{cateId}
-        createID-{createID}
+      <div className="fixed w-full lg:relative lg:h-screen lg:flex-1 lg:border-l-2">
+        {(
+          <RenderOne
+            comp1={createID ? <CreateItem categoryId={createID} /> : null}
+            comp2={itemId ? <ItemView itemId={itemId} /> : null}
+          />
+        ) || (
+          <div className="center hidden h-screen items-center justify-center lg:flex">
+            <span className="text-5xl font-semibold text-slate-300">
+              Nothing
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
+}
+
+function RenderOne({
+  comp1,
+  comp2,
+}: {
+  comp1: React.ReactNode;
+  comp2: React.ReactNode;
+}) {
+  if (comp1) {
+    return comp1;
+  } else {
+    return comp2;
+  }
 }
 
 function CategoryMenu({
@@ -115,7 +148,7 @@ function CategoryMenu({
         <DropdownMenuItem asChild>
           <Link
             className="flex items-center justify-center text-lg"
-            href={`${pathname}?itemCreateCategoryId=${categoryId}`}
+            href={`${pathname}?${QPARAM.createItemCategoryId}=${categoryId}`}
           >
             <Plus className="mr-2 h-4 w-4" />
             create item

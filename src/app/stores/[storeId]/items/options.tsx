@@ -5,16 +5,21 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/components/ui/dialog";
+} from "~/components/shadcn/dialog";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "~/components/shadcn/tabs";
 
 import * as RadioGroup from "@radix-ui/react-radio-group";
 
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { useState } from "react";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
+import { Input } from "~/components/shadcn/input";
+import { Label } from "~/components/shadcn/label";
 
 const Kind = [
   { value: "single", desc: "sg desc" },
