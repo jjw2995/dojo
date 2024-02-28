@@ -24,7 +24,7 @@ import { Label } from "~/components/shadcn/label";
 // import Link from "next/link";
 import { api } from "~/trpc/react";
 import { RouterOutputs } from "~/trpc/shared";
-import Options from "../../../../items/options";
+import Options from "../../../../items/(comps)/options";
 
 export default function Page({
   params,

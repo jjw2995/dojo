@@ -75,7 +75,7 @@ export default function CreateItem({ categoryId }: { categoryId: string }) {
       />
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-8 mt-4 flex w-full flex-col space-y-4"
+        className="mx-4 mt-4 flex w-full flex-col space-y-2"
       >
         <h1 className="text-center">Create Item</h1>
         <div className="px-4">
@@ -113,12 +113,12 @@ export default function CreateItem({ categoryId }: { categoryId: string }) {
           />
         </div>
 
-        <div className="px-4">
+        <div className="px-4 py-2">
           <PrintTo toggleStation={toggleStation} />
         </div>
 
         <div>
-          <div className="px-4">
+          <div className="px-4 py-2">
             <Label>Tax</Label>
             <Taxes toggleTax={toggleTax} toggledTaxes={toggledTaxes} />
           </div>

@@ -44,7 +44,7 @@ export default function ItemView({ itemId }: { itemId: string }) {
       </div>
       <h3 className="text-center text-2xl font-semibold">Item</h3>
       {details.data ? (
-        <div>
+        <div className="mx-4 mt-4 flex flex-col justify-center">
           <Item item={details.data.item} />
           <Taxes taxes={details.data.taxes} />
           <Options />
@@ -60,9 +60,9 @@ function Item({ item }: { item: Details["item"] }) {
     return null;
   }
   return (
-    <div className="flex flex-col">
-      <div>{item.name}</div>
-      <div>${item.price}</div>
+    <div className="flex flex-col space-y-4">
+      <Label>{item.name}</Label>
+      <Label>${item.price}</Label>
     </div>
   );
 }
