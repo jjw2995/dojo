@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus, ChevronLeft } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { Button } from "~/components/shadcn/button";
 import {
@@ -10,22 +10,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "~/components/shadcn/tabs";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogPortal,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/shadcn/dialog";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "~/components/shadcn/accordion";
+import OrderView from "./(comps)/orderView";
 
 /**
  * order
@@ -46,14 +31,19 @@ import {
 
 export default function Page({ params }: { params: { storeId: string } }) {
   const searchParams = useSearchParams();
-  // const router = useRouter();
-  // console.log(router.);
+  const router = useRouter();
+  const pathname = usePathname();
 
-  // console.log(searchParams.get("tab"));
+  const setTabParam = (tab: String) => {
+    router.replace(`${pathname}?tab=${tab}`);
+  };
 
   return (
     <Tabs
       defaultValue={searchParams.get("tab") ? searchParams.get("tab")! : "togo"}
+      onValueChange={(value) => {
+        setTabParam(value);
+      }}
     >
       <div className="mt-2 flex justify-center lg:mt-4">
         <TabsList className="w-full lg:w-96">
@@ -84,36 +74,5 @@ function Togo() {
         <Plus />
       </Button>
     </OrderView>
-  );
-}
-
-function OrderView({ children }: { children: React.ReactNode }) {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-screen m-0 h-screen w-screen gap-0 p-0">
-        <div className="mt-12"></div>
-        <div className="flex h-screen w-screen flex-col lg:flex-row">
-          <div
-            className="flex-1 flex-col"
-            onBlur={() => {
-              // console.log("focus out");
-            }}
-          >
-            <div className="h-[50%] bg-orange-200 lg:h-[50%]">orderList</div>
-            <div>actionButtons</div>
-            <Accordion type="single" collapsible>
-              <AccordionItem value="item-1">
-                <AccordionTrigger>Is it accessible?</AccordionTrigger>
-                <AccordionContent>
-                  Yes. It adheres to the WAI-ARIA design pattern.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-          <div className="flex-1 bg-green-300">itemList</div>
-        </div>
-      </DialogContent>
-    </Dialog>
   );
 }

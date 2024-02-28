@@ -45,7 +45,6 @@ export default function Categories({
 
   const itemId = searchParams.get(QPARAM.itemId);
   const createID = searchParams.get(QPARAM.createItemCategoryId);
-  console.log("itemid, createId", itemId, createID);
 
   return (
     <div className="flex">
