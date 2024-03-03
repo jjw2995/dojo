@@ -11,59 +11,107 @@ import {
   DialogTrigger,
 } from "~/components/shadcn/dialog";
 import * as Collapsible from "@radix-ui/react-collapsible";
+import {
+  ChevronDown,
+  Minus,
+  Plus,
+  X,
+  SplitSquareVertical,
+  NotebookPen,
+} from "lucide-react";
+import { Button } from "~/components/shadcn/button";
+import { forwardRef, useEffect, useRef, useState } from "react";
+import useClickOuter from "~/components/customHooks/useClickOuter";
 
 export default function OrderView({ children }: { children: React.ReactNode }) {
+  const elemRef = useRef(null);
+  const isClickedOuterItemList = useClickOuter(elemRef);
+  console.log(isClickedOuterItemList);
+
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-screen m-0 h-screen w-screen gap-0 p-0">
-        <div className="mt-12"></div>
-        <div className="flex h-screen w-screen flex-col lg:flex-row">
-          <div className="flex-1 flex-col">
-            <div className=" bg-orange-200 lg:h-[50%]">orderList</div>
-          </div>
-          <div className="flex-1 bg-green-300">
-            <ActionButtons />
-            itemList
-          </div>
+      <DialogContent className="max-w-screen m-0 flex h-screen w-screen flex-col gap-0 p-0 lg:flex-row">
+        <div className="flex h-full flex-col lg:w-[40%]">
+          <div className="h-full bg-sky-200">orderList</div>
+          <ActionButtons isClickedOuter={!isClickedOuterItemList} />
         </div>
+        <ItemList className="h-full bg-green-300 lg:flex-1" ref={elemRef} />
       </DialogContent>
     </Dialog>
   );
 }
 
-function ActionButtons() {
+function ActionButtons({ isClickedOuter }: { isClickedOuter: boolean }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (isClickedOuter) {
+      setIsOpen(false);
+    }
+  }, [isClickedOuter]);
+
   return (
-    <div className="fixed w-full bg-red-200">
-      <div>actionButtons</div>
-      <Collapsible.Root>
-        <Collapsible.Content className="relative bg-red-200">
-          <div>hidden stuffs</div>
-          <div>hidden stuffs</div>
-          <div>hidden stuffs</div>
+    <div className="w-full bg-red-200 lg:relative lg:block">
+      <div className="grid grid-cols-5 gap-2 px-2">
+        <Button className="h-[3rem] text-2xl">
+          <X />
+        </Button>
+        <Button className="h-[3rem] text-2xl">
+          <Minus />
+        </Button>
+        <Button className="h-[3rem] text-2xl">
+          <Plus />
+        </Button>
+        <Button className="h-[3rem] text-2xl">
+          <SplitSquareVertical />
+        </Button>
+        <Button className="h-[3rem] text-2xl">
+          <NotebookPen />
+        </Button>
+      </div>
+      <Collapsible.Root
+        open={isOpen}
+        className="fixed w-screen justify-center bg-red-200 lg:relative lg:w-full"
+      >
+        <Collapsible.Content className="relative">
+          <CollapsibleActions />
         </Collapsible.Content>
-        <Collapsible.Trigger>expend</Collapsible.Trigger>
+        <div className="flex w-full items-center justify-center">
+          <Collapsible.Trigger
+            onClick={() => {
+              setIsOpen((r) => !r);
+            }}
+            className="lg:hidden [&[data-state=open]>svg]:rotate-180"
+          >
+            <ChevronDown />
+          </Collapsible.Trigger>
+        </div>
       </Collapsible.Root>
     </div>
   );
 }
 
-// function useClickOutside(ref: React.RefObject<HTMLDivElement>) {
-//     const [isClickedOuter, setIsClickedOuter] = useState(false);
-//     useEffect(() => {
-//       /**
-//        * Alert if clicked on outside of element
-//        */
-//       function handleClickOutside(event: MouseEvent) {
-//         if (ref.current && !ref.current.contains(event.target as Node)) {
-//           alert("You clicked outside of me!");
-//         }
-//       }
-//       // Bind the event listener
-//       document.addEventListener("mousedown", handleClickOutside);
-//       return () => {
-//         // Unbind the event listener on clean up
-//         document.removeEventListener("mousedown", handleClickOutside);
-//       };
-//     }, [ref]);
-//   }
+function CollapsibleActions({ className }: { className?: string }) {
+  return (
+    <div className={`grid grid-cols-2 gap-2 px-2 pt-2 ${className}`}>
+      <Button className="h-[3rem] text-2xl">split</Button>
+      <Button className="h-[3rem] text-2xl">bill</Button>
+      <Button className="h-[3rem] text-2xl">payment</Button>
+      <Button className="h-[3rem] text-2xl">price edit</Button>
+      <Button className="h-[3rem] text-2xl">discount</Button>
+      <Button className="h-[3rem] text-2xl">table info</Button>
+    </div>
+  );
+}
+
+const ItemList = forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, children, ...props }, ref) => {
+  return (
+    <div className={className} ref={ref} {...props}>
+      itemList
+    </div>
+  );
+});
