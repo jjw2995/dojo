@@ -11,6 +11,7 @@ import {
   TabsTrigger,
 } from "~/components/shadcn/tabs";
 import OrderView from "./(comps)/orderView";
+import { ModeToggle } from "~/components/theme-button";
 
 /**
  * order
@@ -60,6 +61,8 @@ export default function Page({ params }: { params: { storeId: string } }) {
       </div>
       <TabsContent value="table"></TabsContent>
       <TabsContent value="togo">
+        <ModeToggle />
+
         <Togo />
       </TabsContent>
       <TabsContent value="all"></TabsContent>
