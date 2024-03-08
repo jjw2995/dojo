@@ -72,7 +72,7 @@ export default function Page({ params }: { params: { storeId: string } }) {
 
 function Togo() {
   return (
-    <OrderView>
+    <OrderView orderMode="togo">
       <Button className="fixed bottom-[6rem] right-[1rem] h-[3rem] w-[3rem] -translate-x-1/2 rounded-full p-2 lg:bottom-[6rem] lg:right-[6rem] lg:h-[4rem] lg:w-[4rem]  ">
         <Plus />
       </Button>
