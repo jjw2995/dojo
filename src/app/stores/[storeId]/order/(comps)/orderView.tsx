@@ -23,6 +23,17 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "~/components/shadcn/accordion";
+
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/shadcn/table";
+
 import { api } from "~/trpc/react";
 import { RouterOutputs } from "~/trpc/shared";
 
@@ -37,17 +48,6 @@ export default function OrderView({
   children: React.ReactNode;
   orderMode: "togo" | "table";
 }) {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-screen m-0 flex h-screen max-h-screen w-screen flex-col gap-0 rounded-none p-0 lg:flex-row">
-        <Main />
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function Main() {
   const [orderList, setOrderList] = useState<Map<number, Item[]>>(new Map());
   const [curIndex, setCurIndex] = useState<{
     onGroup: number;
@@ -63,45 +63,84 @@ function Main() {
   // check exist, append to cur
   const appendItem = (item: Item) => {
     setOrderList((ol) => {
+      console.log(ol);
+
       if (ol.has(curIndex.onGroup)) {
-        return new Map(
-          ol.set(curIndex.onGroup, [...ol.get(curIndex.onGroup)!, item]),
-        );
+        return new Map(ol).set(curIndex.onGroup, [
+          ...ol.get(curIndex.onGroup)!,
+          item,
+        ]);
       } else {
-        return new Map(ol.set(curIndex.onGroup, [item]));
+        return new Map(ol).set(curIndex.onGroup, [item]);
       }
     });
   };
+
   return (
-    <>
-      <div className="flex h-full w-screen flex-col lg:w-[40%]">
-        <OrderList orderList={orderList} />
-        <ActionButtons />
-      </div>
-      <CategoryList
-        className="mt-8 flex h-full overflow-auto bg-secondary lg:mt-0 lg:flex-1"
-        appendItem={appendItem}
-      />
-    </>
+    <Dialog>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="max-w-screen m-0 flex h-screen max-h-screen w-screen flex-col gap-0 rounded-none p-0 pt-12 lg:flex-row">
+        <div className="flex h-full w-screen flex-col lg:w-[40%]">
+          <OrderList orderList={orderList} />
+          <ActionButtons />
+        </div>
+        <CategoryList
+          className="mt-8 flex h-full overflow-auto bg-secondary lg:mt-0 lg:flex-1"
+          appendItem={appendItem}
+        />
+      </DialogContent>
+    </Dialog>
   );
 }
 
 function OrderList({ orderList }: { orderList: Map<number, Item[]> }) {
   return (
-    <div className="h-full bg-pink-200">
-      <div>
-        {Array.from(orderList).map(([nm, listGroup], gk) => {
-          return (
-            <div key={gk}>
-              {listGroup.map((item, ik) => {
-                return (
-                  <div key={ik}>{`${item.name}_${item.price} tax:...`}</div>
-                );
-              })}
-            </div>
-          );
-        })}
-      </div>
+    <div className="h-full p-2">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-8">#</TableHead>
+            <TableHead>Item Name</TableHead>
+            <TableHead className="w-6">Qty</TableHead>
+            <TableHead className="text-right">Price</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody className="h-full overflow-hidden">
+          {Array.from(orderList).map(([nm, listGroup], gk) => {
+            return (
+              <>
+                {listGroup.map((item, ik) => {
+                  return (
+                    <>
+                      <TableRow key={`${gk}_${ik}`} onClick={(e) => {}}>
+                        <TableCell>{ik}</TableCell>
+                        <TableCell className="border-l">{item.name}</TableCell>
+                        <TableCell>qty</TableCell>
+                        <TableCell className="text-right">
+                          ${item.price.toFixed(2)}
+                        </TableCell>
+                      </TableRow>
+                      {/* {[0, 1].map((r, i) => {
+                          return (
+                            <TableRow key={`${gk}_${ik}_${i}`}>
+                              <TableCell></TableCell>
+                              <TableCell className="border-l">
+                                {item.name}
+                                {i}
+                              </TableCell>
+                              <TableCell></TableCell>
+                              <TableCell className="text-right"></TableCell>
+                            </TableRow>
+                          );
+                        })} */}
+                    </>
+                  );
+                })}
+              </>
+            );
+          })}
+        </TableBody>
+      </Table>
     </div>
   );
 }
@@ -165,7 +204,6 @@ function ActionButtons() {
   );
 }
 
-// TODO: disable click - when collapsibleButtons open
 const CategoryList = forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & { appendItem: (item: Item) => void }
@@ -217,7 +255,6 @@ function Category({
             key={"item" + idx.toString()}
             className="py-2 pl-8 text-lg"
             onClick={(e) => {
-              e.preventDefault();
               appendItem(item);
             }}
           >

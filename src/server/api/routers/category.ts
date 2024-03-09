@@ -27,11 +27,11 @@ export const categoryRouter = createTRPCRouter({
         .values({ name: input.name, storeId: ctx.storeId });
     }),
 
-  get: passcodeProcedure.query(async ({ ctx }) => {
+  get: memberProcedure.query(async ({ ctx }) => {
     // ctx.db.transaction(async (tx) => {
 
     // });
-    const a = await ctx.db.query.categoryTable.findMany({
+    const dbCategories = await ctx.db.query.categoryTable.findMany({
       with: {
         items: {
           with: {
@@ -43,11 +43,24 @@ export const categoryRouter = createTRPCRouter({
         },
       },
     });
+    const procCate = dbCategories.map(({ items, ...cateProps }) => {
+      return {
+        ...cateProps,
+        items: items.map(({ itemsToStations, itemsToTaxes, ...itemProps }) => {
+          return {
+            ...itemProps,
+            taxes: itemsToTaxes.map(({ tax }) => tax),
+            stations: itemsToStations.map(({ station }) => station),
+          };
+        }),
+      };
+    });
+
     // const b = a.map((x) => {
     //   return { ...x, items: x.items.map((y) => {}) };
     // });
 
-    return a;
+    return procCate;
 
     // const rows = await ctx.db
     //   .select()
