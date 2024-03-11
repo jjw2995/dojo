@@ -13,7 +13,7 @@ export default function BaseAuth({ children }: { children: React.ReactNode }) {
     if (status == "unauthenticated") {
       router.push("/");
     }
-  }, [status]);
+  }, [status, router]);
 
   if (status !== "authenticated") {
     return <Loading />;

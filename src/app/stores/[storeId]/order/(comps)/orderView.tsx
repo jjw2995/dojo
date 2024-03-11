@@ -40,7 +40,6 @@ import {
 import { api } from "~/trpc/react";
 import { RouterOutputs } from "~/trpc/shared";
 import { cn } from "~/components/lib/utils";
-import { ScrollArea } from "~/components/ui/scroll-area";
 
 type Category = RouterOutputs["category"]["get"][number];
 

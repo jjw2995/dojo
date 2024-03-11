@@ -6,7 +6,6 @@ import { LogOut } from "lucide-react";
 import CreateStore from "./StoreCreate";
 
 import { Card, CardHeader, CardTitle } from "~/components/ui/card";
-import { ScrollArea } from "~/components/ui/scroll-area";
 
 import { api } from "~/trpc/react";
 import BaseAuth from "~/components/auth/base";
@@ -31,8 +30,8 @@ export default function Stores() {
           /> */}
           </div>
 
-          <ScrollArea>
-            <div className="m-4 flex flex-col space-y-2">
+          <div className="relative overflow-hidden">
+            <div className="m-4 flex h-full w-full flex-col space-y-2">
               {stores.data ? (
                 stores.data.map(({ store }) => {
                   return (
@@ -51,7 +50,7 @@ export default function Stores() {
                 <div>create store</div>
               )}
             </div>
-          </ScrollArea>
+          </div>
           <CreateStore />
         </div>
       </div>
