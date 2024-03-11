@@ -7,7 +7,7 @@ export default function LoginButton() {
   return (
     <Button
       onClick={() => {
-        signIn("google");
+        void signIn("google");
       }}
       variant="outline"
       size="lg"
