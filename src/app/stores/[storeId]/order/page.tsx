@@ -3,13 +3,8 @@
 import { Plus, ChevronLeft } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { Button } from "~/components/shadcn/button";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "~/components/shadcn/tabs";
+import { Button } from "~/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import OrderView from "./(comps)/orderView";
 import { ModeToggle } from "~/components/theme-button";
 

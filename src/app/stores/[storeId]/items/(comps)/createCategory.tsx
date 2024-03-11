@@ -6,8 +6,8 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Plus } from "lucide-react";
 
 import { useState } from "react";
-import { Button } from "~/components/shadcn/button";
-import { Input } from "~/components/shadcn/input";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
 
 type CategoryInput = { categoryName: string };
 

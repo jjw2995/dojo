@@ -3,8 +3,11 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
   DialogTrigger,
-} from "~/components/shadcn/dialog";
+} from "~/components/ui/dialog";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import {
   ChevronDown,
@@ -14,7 +17,7 @@ import {
   SplitSquareVertical,
   NotebookPen,
 } from "lucide-react";
-import { Button } from "~/components/shadcn/button";
+import { Button } from "~/components/ui/button";
 import { forwardRef, useEffect, useState } from "react";
 import useIsScreenLg from "~/components/customHooks/useIsScreenLg";
 import {
@@ -22,7 +25,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "~/components/shadcn/accordion";
+} from "~/components/ui/accordion";
 
 import {
   Table,
@@ -32,10 +35,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "~/components/shadcn/table";
+} from "~/components/ui/table";
 
 import { api } from "~/trpc/react";
 import { RouterOutputs } from "~/trpc/shared";
+import { cn } from "~/components/lib/utils";
+import { ScrollArea } from "~/components/ui/scroll-area";
 
 type Category = RouterOutputs["category"]["get"][number];
 
@@ -79,25 +84,36 @@ export default function OrderView({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-screen m-0 flex h-screen max-h-screen w-screen flex-col gap-0 rounded-none p-0 pt-12 lg:flex-row">
-        <div className="flex h-full w-screen flex-col lg:w-[40%]">
-          <OrderList orderList={orderList} />
-          <ActionButtons />
+      <DialogContent className="flex h-screen w-screen max-w-full flex-col rounded-none">
+        <DialogHeader>
+          <DialogTitle>Edit profile</DialogTitle>
+        </DialogHeader>
+        <div className="flex h-screen max-w-full flex-col rounded-none lg:flex-row">
+          <div className="h-[50%] lg:h-full lg:w-[40%]">
+            <OrderList orderList={orderList} className="h-[75%] lg:h-[70%]" />
+            <ActionButtons />
+          </div>
+          <CategoryList
+            className="flex h-[50%] overflow-y-scroll bg-secondary lg:mt-0 lg:h-full lg:flex-1"
+            appendItem={appendItem}
+          />
         </div>
-        <CategoryList
-          className="mt-8 flex h-full overflow-auto bg-secondary lg:mt-0 lg:flex-1"
-          appendItem={appendItem}
-        />
       </DialogContent>
     </Dialog>
   );
 }
 
-function OrderList({ orderList }: { orderList: Map<number, Item[]> }) {
+function OrderList({
+  orderList,
+  className,
+}: {
+  orderList: Map<number, Item[]>;
+  className?: string;
+}) {
   return (
-    <div className="h-full p-2">
+    <div className={cn("overflow-y-scroll", className)}>
       <Table>
-        <TableHeader>
+        <TableHeader className="sticky top-0 bg-background">
           <TableRow>
             <TableHead className="w-8">#</TableHead>
             <TableHead>Item Name</TableHead>
@@ -105,7 +121,7 @@ function OrderList({ orderList }: { orderList: Map<number, Item[]> }) {
             <TableHead className="text-right">Price</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody className="h-full overflow-hidden">
+        <TableBody>
           {Array.from(orderList).map(([nm, listGroup], gk) => {
             return (
               <>
@@ -145,7 +161,7 @@ function OrderList({ orderList }: { orderList: Map<number, Item[]> }) {
   );
 }
 
-function ActionButtons() {
+function ActionButtons({ className }: { className?: string }) {
   const isScreenLg = useIsScreenLg();
   const [isOpen, setOpen] = useState(false);
 
@@ -158,35 +174,35 @@ function ActionButtons() {
   }, [isScreenLg]);
 
   return (
-    <div className="w-full bg-background pt-2 lg:relative lg:p-2">
-      <div className="grid grid-cols-5 gap-2 px-4">
-        <Button className="h-[3rem] text-2xl">
+    <div className={cn("bg-background pt-2 lg:relative lg:p-2", className)}>
+      <div className="grid grid-cols-5 gap-2">
+        <Button className="md:h-[3rem] md:text-2xl">
           <X />
         </Button>
-        <Button className="h-[3rem] text-2xl">
+        <Button className="md:h-[3rem] md:text-2xl">
           <Minus />
         </Button>
-        <Button className="h-[3rem] text-2xl">
+        <Button className="md:h-[3rem] md:text-2xl">
           <Plus />
         </Button>
-        <Button className="h-[3rem] text-2xl">
+        <Button className="md:h-[3rem] md:text-2xl">
           <SplitSquareVertical />
         </Button>
-        <Button className="h-[3rem] text-2xl">
+        <Button className="md:h-[3rem] md:text-2xl">
           <NotebookPen />
         </Button>
       </div>
       <Collapsible.Root
         open={isOpen}
-        className="fixed z-10 w-screen justify-center lg:relative lg:w-full"
+        className="fixed left-0 right-0 z-10 justify-center px-6 lg:relative lg:px-0"
       >
-        <Collapsible.Content className="relative grid grid-cols-2 gap-2 border-b-2 bg-background px-4 pt-2 data-[state=open]:pb-2">
-          <Button className="h-[3rem] text-2xl">split</Button>
-          <Button className="h-[3rem] text-2xl">bill</Button>
-          <Button className="h-[3rem] text-2xl">payment</Button>
-          <Button className="h-[3rem] text-2xl">price edit</Button>
-          <Button className="h-[3rem] text-2xl">discount</Button>
-          <Button className="h-[3rem] text-2xl">table info</Button>
+        <Collapsible.Content className="relative grid grid-cols-2 gap-2 border-b-2 bg-background pt-2 data-[state=open]:pb-2">
+          <Button className="md:h-[3rem] md:text-2xl">split</Button>
+          <Button className="md:h-[3rem] md:text-2xl">bill</Button>
+          <Button className="md:h-[3rem] md:text-2xl">payment</Button>
+          <Button className="md:h-[3rem] md:text-2xl">price edit</Button>
+          <Button className="md:h-[3rem] md:text-2xl">discount</Button>
+          <Button className="md:h-[3rem] md:text-2xl">table info</Button>
         </Collapsible.Content>
         <div className="flex justify-center">
           <Collapsible.Trigger
@@ -194,9 +210,9 @@ function ActionButtons() {
             onClick={() => {
               setOpen((r) => !r);
             }}
-            className="rounded-b-full bg-background data-[state=open]:h-screen data-[state=open]:w-full data-[state=open]:bg-slate-600 data-[state=open]:opacity-20 lg:hidden [&[data-state=open]>svg]:rotate-180"
+            className="rounded-b-full bg-background data-[state=open]:fixed data-[state=open]:h-screen data-[state=open]:w-screen data-[state=open]:bg-slate-600 data-[state=open]:opacity-20 lg:hidden [&[data-state=open]>svg]:rotate-180"
           >
-            <ChevronDown className="h-10 w-10" />
+            <ChevronDown className="h-8 w-8" />
           </Collapsible.Trigger>
         </div>
       </Collapsible.Root>

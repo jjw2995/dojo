@@ -8,21 +8,21 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "~/components/shadcn/accordion";
+} from "~/components/ui/accordion";
 import { MoreVertical, Plus } from "lucide-react";
 
 import { useState } from "react";
 // import type { RouterOutputs } from "~/trpc/shared";
 import Link from "next/link";
 // import { usePathname, useSearchParams } from "next/navigation";
-import { Button } from "~/components/shadcn/button";
-import { Input } from "~/components/shadcn/input";
-import { Label } from "~/components/shadcn/label";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "~/components/shadcn/popover";
+} from "~/components/ui/popover";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,7 +30,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "~/components/shadcn/dropdown-menu";
+} from "~/components/ui/dropdown-menu";
 // import { Separator } from "~/components/shadcn/separator";
 
 export default function Page({

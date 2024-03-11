@@ -2,15 +2,15 @@ import * as Dialog from "@radix-ui/react-dialog";
 import * as Tabs from "@radix-ui/react-tabs";
 
 // import { Tabs as Tb, TabsContent, TabsList, TabsTrigger } from "~/components/shadcn/tabs"
-import { Checkbox } from "~/components/shadcn/checkbox";
-import { Input } from "~/components/shadcn/input";
+import { Checkbox } from "~/components/ui/checkbox";
+import { Input } from "~/components/ui/input";
 
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { useState } from "react";
 import { api } from "~/trpc/react";
 import type { RouterOutputs } from "~/trpc/shared";
-import { Label } from "~/components/shadcn/label";
-import { Button } from "~/components/shadcn/button";
+import { Label } from "~/components/ui/label";
+import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
 import {
   AlertDialog,
@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "~/components/shadcn/alert-dialog";
+} from "~/components/ui/alert-dialog";
 
 type Tax = RouterOutputs["tax"]["get"][number];
 export default function Taxes({

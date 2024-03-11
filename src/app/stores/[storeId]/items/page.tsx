@@ -8,20 +8,20 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "~/components/shadcn/accordion";
+} from "~/components/ui/accordion";
 import { MoreVertical, Plus } from "lucide-react";
 
 import { useState } from "react";
 import Link from "next/link";
-import { Button } from "~/components/shadcn/button";
-import { Input } from "~/components/shadcn/input";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "~/components/shadcn/dropdown-menu";
+} from "~/components/ui/dropdown-menu";
 import { RouterOutputs } from "~/trpc/shared";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import ItemView from "./(comps)/item";

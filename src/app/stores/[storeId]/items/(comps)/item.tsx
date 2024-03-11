@@ -12,15 +12,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "~/components/shadcn/alert-dialog";
-import { Button } from "~/components/shadcn/button";
+} from "~/components/ui/alert-dialog";
+import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "~/components/shadcn/dropdown-menu";
-import { Label } from "~/components/shadcn/label";
+} from "~/components/ui/dropdown-menu";
+import { Label } from "~/components/ui/label";
 // import Link from "next/link";
 import { api } from "~/trpc/react";
 import { RouterOutputs } from "~/trpc/shared";
