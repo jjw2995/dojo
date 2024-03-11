@@ -1,7 +1,7 @@
 import { getServerAuthSession } from "~/server/auth";
 
 import { redirect } from "next/navigation";
-import { Button } from "~/components/ui/button";
+import LoginButton from "~/components/loginButton";
 
 export default async function Landing() {
   const session = await getServerAuthSession();
@@ -33,26 +33,7 @@ export default async function Landing() {
           <path d="M5 14v7H2" />
         </svg>
       </div>
-      <div className="">
-        <form action="/api/auth/signin/google" method="post">
-          <Button
-            variant="outline"
-            size="lg"
-            type="submit"
-            className="text-center"
-          >
-            <img
-              loading="lazy"
-              height="24"
-              width="24"
-              id="provider-logo"
-              className="mr-4"
-              src="https://authjs.dev/img/providers/google.svg"
-            ></img>
-            <p className="text-xl">Sign in with Google</p>
-          </Button>
-        </form>
-      </div>
+      <LoginButton />
     </main>
   );
 }
