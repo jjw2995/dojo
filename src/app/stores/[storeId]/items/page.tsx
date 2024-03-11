@@ -33,13 +33,14 @@ const QPARAM = {
   createItemCategoryId: "createItemCategoryId",
 };
 
-export default function Categories({
-  children,
-  params,
-}: {
-  params: { storeId: string };
-  children: React.ReactNode;
-}) {
+// {
+//   children,
+//   params,
+// }: {
+//   params: { storeId: string };
+//   children: React.ReactNode;
+// }
+export default function Categories() {
   const categories = api.category.get.useQuery();
   const searchParams = useSearchParams();
 
