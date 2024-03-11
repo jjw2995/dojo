@@ -30,7 +30,7 @@ export default function Page({ params }: { params: { storeId: string } }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const setTabParam = (tab: String) => {
+  const setTabParam = (tab: string) => {
     router.replace(`${pathname}?tab=${tab}`);
   };
 

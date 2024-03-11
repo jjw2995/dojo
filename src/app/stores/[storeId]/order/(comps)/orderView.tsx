@@ -127,7 +127,7 @@ function OrderList({
                 {listGroup.map((item, ik) => {
                   return (
                     <>
-                      <TableRow key={`${gk}_${ik}`} onClick={(e) => {}}>
+                      <TableRow key={`${gk}_${ik}`}>
                         <TableCell>{ik}</TableCell>
                         <TableCell className="border-l">{item.name}</TableCell>
                         <TableCell>qty</TableCell>
@@ -243,6 +243,8 @@ const CategoryList = forwardRef<
     </div>
   );
 });
+
+CategoryList.displayName = "CategoryList";
 
 function Category({
   category,

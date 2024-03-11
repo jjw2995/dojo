@@ -59,7 +59,7 @@ function CreateStore() {
           <DialogDescription>
             Name your new group.
             <br />
-            Click create when you're done.
+            Click create when you&aposre done.
           </DialogDescription>
         </DialogHeader>
         <form
@@ -105,7 +105,7 @@ function DialogDemo() {
         <DialogHeader>
           <DialogTitle>Edit profile</DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
+            Make changes to your profile here. Click save when you&aposre done.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
