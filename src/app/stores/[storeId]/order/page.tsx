@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import OrderView from "./(comps)/orderView";
-import { ModeToggle } from "~/components/theme-button";
+import { useEffect } from "react";
 
 /**
  * order
@@ -34,6 +34,12 @@ export default function Page({ params }: { params: { storeId: string } }) {
     router.replace(`${pathname}?tab=${tab}`);
   };
 
+  useEffect(() => {
+    if (!searchParams.get("tab")) {
+      setTabParam("togo");
+    }
+  }, []);
+
   return (
     <Tabs
       defaultValue={searchParams.get("tab") ? searchParams.get("tab")! : "togo"}
@@ -56,8 +62,6 @@ export default function Page({ params }: { params: { storeId: string } }) {
       </div>
       <TabsContent value="table"></TabsContent>
       <TabsContent value="togo">
-        <ModeToggle />
-
         <Togo />
       </TabsContent>
       <TabsContent value="all"></TabsContent>

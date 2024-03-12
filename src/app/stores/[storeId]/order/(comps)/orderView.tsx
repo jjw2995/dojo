@@ -18,7 +18,7 @@ import {
   NotebookPen,
 } from "lucide-react";
 import { Button } from "~/components/ui/button";
-import { forwardRef, useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import useIsScreenLg from "~/components/customHooks/useIsScreenLg";
 import {
   Accordion,
@@ -40,80 +40,101 @@ import {
 import { api } from "~/trpc/react";
 import { RouterOutputs } from "~/trpc/shared";
 import { cn } from "~/components/lib/utils";
+import { Label } from "~/components/ui/label";
+import { Input } from "~/components/ui/input";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { OrderContextProvider, useOrder } from "./order-list-context";
 
 type Category = RouterOutputs["category"]["get"][number];
 
 type Item = Category["items"][number];
+
+type OrderItem = Item & { qty: number };
+type OrderList = Map<number, OrderItem[]>;
+
+type OrderType = "togo" | "table";
 
 export default function OrderView({
   children,
   orderMode,
 }: {
   children: React.ReactNode;
-  orderMode: "togo" | "table";
+  orderMode: OrderType;
 }) {
-  const [orderList, setOrderList] = useState<Map<number, Item[]>>(new Map());
-  const [curIndex, setCurIndex] = useState<{
-    onGroup: number;
-    onItem: number;
-    onOption: number;
-  }>({
-    onGroup: 0,
-    onItem: -1,
-    onOption: -1,
-  });
-
-  // check empty, start subgroupId 0
-  // check exist, append to cur
-  const appendItem = (item: Item) => {
-    setOrderList((ol) => {
-      console.log(ol);
-
-      if (ol.has(curIndex.onGroup)) {
-        return new Map(ol).set(curIndex.onGroup, [
-          ...ol.get(curIndex.onGroup)!,
-          item,
-        ]);
-      } else {
-        return new Map(ol).set(curIndex.onGroup, [item]);
-      }
-    });
-  };
-
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="flex h-screen w-screen max-w-full flex-col rounded-none">
-        <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
-        </DialogHeader>
-        <div className="flex h-screen max-w-full flex-col rounded-none lg:flex-row">
-          <div className="h-[50%] lg:h-full lg:w-[40%]">
-            <OrderList orderList={orderList} className="h-[75%] lg:h-[70%]" />
-            <ActionButtons />
+        <OrderContextProvider>
+          <DialogHeader>
+            <DialogTitle>
+              <TitleOrderInfo orderMode={orderMode} />
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex h-screen max-w-full flex-col rounded-none lg:flex-row">
+            <div className="h-[50%] lg:h-full lg:w-[40%]">
+              <OrderList className="h-[75%] lg:h-[70%]" />
+              <ActionButtons />
+            </div>
+            <CategoryList className="flex h-[50%] overflow-y-scroll bg-secondary lg:mt-0 lg:h-full lg:flex-1" />
           </div>
-          <CategoryList
-            className="flex h-[50%] overflow-y-scroll bg-secondary lg:mt-0 lg:h-full lg:flex-1"
-            appendItem={appendItem}
-          />
-        </div>
+        </OrderContextProvider>
       </DialogContent>
     </Dialog>
   );
 }
 
-function OrderList({
-  orderList,
-  className,
-}: {
-  orderList: Map<number, Item[]>;
-  className?: string;
-}) {
+type OrderInfoInput = { orderMode: OrderType; orderName: string };
+
+function TitleOrderInfo({ orderMode }: { orderMode: OrderType }) {
+  const form = useForm<OrderInfoInput>({ defaultValues: { orderMode } });
+
   return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="ghost" className="text-xl">
+          TOGO: Sean 1253
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="flex w-full max-w-md rounded-none sm:max-w-[425px] sm:rounded-lg">
+        <DialogHeader>
+          <DialogTitle>TOGO: Sean</DialogTitle>
+        </DialogHeader>
+        <form
+          id="createGroupForm"
+          className=""
+          //   onSubmit={form.handleSubmit(onSubmit)}
+        >
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="orderName" className="text-right">
+                Name
+              </Label>
+              <Input
+                id="orderName"
+                className="col-span-3"
+                placeholder="Starbucks Downtown"
+                {...form.register("orderName", { required: true })}
+              />
+            </div>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function OrderList({ className }: { className?: string }) {
+  const order = useOrder();
+  const { onGroup, onItem, onOption } = order.cursor;
+  console.log(order.cursor);
+
+  return (
+    // https://github.com/shadcn-ui/ui/issues/1151
     <div className={cn("overflow-y-scroll", className)}>
       <Table>
         <TableHeader className="sticky top-0 bg-background">
-          <TableRow>
+          <TableRow className="pointer-events-none">
             <TableHead className="w-8">#</TableHead>
             <TableHead>Item Name</TableHead>
             <TableHead className="w-6">Qty</TableHead>
@@ -121,21 +142,31 @@ function OrderList({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {Array.from(orderList).map(([nm, listGroup], gk) => {
-            return (
-              <>
-                {listGroup.map((item, ik) => {
-                  return (
-                    <>
-                      <TableRow key={`${gk}_${ik}`}>
-                        <TableCell>{ik}</TableCell>
-                        <TableCell className="border-l">{item.name}</TableCell>
-                        <TableCell>qty</TableCell>
-                        <TableCell className="text-right">
-                          ${item.price.toFixed(2)}
-                        </TableCell>
-                      </TableRow>
-                      {/* {[0, 1].map((r, i) => {
+          {Array.from(order.list).map(([nm, listGroup], gk) => {
+            return listGroup.map((item, ik) => {
+              console.log(onGroup === gk, onItem === ik);
+
+              return (
+                <React.Fragment key={`${gk}_${ik}`}>
+                  <TableRow
+                    onClick={(e) => {
+                      order.setCursor({ onGroup: gk, onItem: ik });
+                    }}
+                    className={`${
+                      onGroup === gk && onItem === ik ? "bg-muted" : ""
+                    }`}
+                    // data-selected={
+                    //   onGroup === gk && onItem === ik ? "selected" : ""
+                    // }
+                  >
+                    <TableCell>{ik}</TableCell>
+                    <TableCell className="border-l">{item.name}</TableCell>
+                    <TableCell>{item.qty}</TableCell>
+                    <TableCell className="text-right">
+                      ${item.price.toFixed(2)}
+                    </TableCell>
+                  </TableRow>
+                  {/* {[0, 1].map((r, i) => {
                           return (
                             <TableRow key={`${gk}_${ik}_${i}`}>
                               <TableCell></TableCell>
@@ -148,11 +179,9 @@ function OrderList({
                             </TableRow>
                           );
                         })} */}
-                    </>
-                  );
-                })}
-              </>
-            );
+                </React.Fragment>
+              );
+            });
           })}
         </TableBody>
       </Table>
@@ -193,9 +222,9 @@ function ActionButtons({ className }: { className?: string }) {
       </div>
       <Collapsible.Root
         open={isOpen}
-        className="fixed left-0 right-0 z-10 justify-center px-6 lg:relative lg:px-0"
+        className="fixed left-0 right-0 z-10 justify-center px-6 lg:static lg:px-0"
       >
-        <Collapsible.Content className="relative grid grid-cols-2 gap-2 border-b-2 bg-background pt-2 data-[state=open]:pb-2">
+        <Collapsible.Content className="relative grid grid-cols-2 gap-2 border-b-2 bg-background pt-2 data-[state=open]:pb-2 lg:static lg:border-0">
           <Button className="md:h-[3rem] md:text-2xl">split</Button>
           <Button className="md:h-[3rem] md:text-2xl">bill</Button>
           <Button className="md:h-[3rem] md:text-2xl">payment</Button>
@@ -221,8 +250,8 @@ function ActionButtons({ className }: { className?: string }) {
 
 const CategoryList = forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { appendItem: (item: Item) => void }
->(({ className, children, appendItem, ...props }, ref) => {
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, children, ...props }, ref) => {
   const categories = api.category.get.useQuery();
 
   return (
@@ -231,11 +260,7 @@ const CategoryList = forwardRef<
         <div className="relative md:mb-0 lg:mx-4">
           {categories.data?.map((category) => {
             return (
-              <Category
-                key={`catId_${category.id}`}
-                category={category}
-                appendItem={appendItem}
-              />
+              <Category key={`catId_${category.id}`} category={category} />
             );
           })}
         </div>
@@ -246,14 +271,9 @@ const CategoryList = forwardRef<
 
 CategoryList.displayName = "CategoryList";
 
-function Category({
-  category,
-  appendItem,
-}: {
-  category: Category;
-  appendItem: (item: Item) => void;
-}): React.ReactNode {
+function Category({ category }: { category: Category }): React.ReactNode {
   const items = category.items;
+  const order = useOrder();
 
   return (
     <AccordionItem value={"category" + category.id.toString()}>
@@ -269,10 +289,10 @@ function Category({
       {items.map((item, idx) => {
         return (
           <AccordionContent
-            key={"item" + idx.toString()}
+            key={`${item.id}_${idx.toString()}`}
             className="py-2 pl-8 text-lg"
             onClick={(e) => {
-              appendItem(item);
+              order.addItem(item);
             }}
           >
             {item.name}-${item.price}
