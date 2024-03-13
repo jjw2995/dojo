@@ -44,6 +44,7 @@ import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { OrderContextProvider, useOrder } from "./orderListContext";
+import { OrderInfoContextProvider } from "./orderInfoContext";
 
 type Category = RouterOutputs["category"]["get"][number];
 
@@ -65,21 +66,23 @@ export default function OrderView({
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="flex h-screen w-screen max-w-full flex-col rounded-none">
-        <OrderContextProvider>
-          <DialogHeader>
-            <DialogTitle>
-              <TitleOrderInfo orderMode={orderMode} />
-            </DialogTitle>
-          </DialogHeader>
-          {/* come back werid lg screen */}
-          <div className="flex h-full max-w-full flex-col rounded-none lg:flex-row">
-            <div className="h-[20rem] lg:h-full lg:w-[40%]">
-              <OrderList className="h-[75%] lg:h-[70%]" />
-              <ActionButtons />
+        <OrderInfoContextProvider>
+          <OrderContextProvider>
+            <DialogHeader>
+              <DialogTitle>
+                <TitleOrderInfo orderMode={orderMode} />
+              </DialogTitle>
+            </DialogHeader>
+            {/* come back werid lg screen */}
+            <div className="flex h-full max-w-full flex-col rounded-none lg:flex-row">
+              <div className="h-[20rem] lg:h-full lg:w-[40%]">
+                <OrderList className="h-[75%] lg:h-[70%]" />
+                <ActionButtons />
+              </div>
+              <CategoryList className="flex h-[20rem] overflow-y-scroll bg-secondary lg:mt-0 lg:h-full lg:flex-1" />
             </div>
-            <CategoryList className="flex h-[20rem] overflow-y-scroll bg-secondary lg:mt-0 lg:h-full lg:flex-1" />
-          </div>
-        </OrderContextProvider>
+          </OrderContextProvider>
+        </OrderInfoContextProvider>
       </DialogContent>
     </Dialog>
   );
@@ -127,8 +130,10 @@ function TitleOrderInfo({ orderMode }: { orderMode: OrderType }) {
 
 function OrderList({ className }: { className?: string }) {
   const order = useOrder();
-  const { onGroup, onItem, onOption } = order.cursor;
-  console.log(order.cursor);
+  const { onGroup, onItem, onOption } = order.data.cursor;
+  const { cursor, list } = order.data;
+  console.log(list);
+  console.log(cursor);
 
   return (
     // https://github.com/shadcn-ui/ui/issues/1151
@@ -143,15 +148,13 @@ function OrderList({ className }: { className?: string }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {order.list.map((listGroup, gk) => {
+          {list.map((listGroup, gk) => {
             return listGroup.map((item, ik) => {
-              console.log(onGroup === gk, onItem === ik);
-
               return (
                 <React.Fragment key={`${gk}_${ik}`}>
                   <TableRow
                     onClick={(e) => {
-                      order.setCursor({ onGroup: gk, onItem: ik });
+                      order.fn.setCursor({ onGroup: gk, onItem: ik });
                     }}
                     className={`${
                       onGroup === gk && onItem === ik ? "bg-muted" : ""
@@ -211,7 +214,7 @@ function ActionButtons({ className }: { className?: string }) {
         </Button>
         <Button
           onClick={() => {
-            order.decCursor();
+            order.fn.decCursor();
           }}
           className="md:h-[3rem] md:text-2xl"
         >
@@ -219,13 +222,18 @@ function ActionButtons({ className }: { className?: string }) {
         </Button>
         <Button
           onClick={() => {
-            order.incCursor();
+            order.fn.incCursor();
           }}
           className="md:h-[3rem] md:text-2xl"
         >
           <Plus />
         </Button>
-        <Button disabled className="md:h-[3rem] md:text-2xl">
+        <Button
+          onClick={() => {
+            order.fn.addGroup();
+          }}
+          className="md:h-[3rem] md:text-2xl"
+        >
           <SplitSquareVertical />
         </Button>
         <Button disabled className="md:h-[3rem] md:text-2xl">
@@ -316,7 +324,7 @@ function Category({ category }: { category: Category }): React.ReactNode {
             key={`${item.id}_${idx.toString()}`}
             className="py-2 pl-8 text-lg"
             onClick={(e) => {
-              order.addItem(item);
+              order.fn.addItem(item);
             }}
           >
             {item.name}-${item.price}

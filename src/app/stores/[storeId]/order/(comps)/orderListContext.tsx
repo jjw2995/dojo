@@ -22,13 +22,17 @@ type OptionalCursor =
   | Cursor;
 
 interface OrderContextProps {
-  list: OrderList;
-  cursor: Cursor;
-  addItem: (item: Item) => void;
-  setCursor: (cursor: OptionalCursor) => void;
-  incCursor: () => void;
-  decCursor: () => void;
-  addGroup: () => void;
+  data: {
+    list: OrderList;
+    cursor: Cursor;
+  };
+  fn: {
+    addItem: (item: Item) => void;
+    setCursor: (cursor: OptionalCursor) => void;
+    incCursor: () => void;
+    decCursor: () => void;
+    addGroup: () => void;
+  };
 }
 
 const OrderContext = React.createContext<OrderContextProps | null>(null);
@@ -53,7 +57,8 @@ const keepOrTrailIdx = (curIdx: number, curLen: number) => {
 
 const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
   const addItem = (item: Item) => {
-    setState(({ cursor, list }) => {
+    setState((state) => {
+      const { cursor, list } = state.data;
       const orderItem: OrderItem = { ...item, qty: 1 };
 
       const targetGroup = list[cursor.onGroup];
@@ -105,7 +110,7 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
   };
   const incCursor = () => {
     setState((state) => {
-      const { cursor, list } = state;
+      const { cursor, list } = state.data;
       if (cursor.onItem === undefined) {
         return state;
       }
@@ -136,7 +141,7 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
   };
   const decCursor = () => {
     setState((state) => {
-      const { cursor, list } = state;
+      const { cursor, list } = state.data;
       if (cursor.onItem === undefined) {
         return state;
       }
@@ -153,6 +158,22 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       if (item.qty < 2) {
+        // qty 1, remove item
+
+        if (targetGroup.length < 2) {
+          const trailingGroupIdx =
+            keepOrTrailIdx(curGroupIdx, list.length) ?? 0;
+          const nextGroup = list[trailingGroupIdx];
+          return {
+            ...state,
+            list: list.filter((_, gk) => gk !== curGroupIdx),
+            cursor: {
+              onGroup: trailingGroupIdx,
+              onItem: nextGroup ? nextGroup.length - 1 : undefined,
+              onOption: undefined,
+            },
+          };
+        }
         return {
           ...state,
           list: list.map((group, gk) => {
@@ -168,6 +189,7 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
         };
       }
 
+      //   qty > 1
       return {
         ...state,
         list: list.map((group, gk) => {
@@ -186,26 +208,16 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
   };
   const addGroup = () => {
     setState((state) => {
-      const { cursor, list } = state;
-      const { onGroup } = cursor;
+      const cleanList = state.data.list.filter((group) => group.length !== 0);
 
-      const curGroup = list[onGroup];
-
-      // will not occur if cursor is managed properly
-      if (!curGroup) {
-        return state;
-      }
-
-      // no need to add new group, use curGroup
-      if (curGroup.length === 0) {
-        return state;
-      }
-
-      //   list: new Map(list).set(cursor.onGroup, [...targetGroup, orderItem]),
       return {
         ...state,
-        cursor: { onGroup: 0, onItem: undefined, onOption: undefined },
-        // list: new Map(list).set(),
+        list: [...cleanList, []],
+        cursor: {
+          onGroup: cleanList.length,
+          onItem: undefined,
+          onOption: undefined,
+        },
       };
     });
   };
@@ -215,17 +227,21 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
   //   const delCursor =
 
   const initState: OrderContextProps = {
-    list: new Array<OrderItem[]>(),
-    cursor: {
-      onGroup: 0,
-      onItem: undefined,
-      onOption: undefined,
+    data: {
+      list: new Array<OrderItem[]>(),
+      cursor: {
+        onGroup: 0,
+        onItem: undefined,
+        onOption: undefined,
+      },
     },
-    addItem: addItem,
-    setCursor: setCursor,
-    incCursor: incCursor,
-    decCursor: decCursor,
-    addGroup: addGroup,
+    fn: {
+      addItem: addItem,
+      setCursor: setCursor,
+      incCursor: incCursor,
+      decCursor: decCursor,
+      addGroup: addGroup,
+    },
   };
 
   const [state, setState] = useState<OrderContextProps>(initState);
