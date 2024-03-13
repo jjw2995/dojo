@@ -43,7 +43,7 @@ import { cn } from "~/components/lib/utils";
 import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { OrderContextProvider, useOrder } from "./order-list-context";
+import { OrderContextProvider, useOrder } from "./orderListContext";
 
 type Category = RouterOutputs["category"]["get"][number];
 
@@ -71,12 +71,13 @@ export default function OrderView({
               <TitleOrderInfo orderMode={orderMode} />
             </DialogTitle>
           </DialogHeader>
-          <div className="flex h-screen max-w-full flex-col rounded-none lg:flex-row">
-            <div className="h-[50%] lg:h-full lg:w-[40%]">
+          {/* come back werid lg screen */}
+          <div className="flex h-full max-w-full flex-col rounded-none lg:flex-row">
+            <div className="h-[20rem] lg:h-full lg:w-[40%]">
               <OrderList className="h-[75%] lg:h-[70%]" />
               <ActionButtons />
             </div>
-            <CategoryList className="flex h-[50%] overflow-y-scroll bg-secondary lg:mt-0 lg:h-full lg:flex-1" />
+            <CategoryList className="flex h-[20rem] overflow-y-scroll bg-secondary lg:mt-0 lg:h-full lg:flex-1" />
           </div>
         </OrderContextProvider>
       </DialogContent>
@@ -142,7 +143,7 @@ function OrderList({ className }: { className?: string }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {Array.from(order.list).map(([nm, listGroup], gk) => {
+          {order.list.map((listGroup, gk) => {
             return listGroup.map((item, ik) => {
               console.log(onGroup === gk, onItem === ik);
 
@@ -192,6 +193,7 @@ function OrderList({ className }: { className?: string }) {
 function ActionButtons({ className }: { className?: string }) {
   const isScreenLg = useIsScreenLg();
   const [isOpen, setOpen] = useState(false);
+  const order = useOrder();
 
   useEffect(() => {
     if (isScreenLg) {
@@ -204,19 +206,29 @@ function ActionButtons({ className }: { className?: string }) {
   return (
     <div className={cn("bg-background pt-2 lg:relative lg:p-2", className)}>
       <div className="grid grid-cols-5 gap-2">
-        <Button className="md:h-[3rem] md:text-2xl">
+        <Button disabled className="md:h-[3rem] md:text-2xl">
           <X />
         </Button>
-        <Button className="md:h-[3rem] md:text-2xl">
+        <Button
+          onClick={() => {
+            order.decCursor();
+          }}
+          className="md:h-[3rem] md:text-2xl"
+        >
           <Minus />
         </Button>
-        <Button className="md:h-[3rem] md:text-2xl">
+        <Button
+          onClick={() => {
+            order.incCursor();
+          }}
+          className="md:h-[3rem] md:text-2xl"
+        >
           <Plus />
         </Button>
-        <Button className="md:h-[3rem] md:text-2xl">
+        <Button disabled className="md:h-[3rem] md:text-2xl">
           <SplitSquareVertical />
         </Button>
-        <Button className="md:h-[3rem] md:text-2xl">
+        <Button disabled className="md:h-[3rem] md:text-2xl">
           <NotebookPen />
         </Button>
       </div>
@@ -225,12 +237,24 @@ function ActionButtons({ className }: { className?: string }) {
         className="fixed left-0 right-0 z-10 justify-center px-6 lg:static lg:px-0"
       >
         <Collapsible.Content className="relative grid grid-cols-2 gap-2 border-b-2 bg-background pt-2 data-[state=open]:pb-2 lg:static lg:border-0">
-          <Button className="md:h-[3rem] md:text-2xl">split</Button>
-          <Button className="md:h-[3rem] md:text-2xl">bill</Button>
-          <Button className="md:h-[3rem] md:text-2xl">payment</Button>
-          <Button className="md:h-[3rem] md:text-2xl">price edit</Button>
-          <Button className="md:h-[3rem] md:text-2xl">discount</Button>
-          <Button className="md:h-[3rem] md:text-2xl">table info</Button>
+          <Button disabled className="md:h-[3rem] md:text-2xl">
+            Split
+          </Button>
+          <Button disabled className="md:h-[3rem] md:text-2xl">
+            Bill
+          </Button>
+          <Button disabled className="md:h-[3rem] md:text-2xl">
+            Payment
+          </Button>
+          <Button disabled className="md:h-[3rem] md:text-2xl">
+            Price Edit
+          </Button>
+          <Button disabled className="md:h-[3rem] md:text-2xl">
+            Discount
+          </Button>
+          <Button disabled className="md:h-[3rem] md:text-2xl">
+            Save Order
+          </Button>
         </Collapsible.Content>
         <div className="flex justify-center">
           <Collapsible.Trigger

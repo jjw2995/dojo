@@ -6,7 +6,9 @@ type Category = RouterOutputs["category"]["get"][number];
 type Item = Category["items"][number];
 
 type OrderItem = Item & { qty: number };
-type OrderList = Map<number, OrderItem[]>;
+type OrderList = Array<OrderItem[]>;
+
+let a: OrderList;
 
 type Cursor = {
   onGroup: number;
@@ -24,26 +26,24 @@ interface OrderContextProps {
   cursor: Cursor;
   addItem: (item: Item) => void;
   setCursor: (cursor: OptionalCursor) => void;
+  incCursor: () => void;
+  decCursor: () => void;
+  addGroup: () => void;
 }
 
-// ??? do i want to init null and do checks elsewhere? or just hack myway here?
-const OrderContext = React.createContext<OrderContextProps>({
-  list: new Map<number, OrderItem[]>(),
-  cursor: {
-    onGroup: 0,
-    onItem: -1,
-    onOption: -1,
-  },
-  addItem: (item: Item) => {
-    return 0;
-  },
-  setCursor: (cursor: OptionalCursor) => {
-    return 0;
-  },
-});
+const OrderContext = React.createContext<OrderContextProps | null>(null);
 
-// const OrderContext = React.createContext<OrderContextProps | null>(null);
+const keepOrTrailIdx = (curIdx: number, curLen: number) => {
+  if (curLen === 0) {
+    return;
+  }
+  if (curIdx + 1 < curLen) {
+    return curIdx;
+  }
+  return curIdx - 1;
+};
 
+// do walk here?
 // const cursorOps = (cursor: Cursor) => {
 //   const setItemIdx = (itemIdx: number): Cursor => {
 //     return { ...cursor, onItem: itemIdx };
@@ -56,24 +56,33 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
     setState(({ cursor, list }) => {
       const orderItem: OrderItem = { ...item, qty: 1 };
 
-      const targetGroup = list.get(cursor.onGroup);
+      const targetGroup = list[cursor.onGroup];
 
       if (targetGroup) {
         return {
           ...state,
-          list: new Map(list).set(cursor.onGroup, [...targetGroup, orderItem]),
-          cursor: { ...cursor, onItem: targetGroup.length },
+          list: list.map((itemList, i) => {
+            if (i !== cursor.onGroup) {
+              return itemList;
+            } else {
+              return [...itemList, orderItem];
+            }
+          }),
+          cursor: {
+            ...cursor,
+            onItem: targetGroup.length,
+            onOption: undefined,
+          },
         };
       } else {
         return {
           ...state,
-          list: new Map(list).set(cursor.onGroup, [orderItem]),
-          cursor: { ...cursor, onItem: 0 },
+          list: [...list, [orderItem]],
+          cursor: { ...cursor, onItem: 0, onOption: undefined },
         };
       }
     });
   };
-
   const setCursor = ({
     onGroup,
     onItem,
@@ -94,16 +103,129 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
       };
     });
   };
+  const incCursor = () => {
+    setState((state) => {
+      const { cursor, list } = state;
+      if (cursor.onItem === undefined) {
+        return state;
+      }
+      const targetGroup = list[cursor.onGroup];
+      if (!targetGroup) {
+        return state;
+      }
+      const item = targetGroup[cursor.onItem];
+      if (!item) {
+        return state;
+      }
 
-  const initState = {
-    list: new Map<number, OrderItem[]>(),
+      return {
+        ...state,
+        list: list.map((group, gk) => {
+          if (gk !== cursor.onGroup) {
+            return group;
+          }
+          return group.map((item, ik) => {
+            if (ik !== cursor.onItem) {
+              return item;
+            }
+            return { ...item, qty: item.qty + 1 };
+          });
+        }),
+      };
+    });
+  };
+  const decCursor = () => {
+    setState((state) => {
+      const { cursor, list } = state;
+      if (cursor.onItem === undefined) {
+        return state;
+      }
+      const curItemIdx = cursor.onItem;
+      const curGroupIdx = cursor.onGroup;
+
+      const targetGroup = list[curGroupIdx];
+      if (!targetGroup) {
+        return state;
+      }
+      const item = targetGroup[curItemIdx];
+      if (!item) {
+        return state;
+      }
+
+      if (item.qty < 2) {
+        return {
+          ...state,
+          list: list.map((group, gk) => {
+            if (gk !== cursor.onGroup) {
+              return group;
+            }
+            return group.filter((_, ik) => curItemIdx !== ik);
+          }),
+          cursor: {
+            ...cursor,
+            onItem: keepOrTrailIdx(curItemIdx, targetGroup.length),
+          },
+        };
+      }
+
+      return {
+        ...state,
+        list: list.map((group, gk) => {
+          if (gk !== curGroupIdx) {
+            return group;
+          }
+          return group.map((item, ik) => {
+            if (ik !== cursor.onItem) {
+              return item;
+            }
+            return { ...item, qty: item.qty - 1 };
+          });
+        }),
+      };
+    });
+  };
+  const addGroup = () => {
+    setState((state) => {
+      const { cursor, list } = state;
+      const { onGroup } = cursor;
+
+      const curGroup = list[onGroup];
+
+      // will not occur if cursor is managed properly
+      if (!curGroup) {
+        return state;
+      }
+
+      // no need to add new group, use curGroup
+      if (curGroup.length === 0) {
+        return state;
+      }
+
+      //   list: new Map(list).set(cursor.onGroup, [...targetGroup, orderItem]),
+      return {
+        ...state,
+        cursor: { onGroup: 0, onItem: undefined, onOption: undefined },
+        // list: new Map(list).set(),
+      };
+    });
+  };
+
+  const addMemo = () => {};
+
+  //   const delCursor =
+
+  const initState: OrderContextProps = {
+    list: new Array<OrderItem[]>(),
     cursor: {
       onGroup: 0,
-      onItem: -1,
-      onOption: -1,
+      onItem: undefined,
+      onOption: undefined,
     },
     addItem: addItem,
     setCursor: setCursor,
+    incCursor: incCursor,
+    decCursor: decCursor,
+    addGroup: addGroup,
   };
 
   const [state, setState] = useState<OrderContextProps>(initState);
@@ -113,6 +235,12 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-const useOrder = () => useContext(OrderContext);
+const useOrder = () => {
+  const c = useContext(OrderContext);
+  if (!c) {
+    throw new Error("orderContext not initialized");
+  }
+  return c;
+};
 
 export { OrderContextProvider, useOrder };
