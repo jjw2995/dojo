@@ -44,7 +44,7 @@ import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { OrderContextProvider, useOrder } from "./orderListContext";
-import { OrderInfoContextProvider } from "./orderInfoContext";
+import { OrderInfoContextProvider, useOrderInfo } from "./orderInfoContext";
 
 type Category = RouterOutputs["category"]["get"][number];
 
@@ -88,41 +88,55 @@ export default function OrderView({
   );
 }
 
-type OrderInfoInput = { orderMode: OrderType; orderName: string };
-
 function TitleOrderInfo({ orderMode }: { orderMode: OrderType }) {
-  const form = useForm<OrderInfoInput>({ defaultValues: { orderMode } });
+  const orderInfo = useOrderInfo();
+  //   console.log(orderInfo.tableName);
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="ghost" className="text-xl">
-          TOGO: Sean 1253
+          {orderMode.toUpperCase()}: {orderInfo.tableName}
         </Button>
       </DialogTrigger>
-      <DialogContent className="flex w-full max-w-md rounded-none sm:max-w-[425px] sm:rounded-lg">
+      <DialogContent className="w-full max-w-md rounded-none sm:max-w-[425px] sm:rounded-lg">
         <DialogHeader>
-          <DialogTitle>TOGO: Sean</DialogTitle>
+          <DialogTitle>Table Info</DialogTitle>
+          {/* <DialogTitle>Create Group</DialogTitle>
+          <DialogDescription>
+            Name your new group.
+            <br />
+            Click create when you&aposre done.
+          </DialogDescription> */}
         </DialogHeader>
-        <form
-          id="createGroupForm"
-          className=""
-          //   onSubmit={form.handleSubmit(onSubmit)}
-        >
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="orderName" className="text-right">
-                Name
-              </Label>
-              <Input
-                id="orderName"
-                className="col-span-3"
-                placeholder="Starbucks Downtown"
-                {...form.register("orderName", { required: true })}
-              />
-            </div>
+
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="orderMode" className="text-right">
+              OrderMode
+            </Label>
+            <Input
+              id="orderMode"
+              className="col-span-3"
+              disabled
+              value={orderMode}
+            />
           </div>
-        </form>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="orderName" className="text-right">
+              Name
+            </Label>
+            <Input
+              id="orderName"
+              className="col-span-3"
+              placeholder="uber #2145"
+              value={orderInfo.tableName}
+              onChange={(e) => {
+                orderInfo.fn.setTableName(e.target.value);
+              }}
+            />
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -130,10 +144,10 @@ function TitleOrderInfo({ orderMode }: { orderMode: OrderType }) {
 
 function OrderList({ className }: { className?: string }) {
   const order = useOrder();
-  const { onGroup, onItem, onOption } = order.data.cursor;
-  const { cursor, list } = order.data;
-  console.log(list);
-  console.log(cursor);
+  const { cursor, list } = order;
+  const { onGroup, onItem, onOption } = cursor;
+  //   console.log(list);
+  //   console.log(cursor);
 
   return (
     // https://github.com/shadcn-ui/ui/issues/1151

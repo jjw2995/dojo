@@ -4,10 +4,11 @@ import React, { useContext, useState } from "react";
 // type Category = RouterOutputs["category"]["get"][number];
 
 interface OrderInfoContextProps {
-  data: {
-    tableName: string;
-  };
+  tableName: string;
   //   decCursor: () => void;
+  fn: {
+    setTableName: (name: string) => void;
+  };
 }
 
 const OrderInfoContext = React.createContext<OrderInfoContextProps | null>(
@@ -19,10 +20,16 @@ const OrderInfoContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const setTableName = (name: string) => {
+    setState((prev) => {
+      return { ...prev, tableName: name };
+    });
+  };
+
   const initState: OrderInfoContextProps = {
-    // addGroup: addGroup,
-    data: {
-      tableName: "",
+    tableName: "",
+    fn: {
+      setTableName,
     },
   };
 
