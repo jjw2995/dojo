@@ -45,15 +45,15 @@ export default function Page({ params }: { params: { storeId: string } }) {
         setTabParam(value);
       }}
     >
-      <div className="sticky top-0 flex justify-center bg-background pt-2 lg:pt-4">
-        <TabsList className=" w-full lg:w-96">
-          <TabsTrigger className="text-xl lg:text-2xl" value="table" disabled>
+      <div className="sticky top-0 flex justify-center bg-background pt-2 md:pt-4">
+        <TabsList className=" w-full md:w-96">
+          <TabsTrigger className="text-xl md:text-2xl" value="table" disabled>
             table
           </TabsTrigger>
-          <TabsTrigger className="text-xl lg:text-2xl" value="togo">
+          <TabsTrigger className="text-xl md:text-2xl" value="togo">
             togo
           </TabsTrigger>
-          <TabsTrigger className="text-xl lg:text-2xl" value="all">
+          <TabsTrigger className="text-xl md:text-2xl" value="all">
             all
           </TabsTrigger>
         </TabsList>

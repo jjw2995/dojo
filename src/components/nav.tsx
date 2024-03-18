@@ -19,14 +19,14 @@ export default function Nav({
   }
 
   return (
-    <div className="flex lg:flex-row-reverse">
-      <div className="w-full lg:mx-8">{children}</div>
-      <div className="fixed bottom-0 z-20 flex w-[100%] justify-around bg-background p-4 text-sm font-medium leading-4 tracking-tight text-muted-foreground decoration-2 underline-offset-2 lg:relative lg:bottom-auto lg:flex lg:w-auto lg:flex-col lg:justify-normal lg:space-y-8 lg:p-6 lg:text-lg lg:leading-4">
+    <div className="flex md:flex-row-reverse">
+      <div className="w-full md:mx-4">{children}</div>
+      <div className="fixed bottom-0 z-20 flex w-[100%] justify-around bg-background p-4 text-sm font-medium leading-4 tracking-tight text-muted-foreground decoration-2 underline-offset-2 md:relative md:bottom-auto md:flex md:w-auto md:flex-col md:justify-normal md:space-y-8 md:p-6 md:text-lg md:leading-4">
         <Link
           className={`flex flex-col items-center text-center`}
           href={`/stores`}
         >
-          <Store className="lg:h-8 lg:w-8" />
+          <Store className="md:h-8 md:w-8" />
           stores
         </Link>
 
@@ -42,7 +42,7 @@ export default function Nav({
           }`}
           href={`/stores/${storeId}/order`}
         >
-          <ClipboardPen className="lg:h-8 lg:w-8" />
+          <ClipboardPen className="md:h-8 md:w-8" />
           order
         </Link>
         <Link
@@ -51,7 +51,7 @@ export default function Nav({
           }`}
           href={`/stores/${storeId}/kitchen`}
         >
-          <CookingPot className="lg:h-8 lg:w-8" />
+          <CookingPot className="md:h-8 md:w-8" />
           cook
         </Link>
         <Link
@@ -60,7 +60,7 @@ export default function Nav({
           }`}
           href={`/stores/${storeId}/items`}
         >
-          <Soup className="lg:h-8 lg:w-8" />
+          <Soup className="md:h-8 md:w-8" />
           items
         </Link>
       </div>

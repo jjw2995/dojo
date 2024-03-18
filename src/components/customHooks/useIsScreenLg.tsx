@@ -15,5 +15,5 @@ export default function useIsScreenLg() {
     };
   }, []);
 
-  return width >= 1024;
+  return width >= 768;
 }

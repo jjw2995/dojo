@@ -53,7 +53,7 @@ export default function Categories() {
         className="no-scrollbar max-h-screen flex-1 overflow-auto"
         type="multiple"
       >
-        <div className="relative mb-20  md:mb-0 lg:mx-4">
+        <div className="relative mb-20  md:mx-4 md:mb-0">
           {categories.data?.map((category) => {
             return (
               <Category key={`catId_${category.id}`} category={category} />
@@ -62,14 +62,14 @@ export default function Categories() {
         </div>
       </Accordion>
       <CreateCategory />
-      <div className="fixed w-full lg:relative lg:h-screen lg:flex-1 lg:border-l-2">
+      <div className="fixed w-full md:relative md:h-screen md:flex-1 md:border-l-2">
         <RenderOne
           componentArr={[
             createID && <CreateItem categoryId={createID} />,
             itemId && <ItemView itemId={itemId} />,
           ]}
           fallback={
-            <div className="center hidden h-screen items-center justify-center lg:flex">
+            <div className="center hidden h-screen items-center justify-center md:flex">
               <span className="text-5xl font-semibold text-slate-300">
                 Nothing
               </span>
@@ -175,14 +175,14 @@ function CreateCategory() {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <Button className="fixed bottom-[6rem] right-[1rem] h-[3rem] w-[3rem] -translate-x-1/2 rounded-full p-2 lg:bottom-[2rem] lg:right-[47%]">
+        <Button className="fixed bottom-[6rem] right-[1rem] h-[3rem] w-[3rem] -translate-x-1/2 rounded-full p-2 md:bottom-[2rem] md:right-[47%]">
           <Plus />
         </Button>
       </Dialog.Trigger>
 
       <Dialog.Portal>
         <Dialog.Overlay />
-        <Dialog.Content className="text-text fixed left-1/2 top-1/2 z-10 w-[20rem] -translate-x-1/2 -translate-y-1/2 rounded-sm bg-background p-2 outline lg:left-1/4">
+        <Dialog.Content className="text-text fixed left-1/2 top-1/2 z-10 w-[20rem] -translate-x-1/2 -translate-y-1/2 rounded-sm bg-background p-2 outline md:left-1/4">
           <Dialog.Title className="text-center">Add Category</Dialog.Title>
           <form className="py-2" onSubmit={form.handleSubmit(onSubmit)}>
             <Input

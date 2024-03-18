@@ -68,12 +68,12 @@ export default function OrderView({
               </DialogTitle>
             </DialogHeader>
             {/* come back werid lg screen */}
-            <div className="flex h-full max-w-full flex-col rounded-none lg:flex-row">
-              <div className="h-[20rem] lg:h-full lg:w-[40%]">
-                <OrderList className="h-[75%] lg:h-[70%]" />
+            <div className="flex h-full max-w-full flex-col rounded-none md:flex-row">
+              <div className="h-[20rem] md:h-full md:w-[45%]">
+                <OrderList className="h-[75%] md:h-[70%]" />
                 <ActionButtons type={orderMode} />
               </div>
-              <CategoryList className="flex h-[20rem] overflow-y-scroll bg-secondary lg:mt-0 lg:h-full lg:flex-1" />
+              <CategoryList className="flex h-[20rem] overflow-y-scroll bg-secondary md:mt-0 md:h-full md:flex-1" />
             </div>
           </OrderContextProvider>
         </OrderInfoContextProvider>
@@ -210,7 +210,7 @@ function ActionButtons({
   }, [isScreenLg]);
 
   return (
-    <div className={cn("bg-background pt-2 lg:relative lg:p-2", className)}>
+    <div className={cn("bg-background pt-2 md:relative md:p-2", className)}>
       <div className="grid grid-cols-5 gap-2">
         <Button disabled className="md:h-[3rem] md:text-2xl">
           <X />
@@ -245,9 +245,9 @@ function ActionButtons({
       </div>
       <Collapsible.Root
         open={isOpen}
-        className="fixed left-0 right-0 z-10 justify-center px-6 lg:static lg:px-0"
+        className="fixed left-0 right-0 z-10 justify-center px-6 md:static md:px-0"
       >
-        <Collapsible.Content className="relative grid grid-cols-2 gap-2 border-b-2 bg-background pt-2 data-[state=open]:pb-2 lg:static lg:border-0">
+        <Collapsible.Content className="relative grid grid-cols-2 gap-2 border-b-2 bg-background pt-2 data-[state=open]:pb-2 md:static md:border-0">
           <Button disabled className="md:h-[3rem] md:text-2xl">
             Split
           </Button>
@@ -283,7 +283,7 @@ function ActionButtons({
             onClick={() => {
               setOpen((r) => !r);
             }}
-            className="rounded-b-full bg-background data-[state=open]:fixed data-[state=open]:h-screen data-[state=open]:w-screen data-[state=open]:bg-slate-600 data-[state=open]:opacity-20 lg:hidden [&[data-state=open]>svg]:rotate-180"
+            className="rounded-b-full bg-background data-[state=open]:fixed data-[state=open]:h-screen data-[state=open]:w-screen data-[state=open]:bg-slate-600 data-[state=open]:opacity-20 md:hidden [&[data-state=open]>svg]:rotate-180"
           >
             <ChevronDown className="h-8 w-8" />
           </Collapsible.Trigger>
@@ -303,7 +303,7 @@ const CategoryList = forwardRef<
   return (
     <div className={className} ref={ref} {...props}>
       <Accordion className="no-scrollbar flex-1" type="multiple">
-        <div className="relative md:mb-0 lg:mx-4">
+        <div className="relative md:mx-4 md:mb-0">
           {categories.data?.map((category) => {
             return (
               <Category key={`catId_${category.id}`} category={category} />

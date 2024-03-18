@@ -2,6 +2,24 @@
 
 cloud POS for your stores bootstrapped with [T3 Stack](https://create.t3.gg/)
 
+This app is to be used as a typical point of sales (POS) software
+
+### Which tech stack
+
+[T3 Stack](https://create.t3.gg/) with Drizzle, Tailwind, NextAuth, ShadcnUI
+
+### With whoom?
+
+- all by myself, from design to development
+
+### how long?
+
+design took 2 months, development ~ 2 months
+
+### goal
+
+It will be considered sucessful if acquaintance's sandwich shop (that does not use a POS) uses this software to manage rush-hour orders
+
 ## MVP scope
 
 <!--
