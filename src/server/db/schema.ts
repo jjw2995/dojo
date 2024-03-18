@@ -1,9 +1,11 @@
 import { relations, sql } from "drizzle-orm";
 import {
   bigint,
+  char,
   decimal,
   index,
   int,
+  json,
   mysqlEnum,
   mysqlTableCreator,
   primaryKey,
@@ -13,6 +15,8 @@ import {
   varchar,
 } from "drizzle-orm/mysql-core";
 import { type AdapterAccount } from "next-auth/adapters";
+import { orderItemListSchema } from "../customTypes";
+// import { OrderItem } from "../customTypes";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -22,22 +26,22 @@ import { type AdapterAccount } from "next-auth/adapters";
  */
 export const mysqlTable = mysqlTableCreator((name) => `dojo_${name}`);
 
-export const posts = mysqlTable(
-  "post",
-  {
-    id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-    name: varchar("name", { length: 256 }),
-    createdById: varchar("createdById", { length: 255 }).notNull(),
-    createdAt: timestamp("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updatedAt").onUpdateNow(),
-  },
-  (example) => ({
-    createdByIdIdx: index("createdById_idx").on(example.createdById),
-    nameIndex: index("name_idx").on(example.name),
-  }),
-);
+// export const posts = mysqlTable(
+//   "post",
+//   {
+//     id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+//     name: varchar("name", { length: 256 }),
+//     createdById: varchar("createdById", { length: 255 }).notNull(),
+//     createdAt: timestamp("created_at")
+//       .default(sql`CURRENT_TIMESTAMP`)
+//       .notNull(),
+//     updatedAt: timestamp("updatedAt").onUpdateNow(),
+//   },
+//   (example) => ({
+//     createdByIdIdx: index("createdById_idx").on(example.createdById),
+//     nameIndex: index("name_idx").on(example.name),
+//   }),
+// );
 
 export const users = mysqlTable("user", {
   id: varchar("id", { length: 255 }).notNull().primaryKey(),
@@ -113,6 +117,8 @@ export const verificationTokens = mysqlTable(
 );
 
 // ===============================
+// ===============================
+// ===============================
 
 export const members = mysqlTable(
   "member",
@@ -128,6 +134,7 @@ export const members = mysqlTable(
     compoundKey: primaryKey(member.userId, member.storeId),
   }),
 );
+
 export const membersRelations = relations(members, ({ one }) => ({
   user: one(users, { fields: [members.userId], references: [users.id] }),
   store: one(stores, { fields: [members.storeId], references: [stores.id] }),
@@ -179,7 +186,9 @@ export const itemTable = mysqlTable("item", {
   name: varchar("name", { length: 256 }).notNull(),
   storeId: int("storeId").notNull(),
   categoryId: int("categoryId").notNull(),
-  price: decimal("price").$type<number>().notNull(),
+  price: decimal("price", { precision: 10, scale: 0 })
+    .$type<number>()
+    .notNull(),
   // options ? db relation M-M
   // taxes ? db relation M-M
 });
@@ -249,7 +258,9 @@ export const taxTable = mysqlTable("tax", {
   id: serial("id").primaryKey(),
   storeId: int("storeId").notNull(),
   name: varchar("name", { length: 256 }).notNull(),
-  percent: decimal("percent").$type<number>().notNull(),
+  percent: decimal("percent", { precision: 10, scale: 0 })
+    .$type<number>()
+    .notNull(),
 });
 export const taxesRelations = relations(taxTable, ({ many }) => ({
   itemsToTaxes: many(itemToTaxTable),
@@ -275,6 +286,22 @@ export const itemsToTaxesRelations = relations(itemToTaxTable, ({ one }) => ({
     references: [taxTable.id],
   }),
 }));
+// orderItemList
+
+export const orderTable = mysqlTable("order", {
+  id: serial("id").primaryKey(),
+  storeId: int("storeId").notNull(),
+  dedupeId: bigint("dedupeId", { mode: "number" }).notNull(),
+  list: json("list").$type<typeof orderItemListSchema._type>(),
+  type: mysqlEnum("type", ["TABLE", "TOGO", "ONLINE"]),
+  //   type: char("type", { length: 32 }).notNull(),
+  name: varchar("name", { length: 256 }).notNull(),
+  createdById: varchar("createdById", { length: 255 }).notNull(),
+  createdAt: timestamp("created_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updatedAt").onUpdateNow(),
+});
 
 /**
  *

@@ -15,9 +15,6 @@ import {
   itemToTaxTable,
 } from "~/server/db/schema";
 
-type Category = typeof categoryTable.$inferSelect;
-type Item = typeof itemTable.$inferSelect;
-
 export const categoryRouter = createTRPCRouter({
   create: passcodeProcedure
     .input(z.object({ name: z.string().min(1) }))
@@ -28,12 +25,11 @@ export const categoryRouter = createTRPCRouter({
     }),
 
   get: memberProcedure.query(async ({ ctx }) => {
-    // ctx.db.transaction(async (tx) => {
-
-    // });
     const dbCategories = await ctx.db.query.categoryTable.findMany({
+      columns: { storeId: false },
       with: {
         items: {
+          columns: { categoryId: false, storeId: false },
           with: {
             itemsToTaxes: { with: { tax: { columns: { storeId: false } } } },
             itemsToStations: {
