@@ -220,7 +220,7 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
-  const addMemo = () => {};
+  //   const addMemo = () => {};
 
   const initState: OrderContextProps = {
     list: new Array<OrderItem[]>(),

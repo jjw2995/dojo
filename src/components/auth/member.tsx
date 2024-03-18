@@ -22,7 +22,7 @@ export default function MemberAuth({
     if (isMember === false) {
       router.push("/stores");
     }
-  }, [isLoading, router]);
+  }, [isLoading, router, isMember]);
 
   if (isLoading || !isMember) {
     return <Loading />;

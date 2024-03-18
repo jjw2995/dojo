@@ -5,7 +5,7 @@ import {
   memberProcedure,
   passcodeProcedure,
 } from "~/server/api/trpc";
-import { db as DB } from "~/server/db";
+import { type db as DB } from "~/server/db";
 import {
   itemTable,
   itemToStationTable,

@@ -10,11 +10,7 @@ import {
 import { orderItemListSchema } from "~/server/customTypes";
 import {
   stationTable,
-  categoryTable,
   itemToStationTable,
-  itemTable,
-  taxTable,
-  itemToTaxTable,
   orderTable,
 } from "~/server/db/schema";
 

@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 
 import { ClipboardPen, CookingPot, Soup, Store } from "lucide-react";
 
-const navRoutes = ["order", "kitchen", "categories"];
+// const navRoutes = ["order", "kitchen", "categories"];
 
 export default function Nav({
   children,

@@ -196,7 +196,7 @@ function ActionButtons({
   const orderCreate = api.order.create.useMutation({
     onSuccess: () => {
       // order.fn.clearList()
-      utils.order.getTogoOrders.invalidate();
+      void utils.order.getTogoOrders.invalidate();
     },
   });
   //   console.log(order.list);

@@ -10,9 +10,6 @@ import {
   stationTable,
   categoryTable,
   itemToStationTable,
-  itemTable,
-  taxTable,
-  itemToTaxTable,
 } from "~/server/db/schema";
 
 export const categoryRouter = createTRPCRouter({
