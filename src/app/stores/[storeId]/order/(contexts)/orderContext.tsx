@@ -1,14 +1,19 @@
 import React, { useContext, useState } from "react";
+import { orderItemListSchema, orderItemSchema } from "~/server/customTypes";
 import { RouterOutputs } from "~/trpc/shared";
+
+type OrderItem = typeof orderItemSchema._type;
 
 type Category = RouterOutputs["category"]["get"][number];
 
+// TODO: replace with db def in the future
+// type Option = { description: string; price: number; id: string };
+
 type Item = Category["items"][number];
+// type Item = Category["items"][number] & { options?: Option[] };
 
-type OrderItem = Item & { qty: number };
-type OrderList = Array<OrderItem[]>;
-
-let a: OrderList;
+// export type OrderList = Array<OrderItem[]>;
+type OrderList = typeof orderItemListSchema._type;
 
 type Cursor = {
   onGroup: number;
@@ -45,19 +50,14 @@ const keepOrTrailIdx = (curIdx: number, curLen: number) => {
   return curIdx - 1;
 };
 
-// do walk here?
-// const cursorOps = (cursor: Cursor) => {
-//   const setItemIdx = (itemIdx: number): Cursor => {
-//     return { ...cursor, onItem: itemIdx };
-//   };
-//   return { setItemIdx };
-// };
-
 const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
   const addItem = (item: Item) => {
     setState((state) => {
       const { cursor, list } = state;
-      const orderItem: OrderItem = { ...item, qty: 1 };
+      const stations = item.stations.map((st) => {
+        return { ...st, isDone: false };
+      });
+      const orderItem: OrderItem = { ...item, stations, options: [], qty: 1 };
 
       const targetGroup = list[cursor.onGroup];
       //   console.log(item, orderItem, targetGroup);
@@ -158,8 +158,6 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       if (item.qty < 2) {
-        // qty 1, remove item
-
         if (targetGroup.length < 2) {
           const trailingGroupIdx =
             keepOrTrailIdx(curGroupIdx, list.length) ?? 0;
@@ -223,8 +221,6 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const addMemo = () => {};
-
-  //   const delCursor =
 
   const initState: OrderContextProps = {
     list: new Array<OrderItem[]>(),

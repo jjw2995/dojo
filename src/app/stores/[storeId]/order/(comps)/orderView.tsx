@@ -3,7 +3,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -30,7 +29,6 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -42,25 +40,21 @@ import { RouterOutputs } from "~/trpc/shared";
 import { cn } from "~/components/lib/utils";
 import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { OrderContextProvider, useOrder } from "./orderListContext";
-import { OrderInfoContextProvider, useOrderInfo } from "./orderInfoContext";
+import { OrderContextProvider, useOrder } from "../(contexts)/orderContext";
+import {
+  OrderInfoContextProvider,
+  useOrderInfo,
+} from "../(contexts)/orderInfoContext";
+import { type orderMode } from "~/components/enums";
 
 type Category = RouterOutputs["category"]["get"][number];
-
-type Item = Category["items"][number];
-
-type OrderItem = Item & { qty: number };
-type OrderList = Map<number, OrderItem[]>;
-
-type OrderType = "togo" | "table";
 
 export default function OrderView({
   children,
   orderMode,
 }: {
   children: React.ReactNode;
-  orderMode: OrderType;
+  orderMode: orderMode;
 }) {
   return (
     <Dialog>
@@ -77,7 +71,7 @@ export default function OrderView({
             <div className="flex h-full max-w-full flex-col rounded-none lg:flex-row">
               <div className="h-[20rem] lg:h-full lg:w-[40%]">
                 <OrderList className="h-[75%] lg:h-[70%]" />
-                <ActionButtons />
+                <ActionButtons type={orderMode} />
               </div>
               <CategoryList className="flex h-[20rem] overflow-y-scroll bg-secondary lg:mt-0 lg:h-full lg:flex-1" />
             </div>
@@ -88,9 +82,8 @@ export default function OrderView({
   );
 }
 
-function TitleOrderInfo({ orderMode }: { orderMode: OrderType }) {
+function TitleOrderInfo({ orderMode }: { orderMode: orderMode }) {
   const orderInfo = useOrderInfo();
-  //   console.log(orderInfo.tableName);
 
   return (
     <Dialog>
@@ -102,12 +95,6 @@ function TitleOrderInfo({ orderMode }: { orderMode: OrderType }) {
       <DialogContent className="w-full max-w-md rounded-none sm:max-w-[425px] sm:rounded-lg">
         <DialogHeader>
           <DialogTitle>Table Info</DialogTitle>
-          {/* <DialogTitle>Create Group</DialogTitle>
-          <DialogDescription>
-            Name your new group.
-            <br />
-            Click create when you&aposre done.
-          </DialogDescription> */}
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
@@ -146,8 +133,6 @@ function OrderList({ className }: { className?: string }) {
   const order = useOrder();
   const { cursor, list } = order;
   const { onGroup, onItem, onOption } = cursor;
-  //   console.log(list);
-  //   console.log(cursor);
 
   return (
     // https://github.com/shadcn-ui/ui/issues/1151
@@ -163,43 +148,32 @@ function OrderList({ className }: { className?: string }) {
         </TableHeader>
         <TableBody>
           {list.map((listGroup, gk) => {
-            return listGroup.map((item, ik) => {
-              return (
-                <React.Fragment key={`${gk}_${ik}`}>
-                  <TableRow
-                    onClick={(e) => {
-                      order.fn.setCursor({ onGroup: gk, onItem: ik });
-                    }}
-                    className={`${
-                      onGroup === gk && onItem === ik ? "bg-muted" : ""
-                    }`}
-                    // data-selected={
-                    //   onGroup === gk && onItem === ik ? "selected" : ""
-                    // }
-                  >
-                    <TableCell>{ik}</TableCell>
-                    <TableCell className="border-l">{item.name}</TableCell>
-                    <TableCell>{item.qty}</TableCell>
-                    <TableCell className="text-right">
-                      ${item.price.toFixed(2)}
-                    </TableCell>
-                  </TableRow>
-                  {/* {[0, 1].map((r, i) => {
-                          return (
-                            <TableRow key={`${gk}_${ik}_${i}`}>
-                              <TableCell></TableCell>
-                              <TableCell className="border-l">
-                                {item.name}
-                                {i}
-                              </TableCell>
-                              <TableCell></TableCell>
-                              <TableCell className="text-right"></TableCell>
-                            </TableRow>
-                          );
-                        })} */}
-                </React.Fragment>
-              );
-            });
+            return (
+              <React.Fragment key={`subgroup_${gk}`}>
+                {listGroup.map((item, ik) => {
+                  return (
+                    <React.Fragment key={`item_${ik}`}>
+                      <TableRow
+                        onClick={(e) => {
+                          order.fn.setCursor({ onGroup: gk, onItem: ik });
+                        }}
+                        data-first={ik === 0}
+                        data-even={gk % 2 === 0}
+                        data-selected={onGroup === gk && onItem === ik}
+                        className="data-[even=true]:bg-yellow-10 border-t-slate-500 data-[first=true]:border-t-2 data-[selected=true]:bg-muted"
+                      >
+                        <TableCell>{ik}</TableCell>
+                        <TableCell className="border-l">{item.name}</TableCell>
+                        <TableCell>{item.qty}</TableCell>
+                        <TableCell className="text-right">
+                          ${item.price.toFixed(2)}
+                        </TableCell>
+                      </TableRow>
+                    </React.Fragment>
+                  );
+                })}
+              </React.Fragment>
+            );
           })}
         </TableBody>
       </Table>
@@ -207,10 +181,25 @@ function OrderList({ className }: { className?: string }) {
   );
 }
 
-function ActionButtons({ className }: { className?: string }) {
+function ActionButtons({
+  className,
+  type,
+}: {
+  className?: string;
+  type: orderMode;
+}) {
   const isScreenLg = useIsScreenLg();
   const [isOpen, setOpen] = useState(false);
   const order = useOrder();
+  const info = useOrderInfo();
+  const utils = api.useUtils();
+  const orderCreate = api.order.create.useMutation({
+    onSuccess: () => {
+      // order.fn.clearList()
+      utils.order.getTogoOrders.invalidate();
+    },
+  });
+  //   console.log(order.list);
 
   useEffect(() => {
     if (isScreenLg) {
@@ -274,7 +263,17 @@ function ActionButtons({ className }: { className?: string }) {
           <Button disabled className="md:h-[3rem] md:text-2xl">
             Discount
           </Button>
-          <Button disabled className="md:h-[3rem] md:text-2xl">
+          <Button
+            onClick={() => {
+              void orderCreate.mutate({
+                dedupeId: Date.now(),
+                list: order.list,
+                name: info.tableName,
+                type,
+              });
+            }}
+            className="md:h-[3rem] md:text-2xl"
+          >
             Save Order
           </Button>
         </Collapsible.Content>
@@ -299,6 +298,7 @@ const CategoryList = forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, children, ...props }, ref) => {
   const categories = api.category.get.useQuery();
+  //   console.log(categories.data);
 
   return (
     <div className={className} ref={ref} {...props}>
