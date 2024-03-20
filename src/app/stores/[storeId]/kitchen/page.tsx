@@ -1,179 +1,224 @@
 "use client";
 
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import * as Dialog from "@radix-ui/react-dialog";
-import * as Select from "@radix-ui/react-select";
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { api } from "~/trpc/react";
 import type { RouterOutputs } from "~/trpc/shared";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { MoreVertical, Plus } from "lucide-react";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
 
 type stationType = RouterOutputs["station"]["get"][number];
+type StationInput = { stationName: string };
+
+const QPARAM = "stationId";
+
 export default function Page() {
-  // { params }: { params: { storeId: string } }
-  const [curStation, setCurStation] = useState<stationType | null>(null);
-  // const station = api.station.get.useQuery(undefined, {
-  //   enabled: curStationId !== null,
-  // });
+  const orders = api.order.getOrders.useQuery();
 
-  const setCurrentStation = (station: stationType) => {
-    setCurStation(station);
-  };
-
-  const setStationNull = () => {
-    setCurStation(null);
-  };
+  //   console.log(orders.data);
 
   return (
-    <div className="mx-[5%] my-[2%] flex flex-row justify-between text-2xl">
-      <StationSelect setStation={setCurrentStation}>
-        {curStation?.name}
-      </StationSelect>
+    <div>
+      <div className="m-4 flex flex-row justify-between text-2xl">
+        <StationSelect />
+        <StationMenu />
+      </div>
 
-      {curStation ? (
-        <StationMenu
-          stationId={curStation.id}
-          setStationNull={setStationNull}
-        />
-      ) : null}
+      <div className=""></div>
     </div>
   );
 }
 
-type Input = { stationName: string };
+function useQueryParam() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const stationId = searchParams.get(QPARAM);
 
-function Create() {
-  const [open, setOpen] = useState(false);
-  const form = useForm<Input>();
+  function resetQueryParam() {
+    router.replace(pathname);
+  }
+
+  function setQueryParam(val: string) {
+    router.replace(`${pathname}?${QPARAM}=${val}`);
+  }
+
+  return { resetQueryParam, setQueryParam, stationId };
+}
+
+function StationSelect() {
+  const useQP = useQueryParam();
+  const stations = api.station.get.useQuery();
+  const [isOpen, setIsOpen] = useState(false);
+  const [value, setValue] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!useQP.stationId) {
+      setValue(null);
+    }
+  }, [useQP.stationId]);
+
+  function setSelectValue(val: string) {
+    setValue(() => {
+      if (val === "_") {
+        useQP.resetQueryParam();
+        return null;
+      }
+      useQP.setQueryParam(val);
+      return val;
+    });
+  }
+
+  return (
+    <>
+      <Select
+        onValueChange={(value) => {
+          setSelectValue(value);
+        }}
+        defaultValue="_"
+      >
+        <SelectTrigger className="font-semibol w-[180px] text-xl">
+          <SelectValue placeholder="station">
+            {value && stations.data
+              ? stations.data.find((r) => r.id === Number(value))?.name
+              : "All"}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="_">All</SelectItem>
+          {stations.data?.map((station) => {
+            return (
+              <SelectItem key={station.id} value={`${station.id}`}>
+                {station.name}
+              </SelectItem>
+            );
+          })}
+          <div
+            className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm text-muted-foreground outline-none"
+            onClick={() => {
+              setIsOpen(true);
+            }}
+          >
+            + add station
+          </div>
+        </SelectContent>
+      </Select>
+      <Create isOpen={isOpen} setIsOpen={setIsOpen} />
+    </>
+  );
+}
+
+function Create({
+  isOpen,
+  setIsOpen,
+}: {
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+}) {
+  const form = useForm<StationInput>();
   const stationCreate = api.station.create.useMutation();
   const utils = api.useUtils();
-  const onSubmit: SubmitHandler<Input> = (data) => {
+  const onSubmit: SubmitHandler<StationInput> = (data) => {
     stationCreate.mutate(
       { name: data.stationName },
       {
         onSuccess() {
           void utils.station.get.invalidate();
           form.reset();
-          setOpen(false);
+          setIsOpen(false);
         },
       },
     );
   };
 
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger asChild>
-        <button className="m-2 p-2 text-xl">+</button>
-      </Dialog.Trigger>
-
-      <Dialog.Portal>
-        <Dialog.Overlay />
-        <Dialog.Content className="text-text fixed left-[50%] top-[50%] z-10 w-[70%] translate-x-[-50%] translate-y-[-50%] rounded-sm bg-background p-2 outline">
-          <Dialog.Title>add station</Dialog.Title>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <input
-              className="text-black"
-              placeholder="Station Name"
-              {...form.register("stationName", { required: true })}
-            />
-            <div className="m-2 flex flex-row justify-around">
-              <button className="p-2 outline" type="submit">
-                create
-              </button>
-              <Dialog.Close asChild>
-                <button className="p-2 outline">cancel</button>
-              </Dialog.Close>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogContent className="w-full max-w-md">
+        <DialogHeader>
+          <DialogTitle>Create Station</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="stationName" className="text-right">
+                Name
+              </Label>
+              <Input
+                className="col-span-3"
+                id="stationName"
+                placeholder="Station Name"
+                {...form.register("stationName", { required: true })}
+              />
             </div>
-          </form>
-          <Dialog.Description />
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+          </div>
+        </form>
+        <DialogFooter className="justify-center gap-2">
+          <DialogClose asChild>
+            <Button variant="destructive">cancel</Button>
+          </DialogClose>
+          <Button type="submit">create</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
-function StationMenu({
-  stationId,
-  setStationNull,
-}: {
-  stationId: number;
-  setStationNull: () => void;
-}) {
+// function StationMenu({ stationId }: { stationId: number }) {
+function StationMenu() {
+  const useQP = useQueryParam();
   const util = api.useUtils();
   const d = api.station.delete.useMutation({
     onSuccess: async () => {
       await util.station.get.invalidate();
+      useQP.resetQueryParam();
     },
   });
 
-  return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger>...</DropdownMenu.Trigger>
+  if (!useQP.stationId) return null;
 
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content>
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <MoreVertical />
+      </DropdownMenuTrigger>
+
+      <DropdownMenuPortal>
+        <DropdownMenuContent align="end">
           {/* <DropdownMenu.Arrow className="fill-white" /> */}
-          <DropdownMenu.Item
+          <DropdownMenuItem
             onClick={() => {
-              d.mutate({ stationId });
-              setStationNull();
+              d.mutate({ stationId: Number(useQP.stationId) });
             }}
           >
             delete
-          </DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
-  );
-}
-
-function StationSelect({
-  setStation,
-  children,
-}: {
-  setStation: (station: stationType) => void;
-  children?: React.ReactNode;
-}) {
-  const kitchen = api.station.get.useQuery();
-
-  return (
-    <Select.Root
-      onValueChange={(stationId) => {
-        const a = kitchen.data?.find(({ id }) => {
-          return id === Number(stationId);
-        });
-        if (a) {
-          setStation(a);
-        }
-      }}
-    >
-      <Select.Trigger asChild>
-        <div className="underline underline-offset-4">
-          {children ? children : kitchen.data ? "select" : "create"}
-          {/* <Select.Value placeholder={kitchen.data ? "select" : "create"} /> */}
-        </div>
-      </Select.Trigger>
-
-      <Select.Portal>
-        <Select.Content>
-          <Select.ScrollUpButton />
-          <Select.Viewport>
-            <Create></Create>
-            {kitchen.data?.map((val, idx) => {
-              return (
-                <Select.Item value={String(val.id)} key={idx}>
-                  <Select.ItemText>{val.name}</Select.ItemText>
-                </Select.Item>
-              );
-            })}
-
-            <Select.Separator />
-          </Select.Viewport>
-          <Select.ScrollDownButton />
-          {/* <Select.Arrow /> */}
-        </Select.Content>
-      </Select.Portal>
-    </Select.Root>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenuPortal>
+    </DropdownMenu>
   );
 }

@@ -4,7 +4,7 @@ import { type ChangeEvent, useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { api } from "~/trpc/react";
 import Taxes from "./taxes";
-import { RouterOutputs } from "~/trpc/shared";
+import { type RouterOutputs } from "~/trpc/shared";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Button } from "~/components/ui/button";
@@ -166,7 +166,7 @@ function PrintTo({ toggleStation }: { toggleStation: (obj: Station) => void }) {
               name=""
               // className="h-6 w-6"
               id={v.id.toString()}
-              onClick={(e) => {
+              onClick={() => {
                 toggleStation(v);
               }}
             />

@@ -45,8 +45,8 @@ export default function Page({ params }: { params: { storeId: string } }) {
         setTabParam(value);
       }}
     >
-      <div className="sticky top-0 flex justify-center bg-background pt-2 md:pt-4">
-        <TabsList className=" w-full md:w-96">
+      <div className="sticky top-0 flex justify-center bg-background pt-2 md:py-4">
+        <TabsList className="w-full md:w-96">
           <TabsTrigger className="text-xl md:text-2xl" value="table" disabled>
             table
           </TabsTrigger>

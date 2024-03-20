@@ -32,6 +32,17 @@ export const orderRouter = createTRPCRouter({
       });
     }),
 
+  getOrders: memberProcedure.query(async ({ ctx }) => {
+    return await ctx.db
+      .select()
+      .from(orderTable)
+      .where(
+        and(eq(orderTable.isPaid, false), eq(orderTable.storeId, ctx.storeId)),
+      )
+      .orderBy(orderTable.createdAt)
+      .limit(100);
+  }),
+
   getTogoOrders: memberProcedure.query(async ({ ctx }) => {
     return await ctx.db
       .select()

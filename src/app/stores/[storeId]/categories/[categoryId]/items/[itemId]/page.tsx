@@ -13,15 +13,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
-import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { Label } from "~/components/ui/label";
-// import Link from "next/link";
 import { api } from "~/trpc/react";
 import { RouterOutputs } from "~/trpc/shared";
 import Options from "../../../../items/(comps)/options";
@@ -112,7 +109,7 @@ function ItemMenu({
   );
 }
 
-function Delete({ itemId, className }: { itemId: string; className?: string }) {
+function Delete({ itemId }: { itemId: string }) {
   const deleteItem = api.item.delete.useMutation();
 
   return (

@@ -20,13 +20,13 @@ type OrderList = RouterOutputs["order"]["getTogoOrders"];
 type Order = OrderList[number];
 
 export default function Togo() {
-  const togoOrder = api.order.getTogoOrders.useQuery();
+  const togoOrders = api.order.getTogoOrders.useQuery();
 
   return (
     <div className="mx-4 mb-[6rem]">
-      <div className="space-y-2">
-        {togoOrder.data?.map((order) => {
-          return <Order order={order} key={order.id} />;
+      <div className="grid gap-2 lg:grid-cols-3 xl:grid-cols-4">
+        {togoOrders.data?.map((order, ind) => {
+          return <Order order={order} key={`${order.id}_${ind}`} />;
         })}
       </div>
       <OrderView orderMode="TOGO">

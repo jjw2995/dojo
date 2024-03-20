@@ -28,7 +28,11 @@ function getTimeString(date: Date) {
   const dayOfWeek = days[date.getDay()];
   //   const monthOfYear = months[month];
 
-  return `${year}/${month + 1}/${day} ${dayOfWeek} ${
+  //   return `${year}/${month + 1}/${day} ${dayOfWeek} ${
+  //     isPm ? hour - 12 : hour
+  //   }:${minutes} ${isPm ? "PM" : "AM"}`;
+
+  return `${month + 1}/${day} ${dayOfWeek} ${
     isPm ? hour - 12 : hour
   }:${minutes} ${isPm ? "PM" : "AM"}`;
 }

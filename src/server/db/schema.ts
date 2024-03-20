@@ -1,6 +1,7 @@
 import { relations, sql } from "drizzle-orm";
 import {
   bigint,
+  boolean,
   char,
   decimal,
   index,
@@ -294,7 +295,7 @@ export const orderTable = mysqlTable("order", {
   dedupeId: bigint("dedupeId", { mode: "number" }).notNull(),
   list: json("list").$type<typeof orderItemListSchema._type>(),
   type: mysqlEnum("type", ["TABLE", "TOGO", "ONLINE"]),
-  //   type: char("type", { length: 32 }).notNull(),
+  isPaid: boolean("isPaid").default(false),
   name: varchar("name", { length: 256 }).notNull(),
   createdById: varchar("createdById", { length: 255 }).notNull(),
   createdAt: timestamp("created_at")

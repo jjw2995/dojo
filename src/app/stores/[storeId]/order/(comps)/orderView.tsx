@@ -73,7 +73,7 @@ export default function OrderView({
                 <OrderList className="h-[75%] md:h-[70%]" />
                 <ActionButtons type={orderMode} />
               </div>
-              <CategoryList className="flex h-[20rem] overflow-y-scroll bg-secondary md:mt-0 md:h-full md:flex-1" />
+              <CategoryList className="flex h-[20rem] overflow-y-scroll md:mt-0 md:h-full md:flex-1" />
             </div>
           </OrderContextProvider>
         </OrderInfoContextProvider>

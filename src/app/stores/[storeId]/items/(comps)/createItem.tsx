@@ -162,7 +162,7 @@ function PrintTo({ toggleStation }: { toggleStation: (obj: Station) => void }) {
               name=""
               // className="h-6 w-6"
               id={v.id.toString()}
-              onClick={(e) => {
+              onClick={() => {
                 toggleStation(v);
               }}
             />

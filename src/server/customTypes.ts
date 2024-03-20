@@ -15,7 +15,7 @@ const taxSchema = z.object({
 const stationSchema = z.object({
   id: z.number(),
   name: z.string(),
-  isDone: z.boolean(),
+  isDone: z.boolean().default(false),
 });
 
 const orderItemSchema = z.object({
@@ -23,6 +23,7 @@ const orderItemSchema = z.object({
   name: z.string(),
   price: z.number(),
   qty: z.number(),
+  isPaid: z.boolean().default(false),
   stations: z.array(stationSchema),
   taxes: z.array(taxSchema),
   options: z.array(optionSchema),

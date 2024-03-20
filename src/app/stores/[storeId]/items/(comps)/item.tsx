@@ -13,7 +13,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
-import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -121,7 +120,7 @@ function ItemMenu({
   );
 }
 
-function Delete({ itemId, className }: { itemId: string; className?: string }) {
+function Delete({ itemId }: { itemId: string }) {
   const deleteItem = api.item.delete.useMutation();
 
   return (
