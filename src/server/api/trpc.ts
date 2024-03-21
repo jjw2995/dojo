@@ -10,7 +10,7 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import { type NextRequest } from "next/server";
 import superjson from "superjson";
-import { ZodError, z } from "zod";
+import { ZodError } from "zod";
 
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
@@ -138,7 +138,7 @@ export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
 // check store member OR admin
 export const memberProcedure = protectedProcedure
   // .input(z.object({ storeId: z.string().optional() }))
-  .use(async ({ ctx, next, input }) => {
+  .use(async ({ ctx, next }) => {
     const urlArr = ctx.headers.get("referer")?.split("/");
 
     const storesIndex = urlArr?.findIndex((v) => {

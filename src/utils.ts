@@ -1,17 +1,17 @@
-const months = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-] as const;
+// const months = [
+//   "Jan",
+//   "Feb",
+//   "Mar",
+//   "Apr",
+//   "May",
+//   "Jun",
+//   "Jul",
+//   "Aug",
+//   "Sep",
+//   "Oct",
+//   "Nov",
+//   "Dec",
+// ] as const;
 
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
 
@@ -21,7 +21,7 @@ function getTimeString(date: Date) {
 
   const isPm = hour > 12;
 
-  const year = date.getFullYear();
+  //   const year = date.getFullYear();
   const month = date.getMonth();
   const day = date.getDate();
 

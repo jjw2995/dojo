@@ -33,7 +33,7 @@ const orderItemListSchema = z.array(z.array(orderItemSchema));
 
 // type OrderItem = typeof orderItemSchema._type;
 
-const orderTypeSchema = z.enum(["TABLE", "TODO", "ONLINe"]);
+const orderTypeSchema = z.enum(["TABLE", "TODO", "ONLINE"]);
 
 export {
   taxSchema,

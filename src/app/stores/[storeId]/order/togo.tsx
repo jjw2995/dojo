@@ -6,13 +6,11 @@ import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
 import {
   Card,
-  CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { RouterOutputs } from "~/trpc/shared";
+import { type RouterOutputs } from "~/trpc/shared";
 import { getTimeString } from "~/utils";
 
 // RouterOutputs

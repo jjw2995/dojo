@@ -1,11 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { stores, members } from "~/server/db/schema";
 
 export const storeRouter = createTRPCRouter({

@@ -2,7 +2,6 @@ import { relations, sql } from "drizzle-orm";
 import {
   bigint,
   boolean,
-  char,
   decimal,
   index,
   int,

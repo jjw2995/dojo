@@ -31,6 +31,14 @@ import {
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 
 type stationType = RouterOutputs["station"]["get"][number];
 type StationInput = { stationName: string };
@@ -38,18 +46,47 @@ type StationInput = { stationName: string };
 const QPARAM = "stationId";
 
 export default function Page() {
-  const orders = api.order.getOrders.useQuery();
-
-  //   console.log(orders.data);
-
   return (
-    <div>
-      <div className="m-4 flex flex-row justify-between text-2xl">
+    <div className="flex h-screen flex-col">
+      <div className="flex flex-row justify-between p-4 text-2xl">
         <StationSelect />
         <StationMenu />
       </div>
+      <OrderList />
+    </div>
+  );
+}
 
-      <div className=""></div>
+function OrderList() {
+  const orders = api.order.getOrders.useQuery();
+
+  //   <div className="my-2 grid flex-1 grid-cols-4 grid-rows-2 gap-4">
+  //   {[0, 1, 2, 3, 4, 5].map((r) => {
+  //     return (
+  //       <Card key={r} className="h- basis-1/4">
+
+  return (
+    <div className="grid snap-x grid-flow-col grid-rows-1 gap-4 overflow-x-scroll px-4 pb-4 md:flex-1 md:grid-flow-row md:grid-cols-4 md:grid-rows-2 md:overflow-hidden">
+      {/* <div className="bg-pink- my-2 grid flex-1 grid-cols-4 grid-rows-2 gap-4"> */}
+      {[0, 1, 2, 3, 4, 5].map((r) => {
+        return (
+          <Card
+            key={r}
+            className="h-[40rem] w-[20rem] snap-center md:h-auto md:w-auto md:basis-1/4"
+          >
+            <CardHeader>
+              <CardTitle>Card Title</CardTitle>
+              <CardDescription>Card Description</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>Card Content</p>
+            </CardContent>
+            <CardFooter>
+              <p>Card Footer</p>
+            </CardFooter>
+          </Card>
+        );
+      })}
     </div>
   );
 }

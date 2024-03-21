@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { orderItemListSchema, orderItemSchema } from "~/server/customTypes";
-import { RouterOutputs } from "~/trpc/shared";
+import { type RouterOutputs } from "~/trpc/shared";
 
 type OrderItem = typeof orderItemSchema._type;
 
@@ -57,7 +57,13 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
       const stations = item.stations.map((st) => {
         return { ...st, isDone: false };
       });
-      const orderItem: OrderItem = { ...item, stations, options: [], qty: 1 };
+      const orderItem: OrderItem = {
+        ...item,
+        stations,
+        options: [],
+        qty: 1,
+        isPaid: false,
+      };
 
       const targetGroup = list[cursor.onGroup];
       //   console.log(item, orderItem, targetGroup);

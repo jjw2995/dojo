@@ -20,7 +20,7 @@ export default function Nav({
 
   return (
     <div className="flex md:flex-row-reverse">
-      <div className="w-full md:mx-4">{children}</div>
+      <div className="mb-20 w-full md:mx-4 md:mb-0">{children}</div>
       <div className="fixed bottom-0 z-20 flex w-[100%] justify-around bg-background p-4 text-sm font-medium leading-4 tracking-tight text-muted-foreground decoration-2 underline-offset-2 md:relative md:bottom-auto md:flex md:w-auto md:flex-col md:justify-normal md:space-y-8 md:p-6 md:text-lg md:leading-4">
         <Link
           className={`flex flex-col items-center text-center`}
