@@ -26,14 +26,19 @@ export const stationRouter = createTRPCRouter({
     .input(z.object({ name: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.transaction(async (tx) => {
-        const { insertId } = await tx
-          .insert(stationTable)
-          .values({ name: input.name, storeId: ctx.storeId });
+        const station = (
+          await tx
+            .insert(stationTable)
+            .values({ name: input.name, storeId: ctx.storeId })
+            .returning()
+        )[0];
+
+        if (!station) return;
 
         return await tx
           .selectDistinct()
           .from(stationTable)
-          .where(eq(stationTable.id, Number(insertId)));
+          .where(eq(stationTable.id, Number(station.id)));
       });
     }),
 
@@ -52,18 +57,18 @@ export const stationRouter = createTRPCRouter({
       });
     }),
 
-  deleteReferenced: passcodeProcedure
-    .input(z.object({ name: z.string().min(1) }))
-    .mutation(async ({ ctx, input }) => {
-      return await ctx.db.transaction(async (tx) => {
-        const { insertId } = await tx
-          .insert(stationTable)
-          .values({ name: input.name, storeId: ctx.storeId });
+  //   deleteReferenced: passcodeProcedure
+  //     .input(z.object({ name: z.string().min(1) }))
+  //     .mutation(async ({ ctx, input }) => {
+  //       return await ctx.db.transaction(async (tx) => {
+  //         const { insertId } = await tx
+  //           .insert(stationTable)
+  //           .values({ name: input.name, storeId: ctx.storeId });
 
-        return await tx
-          .selectDistinct()
-          .from(stationTable)
-          .where(eq(stationTable.id, Number(insertId)));
-      });
-    }),
+  //         return await tx
+  //           .selectDistinct()
+  //           .from(stationTable)
+  //           .where(eq(stationTable.id, Number(insertId)));
+  //       });
+  //     }),
 });

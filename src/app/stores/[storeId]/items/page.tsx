@@ -24,8 +24,8 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { RouterOutputs } from "~/trpc/shared";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import ItemView from "./(comps)/item";
-import CreateItem from "./(comps)/createItem";
+import ItemView from "./item";
+import CreateItem from "./createItem";
 
 type Category = RouterOutputs["category"]["get"][number];
 const QPARAM = {
@@ -91,7 +91,7 @@ function Category({ category }: { category: Category }): React.ReactNode {
       <div className="sticky top-0 bg-background p-2">
         <AccordionTrigger disabled={items.length < 1} asChild>
           <div>
-            {category.id}-{category.name}
+            {category.name}
             <CategoryMenu categoryId={category.id} />
           </div>
         </AccordionTrigger>

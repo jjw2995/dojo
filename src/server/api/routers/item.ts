@@ -69,17 +69,26 @@ export const itemRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const itemId = await ctx.db.transaction(async (tx) => {
-        const { insertId } = await tx.insert(itemTable).values({
-          categoryId: input.categoryId,
-          name: input.itemName,
-          storeId: ctx.storeId,
-          price: input.itemPrice,
-        });
+        const item = (
+          await tx
+            .insert(itemTable)
+            .values({
+              categoryId: input.categoryId,
+              name: input.itemName,
+              storeId: ctx.storeId,
+              price: input.itemPrice,
+            })
+            .returning()
+        )[0];
+
+        if (!item) {
+          return;
+        }
 
         if (input.stationIds.length) {
           await tx.insert(itemToStationTable).values(
             input.stationIds.map((v) => {
-              return { itemId: Number(insertId), stationId: v };
+              return { itemId: Number(item.id), stationId: v };
             }),
           );
         }
@@ -87,11 +96,11 @@ export const itemRouter = createTRPCRouter({
         if (input.taxIds.length) {
           await tx.insert(itemToTaxTable).values(
             input.taxIds.map((v) => {
-              return { itemId: Number(insertId), taxId: v };
+              return { itemId: Number(item.id), taxId: v };
             }),
           );
         }
-        return insertId;
+        return item.id;
       });
 
       return await getItemDetails(ctx.db, Number(itemId));

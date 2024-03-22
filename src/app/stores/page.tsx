@@ -31,7 +31,7 @@ export default function Stores() {
           </div>
 
           <div className="relative overflow-hidden">
-            <div className="m-4 flex h-full w-full flex-col space-y-2">
+            <div className="w- m-4 flex h-full flex-col space-y-2">
               {stores.data ? (
                 stores.data.map(({ store }) => {
                   return (

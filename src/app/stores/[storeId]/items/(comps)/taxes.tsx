@@ -1,5 +1,5 @@
-import * as Dialog from "@radix-ui/react-dialog";
-import * as Tabs from "@radix-ui/react-tabs";
+// import * as Dialog from "@radix-ui/react-dialog";
+// import * as Tabs from "@radix-ui/react-tabs";
 
 // import { Tabs as Tb, TabsContent, TabsList, TabsTrigger } from "~/components/shadcn/tabs"
 import { Checkbox } from "~/components/ui/checkbox";
@@ -23,6 +23,18 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { ScrollArea } from "~/components/ui/scroll-area";
 
 type Tax = RouterOutputs["tax"]["get"][number];
 export default function Taxes({
@@ -33,47 +45,48 @@ export default function Taxes({
   toggledTaxes: Tax[];
 }) {
   return (
-    <Dialog.Root
+    <Dialog
     // open={open}
     // onOpenChange={(isOpen) => {
     //   // abstract dialog & call "confirm close dialog"
     // }}
     >
-      <Dialog.Trigger asChild>
+      <DialogTrigger asChild>
         <Button className=" m-2 p-2">
           <Plus className="h-4 w-4" />
         </Button>
-      </Dialog.Trigger>
-      <Dialog.Portal>
-        <Dialog.Overlay className="z-50">
-          <Dialog.Content className="text-text fixed left-[50%] top-[50%] z-40 h-[70%] w-[90%] translate-x-[-50%] translate-y-[-50%] overflow-hidden rounded-sm bg-white p-2 outline sm:w-96">
-            <Tabs.Root defaultValue="tab1">
-              <p className="text-center">Taxes</p>
-              <Tabs.List className="mb-8 flex justify-around">
-                <Tabs.Trigger
+      </DialogTrigger>
+      <DialogContent className="text-text fixed h-[18rem] w-[90%] overflow-hidden rounded-sm bg-white p-2 outline sm:w-96">
+        <Tabs defaultValue="tab1">
+          <DialogHeader>
+            <DialogTitle>Taxes</DialogTitle>
+            <DialogDescription>
+              {/* <p className="text-center">Taxes</p> */}
+              <TabsList className="mx-8 flex justify-center">
+                <TabsTrigger
                   value="tab1"
                   className="data-[state=active]:underline"
                 >
                   new
-                </Tabs.Trigger>
-                <Tabs.Trigger
+                </TabsTrigger>
+                <TabsTrigger
                   value="tab2"
                   className="data-[state=active]:underline"
                 >
                   assign
-                </Tabs.Trigger>
-              </Tabs.List>
-              <Tabs.Content value="tab1">
-                <TaxCreate />
-              </Tabs.Content>
-              <Tabs.Content value="tab2">
-                <TaxAssign toggleTax={toggleTax} toggledTaxes={toggledTaxes} />
-              </Tabs.Content>
-            </Tabs.Root>
-          </Dialog.Content>
-        </Dialog.Overlay>
-      </Dialog.Portal>
-    </Dialog.Root>
+                </TabsTrigger>
+              </TabsList>
+            </DialogDescription>
+          </DialogHeader>
+          <TabsContent value="tab1">
+            <TaxCreate />
+          </TabsContent>
+          <TabsContent value="tab2">
+            <TaxAssign toggleTax={toggleTax} toggledTaxes={toggledTaxes} />
+          </TabsContent>
+        </Tabs>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -95,32 +108,47 @@ function TaxCreate() {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
-      <div className="space-y-4">
-        <div className="flex flex-col">
-          <Label htmlFor="">Tax Name</Label>
+    <>
+      <form
+        className="grid gap-4 py-4"
+        id="taxCreate"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="taxName" className="text-right">
+            Name
+          </Label>
           <Input
+            id="taxName"
             placeholder="tax name"
             type="text"
+            className="col-span-3"
             {...form.register("taxName", { required: true })}
           />
         </div>
-        <div className="">
-          <Label htmlFor="">Tax Percentage</Label>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="taxPercent" className="text-right">
+            Tax %
+          </Label>
           <Input
+            id="taxPercent"
             placeholder="tax percent"
             type="number"
+            className="col-span-3"
             {...form.register("taxPercent", {
               required: true,
               min: 0,
             })}
           />
         </div>
-        <div className="flex justify-center">
-          <Button type="submit">create tax</Button>
-        </div>
-      </div>
-    </form>
+        {/* </div> */}
+      </form>
+      <DialogFooter className="justify-center gap-2 pt-8">
+        <Button type="submit" form="taxCreate">
+          create tax
+        </Button>
+      </DialogFooter>
+    </>
   );
 }
 
@@ -136,46 +164,48 @@ function TaxAssign({
 
   return (
     <div>
-      {taxes.data?.map((v) => {
-        return (
-          <div key={v.id}>
-            <Checkbox
-              onCheckedChange={() => {
-                toggleTax(v);
-              }}
-              id={"tax" + v.id}
-              checked={!!toggledTaxes.find((r) => r.id === v.id)}
-            />
-            <Label htmlFor={"tax" + v.id}>
-              {v.name} - {v.percent}
-            </Label>
+      <ScrollArea className="h-36 w-full flex-1 rounded-md border">
+        {taxes.data?.map((v) => {
+          return (
+            <div key={v.id}>
+              <Checkbox
+                onCheckedChange={() => {
+                  toggleTax(v);
+                }}
+                id={"tax" + v.id}
+                checked={!!toggledTaxes.find((r) => r.id === v.id)}
+              />
+              <Label htmlFor={"tax" + v.id}>
+                {v.name} - {v.percent}
+              </Label>
 
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button className="m-2 rounded p-2 outline">delete</Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent className="w-80">
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    All items referencing this tax will be affected.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => {
-                      deleteTax.mutate({ taxId: Number(v.id) });
-                    }}
-                  >
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        );
-      })}
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button className="m-2 rounded p-2 outline">delete</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="w-80">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      All items referencing this tax will be affected.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        deleteTax.mutate({ taxId: Number(v.id) });
+                      }}
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          );
+        })}
+      </ScrollArea>
     </div>
   );
 }

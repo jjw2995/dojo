@@ -23,7 +23,7 @@ import { Label } from "~/components/ui/label";
 // import Link from "next/link";
 import { api } from "~/trpc/react";
 import { RouterOutputs } from "~/trpc/shared";
-import Options from "./options";
+import Options from "./(comps)/options";
 import { Input } from "~/components/ui/input";
 
 type Details = RouterOutputs["item"]["get"];

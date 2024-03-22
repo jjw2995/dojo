@@ -1,21 +1,15 @@
 import { relations, sql } from "drizzle-orm";
-import {
-  bigint,
-  boolean,
-  decimal,
-  index,
-  int,
-  json,
-  mysqlEnum,
-  mysqlTableCreator,
-  primaryKey,
-  serial,
-  text,
-  timestamp,
-  varchar,
-} from "drizzle-orm/mysql-core";
+
 import { type AdapterAccount } from "next-auth/adapters";
 import { orderItemListSchema } from "../customTypes";
+import {
+  index,
+  integer,
+  primaryKey,
+  real,
+  sqliteTableCreator,
+  text,
+} from "drizzle-orm/sqlite-core";
 // import { OrderItem } from "../customTypes";
 
 /**
@@ -24,12 +18,13 @@ import { orderItemListSchema } from "../customTypes";
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const mysqlTable = mysqlTableCreator((name) => `dojo_${name}`);
+
+export const sqliteTable = sqliteTableCreator((name) => `dojo_${name}`);
 
 // export const posts = mysqlTable(
 //   "post",
 //   {
-//     id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+//     id: biginteger("id",{mode:"number"}, { mode: "number" }).primaryKey().autoincrement(),
 //     name: varchar("name", { length: 256 }),
 //     createdById: varchar("createdById", { length: 255 }).notNull(),
 //     createdAt: timestamp("created_at")
@@ -43,15 +38,12 @@ export const mysqlTable = mysqlTableCreator((name) => `dojo_${name}`);
 //   }),
 // );
 
-export const users = mysqlTable("user", {
-  id: varchar("id", { length: 255 }).notNull().primaryKey(),
-  name: varchar("name", { length: 255 }),
-  email: varchar("email", { length: 255 }).notNull(),
-  emailVerified: timestamp("emailVerified", {
-    mode: "date",
-    fsp: 3,
-  }).default(sql`CURRENT_TIMESTAMP(3)`),
-  image: varchar("image", { length: 255 }),
+export const users = sqliteTable("user", {
+  id: text("id").notNull().primaryKey(),
+  name: text("name"),
+  email: text("email").notNull(),
+  emailVerified: integer("emailVerified", { mode: "timestamp_ms" }),
+  image: text("image"),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -59,26 +51,29 @@ export const usersRelations = relations(users, ({ many }) => ({
   members: many(members),
 }));
 
-export const accounts = mysqlTable(
+export const accounts = sqliteTable(
   "account",
   {
-    userId: varchar("userId", { length: 255 }).notNull(),
-    type: varchar("type", { length: 255 })
-      .$type<AdapterAccount["type"]>()
-      .notNull(),
-    provider: varchar("provider", { length: 255 }).notNull(),
-    providerAccountId: varchar("providerAccountId", { length: 255 }).notNull(),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: text("type").$type<AdapterAccount["type"]>().notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
     refresh_token: text("refresh_token"),
     access_token: text("access_token"),
-    expires_at: int("expires_at"),
-    token_type: varchar("token_type", { length: 255 }),
-    scope: varchar("scope", { length: 255 }),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
+    scope: text("scope"),
     id_token: text("id_token"),
-    session_state: varchar("session_state", { length: 255 }),
+    session_state: text("session_state"),
   },
   (account) => ({
     compoundKey: primaryKey(account.provider, account.providerAccountId),
-    userIdIdx: index("userId_idx").on(account.userId),
+    userIdIdx: index("accounts_userId_idx").on(account.userId),
+    // compoundKey: primaryKey({
+    //     columns: [account.provider, account.providerAccountId],
+    //   }),
   }),
 );
 
@@ -86,17 +81,15 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
   user: one(users, { fields: [accounts.userId], references: [users.id] }),
 }));
 
-export const sessions = mysqlTable(
+export const sessions = sqliteTable(
   "session",
   {
-    sessionToken: varchar("sessionToken", { length: 255 })
-      .notNull()
-      .primaryKey(),
-    userId: varchar("userId", { length: 255 }).notNull(),
-    expires: timestamp("expires", { mode: "date" }).notNull(),
+    sessionToken: text("sessionToken", { length: 255 }).notNull().primaryKey(),
+    userId: text("userId", { length: 255 }).notNull(),
+    expires: integer("expires", { mode: "timestamp" }).notNull(),
   },
   (session) => ({
-    userIdIdx: index("userId_idx").on(session.userId),
+    userIdIdx: index("sessions_userId_idx").on(session.userId),
   }),
 );
 
@@ -104,12 +97,12 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, { fields: [sessions.userId], references: [users.id] }),
 }));
 
-export const verificationTokens = mysqlTable(
+export const verificationTokens = sqliteTable(
   "verificationToken",
   {
-    identifier: varchar("identifier", { length: 255 }).notNull(),
-    token: varchar("token", { length: 255 }).notNull(),
-    expires: timestamp("expires", { mode: "date" }).notNull(),
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: integer("expires", { mode: "timestamp_ms" }).notNull(),
   },
   (vt) => ({
     compoundKey: primaryKey(vt.identifier, vt.token),
@@ -120,12 +113,12 @@ export const verificationTokens = mysqlTable(
 // ===============================
 // ===============================
 
-export const members = mysqlTable(
+export const members = sqliteTable(
   "member",
   {
-    userId: varchar("userId", { length: 255 }).notNull(),
-    storeId: int("storeId").notNull(),
-    authority: mysqlEnum("authority", ["owner", "manager", "member"])
+    userId: text("userId", { length: 255 }).notNull(),
+    storeId: integer("storeId", { mode: "number" }).notNull(),
+    authority: text("authority", { enum: ["owner", "manager", "member"] })
       .notNull()
       .default("member"),
     // separate entity "role" [server, cook, etc.], for tip, maybe
@@ -140,9 +133,9 @@ export const membersRelations = relations(members, ({ one }) => ({
   store: one(stores, { fields: [members.storeId], references: [stores.id] }),
 }));
 
-export const stores = mysqlTable("store", {
-  id: serial("id").primaryKey().autoincrement(),
-  name: varchar("name", { length: 256 }).notNull(),
+export const stores = sqliteTable("store", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  name: text("name", { length: 256 }).notNull(),
   // location: str || geohash
   // tax
 });
@@ -152,10 +145,10 @@ export const storesRelations = relations(stores, ({ many }) => ({
   categories: many(categoryTable),
 }));
 
-export const categoryTable = mysqlTable("category", {
-  id: serial("id").primaryKey(),
-  storeId: int("storeId").notNull(),
-  name: varchar("name", { length: 256 }).notNull(),
+export const categoryTable = sqliteTable("category", {
+  id: integer("id", { mode: "number" }).primaryKey(),
+  storeId: integer("storeId", { mode: "number" }).notNull(),
+  name: text("name", { length: 256 }).notNull(),
 });
 export const categoriesRelations = relations(
   categoryTable,
@@ -168,10 +161,10 @@ export const categoriesRelations = relations(
   }),
 );
 
-export const stationTable = mysqlTable("station", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 256 }).notNull(),
-  storeId: int("storeId").notNull(),
+export const stationTable = sqliteTable("station", {
+  id: integer("id", { mode: "number" }).primaryKey(),
+  name: text("name", { length: 256 }).notNull(),
+  storeId: integer("storeId", { mode: "number" }).notNull(),
 });
 export const stationsRelations = relations(stationTable, ({ many, one }) => ({
   itemsToStations: many(itemToStationTable),
@@ -181,14 +174,12 @@ export const stationsRelations = relations(stationTable, ({ many, one }) => ({
   }),
 }));
 
-export const itemTable = mysqlTable("item", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 256 }).notNull(),
-  storeId: int("storeId").notNull(),
-  categoryId: int("categoryId").notNull(),
-  price: decimal("price", { precision: 10, scale: 0 })
-    .$type<number>()
-    .notNull(),
+export const itemTable = sqliteTable("item", {
+  id: integer("id", { mode: "number" }).primaryKey(),
+  name: text("name", { length: 256 }).notNull(),
+  storeId: integer("storeId", { mode: "number" }).notNull(),
+  categoryId: integer("categoryId", { mode: "number" }).notNull(),
+  price: real("price").$type<number>().notNull(),
   // options ? db relation M-M
   // taxes ? db relation M-M
 });
@@ -202,9 +193,9 @@ export const itemsRelations = relations(itemTable, ({ many, one }) => ({
   }),
 }));
 
-export const optionTable = mysqlTable("option", {
-  id: serial("id").primaryKey(),
-  itemId: int("itemId").notNull(),
+export const optionTable = sqliteTable("option", {
+  id: integer("id", { mode: "number" }).primaryKey(),
+  itemId: integer("itemId", { mode: "number" }).notNull(),
 });
 export const optionsRelations = relations(optionTable, ({ many, one }) => ({
   item: one(itemTable, {
@@ -214,9 +205,9 @@ export const optionsRelations = relations(optionTable, ({ many, one }) => ({
   optionElements: many(optionElementTable),
 }));
 
-export const optionElementTable = mysqlTable("optionElement", {
-  id: serial("id").primaryKey(),
-  optionId: int("optionId").notNull(),
+export const optionElementTable = sqliteTable("optionElement", {
+  id: integer("id", { mode: "number" }).primaryKey(),
+  optionId: integer("optionId", { mode: "number" }).notNull(),
 });
 export const optionElementsRelations = relations(
   optionElementTable,
@@ -228,12 +219,12 @@ export const optionElementsRelations = relations(
   }),
 );
 
-export const itemToStationTable = mysqlTable(
+export const itemToStationTable = sqliteTable(
   "itemToStation",
   {
-    itemId: int("itemId").notNull(),
+    itemId: integer("itemId", { mode: "number" }).notNull(),
     // .references(() => items.id),
-    stationId: int("stationId").notNull(),
+    stationId: integer("stationId", { mode: "number" }).notNull(),
     // .references(() => stations.id),
   },
   (t) => ({
@@ -254,23 +245,21 @@ export const itemsToStationsRelations = relations(
   }),
 );
 
-export const taxTable = mysqlTable("tax", {
-  id: serial("id").primaryKey(),
-  storeId: int("storeId").notNull(),
-  name: varchar("name", { length: 256 }).notNull(),
-  percent: decimal("percent", { precision: 10, scale: 0 })
-    .$type<number>()
-    .notNull(),
+export const taxTable = sqliteTable("tax", {
+  id: integer("id", { mode: "number" }).primaryKey(),
+  storeId: integer("storeId", { mode: "number" }).notNull(),
+  name: text("name", { length: 256 }).notNull(),
+  percent: real("percent").$type<number>().notNull(),
 });
 export const taxesRelations = relations(taxTable, ({ many }) => ({
   itemsToTaxes: many(itemToTaxTable),
 }));
 
-export const itemToTaxTable = mysqlTable(
+export const itemToTaxTable = sqliteTable(
   "itemToTax",
   {
-    itemId: int("itemId").notNull(),
-    taxId: int("taxId").notNull(),
+    itemId: integer("itemId", { mode: "number" }).notNull(),
+    taxId: integer("taxId", { mode: "number" }).notNull(),
   },
   (t) => ({
     pk: primaryKey(t.itemId, t.taxId),
@@ -288,20 +277,26 @@ export const itemsToTaxesRelations = relations(itemToTaxTable, ({ one }) => ({
 }));
 // orderItemList
 
-export const orderTable = mysqlTable("order", {
-  id: serial("id").primaryKey(),
-  storeId: int("storeId").notNull(),
-  dedupeId: bigint("dedupeId", { mode: "number" }).notNull(),
-  list: json("list").$type<typeof orderItemListSchema._type>(),
-  type: mysqlEnum("type", ["TABLE", "TOGO", "ONLINE"]),
-  isPaid: boolean("isPaid").default(false),
-  name: varchar("name", { length: 256 }).notNull(),
-  createdById: varchar("createdById", { length: 255 }).notNull(),
-  createdAt: timestamp("created_at")
+export const orderTable = sqliteTable("order", {
+  id: integer("id", { mode: "number" }).primaryKey(),
+  storeId: integer("storeId", { mode: "number" }).notNull(),
+  dedupeId: integer("dedupeId", { mode: "number" }).notNull(),
+  list: text("list", { mode: "json" }).$type<
+    typeof orderItemListSchema._type
+  >(),
+  type: text("type", { enum: ["TABLE", "TOGO", "ONLINE"] }),
+  isPaid: integer("isPaid", { mode: "boolean" }).default(false),
+  name: text("name", { length: 256 }).notNull(),
+  createdById: text("createdById", { length: 255 }).notNull(),
+  createdAt: integer("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
-  updatedAt: timestamp("updatedAt").onUpdateNow(),
+  //   updatedAt: integer("updatedAt",{mode:"timestamp"}),
 });
+
+// emailVerified: integer("emailVerified", {
+//     mode: "timestamp_ms",
+//   }).default(sql`CURRENT_TIMESTAMP`),
 
 /**
  *

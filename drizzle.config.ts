@@ -2,14 +2,13 @@ import { type Config } from "drizzle-kit";
 
 import { env } from "~/env.mjs";
 
-// https://github.com/planetscale/discussion/discussions/168
-// pscale database dump [database] [branch]
 export default {
   schema: "./src/server/db/schema.ts",
-  out: "./drizzle",
-  driver: "mysql2",
+  out: "../src/server/db/migrations",
+  driver: "turso",
   dbCredentials: {
-    connectionString: env.DATABASE_URL,
+    url: env.DATABASE_URL,
+    authToken: env.DATABASE_SECRET,
   },
   tablesFilter: ["dojo_*"],
 } satisfies Config;

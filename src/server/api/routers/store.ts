@@ -43,18 +43,20 @@ export const storeRouter = createTRPCRouter({
     .input(z.object({ name: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.transaction(async (tx) => {
-        const { insertId } = await tx
-          .insert(stores)
-          .values({ name: input.name });
+        const store = (
+          await tx.insert(stores).values({ name: input.name }).returning()
+        )[0];
+
+        if (!store) {
+          return;
+        }
+
         await tx.insert(members).values({
           userId: ctx.session.user.id,
-          storeId: Number(insertId),
+          storeId: Number(store.id),
           authority: "owner",
         });
-        return await tx
-          .selectDistinct()
-          .from(stores)
-          .where(eq(stores.id, Number(insertId)));
+        return store;
       });
     }),
 

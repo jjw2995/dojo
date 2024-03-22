@@ -69,7 +69,7 @@ export default function OrderView({
             </DialogHeader>
             {/* come back werid lg screen */}
             <div className="flex h-full max-w-full flex-col rounded-none md:flex-row">
-              <div className="h-[20rem] md:h-full md:w-[45%]">
+              <div className="h-[20rem] md:h-[54rem] md:w-[45%]">
                 <OrderList className="h-[75%] md:h-[70%]" />
                 <ActionButtons type={orderMode} />
               </div>
