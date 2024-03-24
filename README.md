@@ -91,8 +91,37 @@ It will be considered sucessful if acquaintance's sandwich shop (that does not u
 
 <details>
 <summary>
+Implementing 2 row staggered wrap-around scroll (WIP)
+</summary>
 
-### Trying to enforce collapsible behavior only on mobile with only CSS</summary>
+### I have a list of orders that kitchen needs to see.
+
+**First**, I wanted to have a desktop view that would be 2 rows, staggered wrap-around scroll, where element leaves from top row right side and enters from bottom left side.
+
+I tried searching for a way to do it with just CSS, but there were only simple 2 row scrollable flexbox that would have top and bottom rows locked together.
+
+As far as I can find, there is no good way to have one flexbox/grid with 2 rows to have a overflowing on the top left side and have overflow on bottom right side.
+
+So 2 separate flexboxes it is.
+
+**Second?** was how to append paginated/new orders to start and end of items, without scroll position change and weird flickers
+
+https://github.com/bvaughn/react-virtualized/blob/HEAD/docs/creatingAnInfiniteLoadingList.md
+
+react virtualized? fibre?
+
+**Thrid?** sync top and bottom scroll to have desired staggered scroll effect.
+
+useRef? intersection observer?
+
+TODO: will comeback to it to actually implement.
+
+</details>
+
+<details>
+<summary>
+Trying to enforce collapsible behavior only on mobile with CSS
+</summary>
 
 To have action buttons collapsible only on mobile, I wanted to know if it could be only be CSS.
 
@@ -115,7 +144,7 @@ function ActionButtons() {
 
 With visual side done, I wanted to see if it's possible to avoid taking over control of open state.
 
-As I was looking into it, there was not a good way to infer width from CSS(tailwind) and to modify state, and realised that I had to take control of it to modify the state in the first place anyways.
+As I was looking into it, there was not a good way to infer width from CSS(tailwind) and to trigger state modification, and realised that I had to take control of it to modify the state in the first place anyways.
 
 In the end, I took the L, implemented useIsScreenLg hook, and taken control of open state of Collapsible
 

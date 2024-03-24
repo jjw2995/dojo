@@ -57,20 +57,24 @@ export default function Page() {
   );
 }
 
+// paginated orders hourly, completed or not,
 function OrderList() {
   const orders = api.order.getOrders.useQuery();
+  const [list, setList] = useState(orders.data);
+  //   orders.data..map()
 
   return (
-    <div className="grid flex-1 snap-x grid-flow-col grid-rows-1 gap-4 overflow-x-scroll px-8 pb-4 md:flex-1 md:grid-flow-row md:grid-cols-4 md:grid-rows-2 md:overflow-hidden">
-      {/* <div className="bg-pink- my-2 grid flex-1 grid-cols-4 grid-rows-2 gap-4"> */}
-      {[0, 1, 2, 3, 4, 5, 6].map((r) => {
+    <div className="grid h-full snap-x snap-proximity grid-flow-col grid-rows-1 gap-2 overflow-x-scroll bg-pink-200 md:mx-4 md:flex-1 md:grid-flow-row md:grid-cols-4 md:grid-rows-2 md:overflow-hidden">
+      {list?.map((r) => {
+        console.log(r);
+
         return (
           <Card
-            key={r}
-            className="h- w-[20rem] snap-center md:h-auto md:w-auto md:basis-1/4"
+            key={r.id}
+            className="h-[calc(100%-1rem)] w-[calc(100vw-2rem)] snap-center first:ml-4 last:mr-4 md:w-auto md:first:ml-0 md:last:mr-0"
           >
             <CardHeader>
-              <CardTitle>Card Title</CardTitle>
+              <CardTitle>{r.id}_Card Title</CardTitle>
               <CardDescription>Card Description</CardDescription>
             </CardHeader>
             <CardContent>
@@ -85,6 +89,34 @@ function OrderList() {
     </div>
   );
 }
+
+// function OrderList() {
+//     const orders = api.order.getOrders.useQuery();
+
+//     return (
+//       <div className="grid h-full snap-x snap-proximity grid-flow-col grid-rows-1 gap-2 overflow-x-scroll bg-pink-200 md:mx-4 md:flex-1 md:grid-flow-row md:grid-cols-4 md:grid-rows-2 md:overflow-hidden">
+//         {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((r) => {
+//           return (
+//             <Card
+//               key={r}
+//               className="h-[calc(100%-1rem)] w-[calc(100vw-2rem)] snap-center first:ml-4 last:mr-4 md:w-auto md:first:ml-0 md:last:mr-0"
+//             >
+//               <CardHeader>
+//                 <CardTitle>{r}_Card Title</CardTitle>
+//                 <CardDescription>Card Description</CardDescription>
+//               </CardHeader>
+//               <CardContent>
+//                 <p>Card Content</p>
+//               </CardContent>
+//               <CardFooter>
+//                 <p>Card Footer</p>
+//               </CardFooter>
+//             </Card>
+//           );
+//         })}
+//       </div>
+//     );
+//   }
 
 function useQueryParam() {
   const router = useRouter();
@@ -190,7 +222,7 @@ function Create({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="w-full max-w-md">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Create Station</DialogTitle>
         </DialogHeader>

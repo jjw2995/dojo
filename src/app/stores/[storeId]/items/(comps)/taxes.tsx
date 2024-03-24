@@ -56,7 +56,7 @@ export default function Taxes({
           <Plus className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="text-text fixed h-[18rem] w-[90%] overflow-hidden rounded-sm bg-white p-2 outline sm:w-96">
+      <DialogContent>
         <Tabs defaultValue="tab1">
           <DialogHeader>
             <DialogTitle>Taxes</DialogTitle>

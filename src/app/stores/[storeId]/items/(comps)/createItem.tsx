@@ -10,7 +10,7 @@ import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
-import Taxes from "./(comps)/taxes";
+import Taxes from "./taxes";
 
 type CategoryInput = { itemName: string; itemPrice: string };
 
@@ -68,7 +68,7 @@ export default function CreateItem({ categoryId }: { categoryId: string }) {
   return (
     <div className="flex h-screen w-full justify-center bg-white text-2xl">
       <ChevronLeft
-        className="fixed left-2 top-2 h-8 w-8 lg:hidden"
+        className="fixed left-2 top-2 h-8 w-8 md:hidden"
         onClick={() => {
           router.replace(pathname);
         }}
@@ -157,7 +157,6 @@ function PrintTo({ toggleStation }: { toggleStation: (obj: Station) => void }) {
             className="mx-3 flex place-items-center items-center text-center"
             key={v.id}
           >
-            {/* <Checkbox /> */}
             <Checkbox
               name=""
               // className="h-6 w-6"

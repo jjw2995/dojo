@@ -59,7 +59,7 @@ export default function OrderView({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="flex h-screen w-screen max-w-full flex-col rounded-none">
+      <DialogContent className="flex h-screen w-screen max-w-full flex-col rounded-none md:rounded-none">
         <OrderInfoContextProvider>
           <OrderContextProvider>
             <DialogHeader>
@@ -70,7 +70,7 @@ export default function OrderView({
             {/* come back werid lg screen */}
             <div className="flex h-full max-w-full flex-col rounded-none md:flex-row">
               <div className="h-[20rem] md:h-[54rem] md:w-[45%]">
-                <OrderList className="h-[75%] md:h-[70%]" />
+                <OrderList className="h-[75%]" />
                 <ActionButtons type={orderMode} />
               </div>
               <CategoryList className="flex h-[20rem] overflow-y-scroll md:mt-0 md:h-full md:flex-1" />
@@ -92,7 +92,7 @@ function TitleOrderInfo({ orderMode }: { orderMode: orderMode }) {
           {orderMode.toUpperCase()}: {orderInfo.tableName}
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-full max-w-md rounded-none sm:max-w-[425px] sm:rounded-lg">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Table Info</DialogTitle>
         </DialogHeader>

@@ -2,7 +2,6 @@
 
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { api } from "~/trpc/react";
-import * as Dialog from "@radix-ui/react-dialog";
 import {
   Accordion,
   AccordionContent,
@@ -25,7 +24,14 @@ import {
 import { RouterOutputs } from "~/trpc/shared";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import ItemView from "./item";
-import CreateItem from "./createItem";
+import CreateItem from "./(comps)/createItem";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
 
 type Category = RouterOutputs["category"]["get"][number];
 const QPARAM = {
@@ -48,12 +54,9 @@ export default function Categories() {
   const createID = searchParams.get(QPARAM.createItemCategoryId);
 
   return (
-    <div className="flex">
-      <Accordion
-        className="no-scrollbar max-h-screen flex-1 overflow-auto"
-        type="multiple"
-      >
-        <div className="relative mb-20  md:mx-4 md:mb-0">
+    <div className="flex h-full">
+      <Accordion className="no-scrollbar flex-1 overflow-auto" type="multiple">
+        <div className="relative md:mx-4 md:mb-0">
           {categories.data?.map((category) => {
             return (
               <Category key={`catId_${category.id}`} category={category} />
@@ -173,29 +176,26 @@ function CreateCategory() {
   };
 
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger asChild>
-        <Button className="fixed bottom-[6rem] right-[1rem] h-[3rem] w-[3rem] -translate-x-1/2 rounded-full p-2 md:bottom-[2rem] md:right-[47%]">
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="fixed bottom-[6rem] right-[1rem] h-[3rem] w-[3rem] -translate-x-1/2 rounded-full p-2 md:bottom-[3rem] md:right-[50%]">
           <Plus />
         </Button>
-      </Dialog.Trigger>
+      </DialogTrigger>
 
-      <Dialog.Portal>
-        <Dialog.Overlay />
-        <Dialog.Content className="text-text fixed left-1/2 top-1/2 z-10 w-[20rem] -translate-x-1/2 -translate-y-1/2 rounded-sm bg-background p-2 outline md:left-1/4">
-          <Dialog.Title className="text-center">Add Category</Dialog.Title>
-          <form className="py-2" onSubmit={form.handleSubmit(onSubmit)}>
-            <Input
-              placeholder="Station Name"
-              {...form.register("categoryName", { required: true })}
-            />
-            <div className="mt-2 flex flex-row justify-around">
-              <Button type="submit">create</Button>
-            </div>
-          </form>
-          <Dialog.Description />
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+      <DialogContent>
+        <DialogTitle className="text-center">Add Category</DialogTitle>
+        <form className="py-2" onSubmit={form.handleSubmit(onSubmit)}>
+          <Input
+            placeholder="Station Name"
+            {...form.register("categoryName", { required: true })}
+          />
+          <div className="mt-2 flex flex-row justify-around">
+            <Button type="submit">create</Button>
+          </div>
+        </form>
+        <DialogDescription />
+      </DialogContent>
+    </Dialog>
   );
 }

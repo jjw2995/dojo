@@ -46,11 +46,12 @@ function CreateStore() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="fixed bottom-[3rem] right-[1rem] h-[3rem] w-[3rem] -translate-x-1/2 rounded-full p-2 sm:bottom-[15%] sm:right-[20%]">
+        <Button className="fixed bottom-[6rem] right-[1rem] h-[3rem] w-[3rem] -translate-x-1/2 rounded-full p-2 lg:bottom-[6rem] lg:right-[6rem]">
+          {/* <Button className="fixed bottom-[3rem] right-[1rem] h-[3rem] w-[3rem] -translate-x-1/2 rounded-full p-2 sm:bottom-[15%] sm:right-[20%]"> */}
           <Plus />
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-full max-w-md">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Create Group</DialogTitle>
           <DialogDescription>

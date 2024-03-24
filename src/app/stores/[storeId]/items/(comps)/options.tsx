@@ -66,7 +66,7 @@ function OptionCreate() {
           return (
             <div className="flex items-center" key={v.value}>
               <RadioGroup.Item value={v.value} className="flex" id={v.value}>
-                <RadioGroup.Indicator className="absolute z-50 h-4 w-4 bg-black" />
+                <RadioGroup.Indicator className="absolute h-4 w-4 bg-black" />
               </RadioGroup.Item>
               <Label className="pl-10" htmlFor={v.value}>
                 {v.value}

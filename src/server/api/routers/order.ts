@@ -20,7 +20,7 @@ export const orderRouter = createTRPCRouter({
       z.object({
         list: orderItemListSchema,
         type: z.enum(orderModes),
-        name: z.string().min(1),
+        name: z.string(),
         dedupeId: z.number(),
       }),
     )
