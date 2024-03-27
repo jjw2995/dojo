@@ -11,4 +11,5 @@ export default {
     authToken: env.DATABASE_SECRET,
   },
   tablesFilter: ["dojo_*"],
+  verbose: true,
 } satisfies Config;

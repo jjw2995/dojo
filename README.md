@@ -91,6 +91,24 @@ It will be considered sucessful if acquaintance's sandwich shop (that does not u
 
 <details>
 <summary>
+Moving off of PlanetScale -> Turso
+</summary>
+
+With announcement of PlanetScale to sunset free tier on April 4th, I had to look for another provider that had free tier DB.
+
+</details>
+
+<details>
+<summary>
+Moving off of PlanetScale -> Turso
+</summary>
+
+With announcement of PlanetScale to sunset free tier on April 4th, I had to look for another provider that had free tier DB.
+
+</details>
+
+<details>
+<summary>
 Implementing 2 row staggered wrap-around scroll (WIP)
 </summary>
 

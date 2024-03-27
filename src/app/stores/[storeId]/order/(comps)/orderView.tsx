@@ -49,6 +49,7 @@ import { type orderMode } from "~/components/enums";
 
 type Category = RouterOutputs["category"]["get"][number];
 
+// TODO: oderview layout cleanup
 export default function OrderView({
   children,
   orderMode,

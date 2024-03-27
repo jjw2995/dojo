@@ -1,6 +1,14 @@
 "use client";
 
-import { ChevronLeft, MoreVertical } from "lucide-react";
+import {
+  ChevronLeft,
+  Cross,
+  DeleteIcon,
+  Edit,
+  MoreVertical,
+  Trash,
+  X,
+} from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   AlertDialog,
@@ -25,10 +33,12 @@ import { api } from "~/trpc/react";
 import { RouterOutputs } from "~/trpc/shared";
 import Options from "./(comps)/options";
 import { Input } from "~/components/ui/input";
+import Link from "next/link";
+import { useItemPageUrl } from "./page";
 
 type Details = RouterOutputs["item"]["get"];
 
-export default function ItemView({ itemId }: { itemId: string }) {
+export default function ItemDetail({ itemId }: { itemId: number }) {
   const router = useRouter();
   const details = api.item.get.useQuery({ itemId: Number(itemId) });
   const pathname = usePathname();
@@ -47,7 +57,7 @@ export default function ItemView({ itemId }: { itemId: string }) {
       <h3 className="text-center text-2xl font-semibold">Item</h3>
       {details.data ? (
         <div className="mx-4 mt-4 flex flex-col space-y-2">
-          <Item item={details.data.item} />
+          <Item item={details.data} />
           <Taxes taxes={details.data.taxes} />
           <Options />
         </div>
@@ -56,7 +66,7 @@ export default function ItemView({ itemId }: { itemId: string }) {
   );
 }
 
-function Item({ item }: { item: Details["item"] }) {
+function Item({ item }: { item: Details }) {
   if (!item) {
     return null;
   }
@@ -103,29 +113,42 @@ function ItemMenu({
   itemId,
   className,
 }: {
-  itemId: string;
+  itemId: number;
   className?: string;
 }) {
+  const { getEditItemUrl } = useItemPageUrl();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className={className}>
-        <MoreVertical className="" />
+        <MoreVertical />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem asChild>
           <Delete itemId={itemId} />
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link
+            className="flex items-center"
+            href={getEditItemUrl(itemId.toString())}
+          >
+            <Edit className="mr-2 h-4 w-4" />
+            edit item
+          </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
 
-function Delete({ itemId }: { itemId: string }) {
+function Delete({ itemId }: { itemId: number }) {
   const deleteItem = api.item.delete.useMutation();
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger>delete</AlertDialogTrigger>
+      <AlertDialogTrigger className="flex items-center px-2 py-1.5 text-sm">
+        <Trash className="mr-2 h-4 w-4" />
+        delete
+      </AlertDialogTrigger>
       <AlertDialogContent className="w-80">
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
@@ -140,7 +163,7 @@ function Delete({ itemId }: { itemId: string }) {
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={() => {
-              deleteItem.mutate({ itemId: Number(itemId) });
+              deleteItem.mutate({ itemId: itemId });
             }}
           >
             Delete

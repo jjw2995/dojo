@@ -10,7 +10,7 @@ import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
-import Taxes from "./taxes";
+import Taxes from "./(comps)/taxes";
 
 type CategoryInput = { itemName: string; itemPrice: string };
 
@@ -35,7 +35,7 @@ function useToggle<T extends { id: number }>() {
 type Station = RouterOutputs["station"]["get"][number];
 type Tax = RouterOutputs["tax"]["get"][number];
 
-export default function CreateItem({ categoryId }: { categoryId: string }) {
+export default function CreateItem({ categoryId }: { categoryId: number }) {
   const router = useRouter();
   const pathname = usePathname();
   const form = useForm<CategoryInput>();

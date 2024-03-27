@@ -63,6 +63,7 @@ function OrderList() {
   const [list, setList] = useState(orders.data);
   //   orders.data..map()
 
+  //   https://stackoverflow.com/questions/43311943/prevent-content-from-expanding-grid-items
   return (
     <div className="grid h-full snap-x snap-proximity grid-flow-col grid-rows-1 gap-2 overflow-x-scroll bg-pink-200 md:mx-4 md:flex-1 md:grid-flow-row md:grid-cols-4 md:grid-rows-2 md:overflow-hidden">
       {list?.map((r) => {

@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 import {
@@ -18,40 +19,32 @@ import {
 
 async function getItemDetails(db: typeof DB, itemId: number) {
   return await db.transaction(async (tx) => {
-    const item = tx
-      .selectDistinct()
-      .from(itemTable)
-      .where(eq(itemTable.id, itemId));
+    const item = await tx.query.itemTable.findFirst({
+      where: eq(itemTable.id, itemId),
+    });
 
-    const itemTaxes = tx
-      .select({
-        id: taxTable.id,
-        name: taxTable.name,
-        percent: taxTable.percent,
+    if (!item) throw Error("item does not exist");
+
+    const taxes = (
+      await tx.query.itemToTaxTable.findMany({
+        columns: {},
+        where: eq(itemToTaxTable.itemId, itemId),
+        with: { tax: true },
       })
-      .from(itemToTaxTable)
-      .where(eq(itemToTaxTable.itemId, itemId))
-      .leftJoin(taxTable, eq(itemToTaxTable.taxId, taxTable.id));
+    ).map((r) => r.tax);
 
-    const itemStations = tx
-      .select({ id: stationTable.id, name: stationTable.name })
-      .from(itemToStationTable)
-      .where(eq(itemToStationTable.itemId, itemId))
-      .leftJoin(
-        stationTable,
-        eq(itemToStationTable.stationId, stationTable.id),
-      );
-
-    const [itemRes, itemTaxesRes, itemStationsRes] = await Promise.all([
-      item,
-      itemTaxes,
-      itemStations,
-    ]);
+    const stations = (
+      await tx.query.itemToStationTable.findMany({
+        columns: {},
+        where: eq(itemToStationTable.itemId, itemId),
+        with: { station: true },
+      })
+    ).map((r) => r.station);
 
     return {
-      item: itemRes[0],
-      taxes: itemTaxesRes,
-      stations: itemStationsRes,
+      ...item,
+      taxes,
+      stations,
     };
   });
 }
@@ -69,17 +62,15 @@ export const itemRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const itemId = await ctx.db.transaction(async (tx) => {
-        const item = (
-          await tx
-            .insert(itemTable)
-            .values({
-              categoryId: input.categoryId,
-              name: input.itemName,
-              storeId: ctx.storeId,
-              price: input.itemPrice,
-            })
-            .returning()
-        )[0];
+        const [item] = await tx
+          .insert(itemTable)
+          .values({
+            categoryId: input.categoryId,
+            name: input.itemName,
+            storeId: ctx.storeId,
+            price: input.itemPrice,
+          })
+          .returning();
 
         if (!item) {
           return;
@@ -110,6 +101,97 @@ export const itemRouter = createTRPCRouter({
     .input(z.object({ itemId: z.number() }))
     .query(async ({ ctx, input }) => {
       return await getItemDetails(ctx.db, input.itemId);
+    }),
+
+  patch: passcodeProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        itemName: z.string().min(1).optional(),
+        itemPrice: z.number().optional(),
+        taxIds: z.array(z.number()).optional(),
+        stationIds: z.array(z.number()).optional(),
+        // categoryId: z.number().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.transaction(async (tx) => {
+        const updateTaxes = input.taxIds;
+        const updateStations = input.stationIds;
+
+        const [updatedItem] = await tx
+          .update(itemTable)
+          .set({
+            id: Number(input.id),
+            name: input.itemName,
+            price: input.itemPrice,
+          })
+          .where(eq(itemTable.id, Number(input.id)))
+          .returning();
+
+        if (!updatedItem) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "such item does not exist",
+          });
+        }
+
+        if (updateTaxes) {
+          const prevTaxIds = (
+            await tx
+              .select()
+              .from(itemToTaxTable)
+              .where(eq(itemToTaxTable.itemId, Number(input.id)))
+          ).map((r) => r.taxId);
+          const taxIdsToRm = prevTaxIds.filter((r) => !updateTaxes.includes(r));
+          const taxIdsToAdd = updateTaxes.filter(
+            (r) => !prevTaxIds.includes(r),
+          );
+
+          if (taxIdsToRm.length > 0) {
+            await tx
+              .delete(itemToTaxTable)
+              .where(inArray(itemToTaxTable.taxId, taxIdsToRm));
+          }
+
+          if (taxIdsToAdd.length > 0) {
+            await tx.insert(itemToTaxTable).values(
+              taxIdsToAdd.map((r) => {
+                return { taxId: r, itemId: Number(input.id) };
+              }),
+            );
+          }
+        }
+
+        if (updateStations) {
+          const prevStationIds = (
+            await tx
+              .select()
+              .from(itemToStationTable)
+              .where(eq(itemToStationTable.itemId, Number(input.id)))
+          ).map((r) => r.stationId);
+          const stationIdsToRm = prevStationIds.filter(
+            (r) => !updateStations.includes(r),
+          );
+          const stationIdsToAdd = updateStations.filter(
+            (r) => !prevStationIds.includes(r),
+          );
+
+          if (stationIdsToRm.length > 0) {
+            await tx
+              .delete(itemToStationTable)
+              .where(inArray(itemToStationTable.stationId, stationIdsToRm));
+          }
+
+          if (stationIdsToAdd.length > 0) {
+            await tx.insert(itemToStationTable).values(
+              stationIdsToAdd.map((r) => {
+                return { stationId: r, itemId: Number(input.id) };
+              }),
+            );
+          }
+        }
+      });
     }),
 
   delete: passcodeProcedure

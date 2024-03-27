@@ -23,8 +23,8 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { RouterOutputs } from "~/trpc/shared";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import ItemView from "./item";
-import CreateItem from "./(comps)/createItem";
+import ItemDetail from "./itemDetail";
+import CreateItem from "./createItem";
 import {
   Dialog,
   DialogContent,
@@ -32,26 +32,50 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
+import EditItemView from "./editItem";
 
 type Category = RouterOutputs["category"]["get"][number];
 const QPARAM = {
   itemId: "itemId",
   createItemCategoryId: "createItemCategoryId",
+  editItemId: "editItemId",
 };
 
-// {
-//   children,
-//   params,
-// }: {
-//   params: { storeId: string };
-//   children: React.ReactNode;
-// }
-export default function Categories() {
-  const categories = api.category.get.useQuery();
+export function useItemPageUrl() {
   const searchParams = useSearchParams();
 
   const itemId = searchParams.get(QPARAM.itemId);
   const createID = searchParams.get(QPARAM.createItemCategoryId);
+  const editItemId = searchParams.get(QPARAM.editItemId);
+
+  //   console.log(itemId, createID);
+
+  const pathname = usePathname();
+
+  function getCreateCategoryUrl(catId: string) {
+    return `${pathname}?${QPARAM.createItemCategoryId}=${catId}`;
+  }
+  function getItemDetailUrl(itemId: string) {
+    return `${pathname}?itemId=${itemId}`;
+  }
+
+  function getEditItemUrl(itemId: string) {
+    return `${pathname}?editItemId=${itemId}`;
+  }
+
+  return {
+    itemId,
+    createID,
+    editItemId,
+    getCreateCategoryUrl,
+    getItemDetailUrl,
+    getEditItemUrl,
+  };
+}
+
+export default function Categories() {
+  const categories = api.category.get.useQuery();
+  const { createID, itemId, editItemId, getItemDetailUrl } = useItemPageUrl();
 
   return (
     <div className="flex h-full">
@@ -65,11 +89,17 @@ export default function Categories() {
         </div>
       </Accordion>
       <CreateCategory />
-      <div className="fixed w-full md:relative md:h-screen md:flex-1 md:border-l-2">
+      <div className="md:h- fixed w-full md:relative md:flex-1 md:border-l-2">
         <RenderOne
           componentArr={[
-            createID && <CreateItem categoryId={createID} />,
-            itemId && <ItemView itemId={itemId} />,
+            createID && <CreateItem categoryId={Number(createID)} />,
+            itemId && <ItemDetail itemId={Number(itemId)} />,
+            editItemId && (
+              <EditItemView
+                itemId={Number(editItemId)}
+                detailLink={getItemDetailUrl(editItemId)}
+              />
+            ),
           ]}
           fallback={
             <div className="center hidden h-screen items-center justify-center md:flex">
@@ -87,7 +117,7 @@ export default function Categories() {
 function Category({ category }: { category: Category }): React.ReactNode {
   const items = category.items;
   const router = useRouter();
-  const pathname = usePathname();
+  const { getItemDetailUrl } = useItemPageUrl();
 
   return (
     <AccordionItem value={"category" + category.id.toString()}>
@@ -106,7 +136,7 @@ function Category({ category }: { category: Category }): React.ReactNode {
             key={"item" + idx.toString()}
             className="py-2 pl-8 text-lg"
             onClick={() => {
-              router.replace(`${pathname}?itemId=${item.id}`);
+              router.replace(getItemDetailUrl(item.id.toString()));
             }}
           >
             {item.name}
@@ -133,18 +163,19 @@ function RenderOne({
 }
 
 function CategoryMenu({ categoryId }: { categoryId: number }) {
-  const pathname = usePathname();
+  //   const pathname = usePathname();
+  const { getCreateCategoryUrl } = useItemPageUrl();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <MoreVertical className="" />
+        <MoreVertical />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem asChild>
           <Link
             className="flex items-center justify-center text-lg"
-            href={`${pathname}?${QPARAM.createItemCategoryId}=${categoryId}`}
+            href={getCreateCategoryUrl(categoryId.toString())}
           >
             <Plus className="mr-2 h-4 w-4" />
             create item
