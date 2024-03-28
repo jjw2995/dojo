@@ -158,10 +158,9 @@ function OrderList({ className }: { className?: string }) {
                         onClick={(e) => {
                           order.fn.setCursor({ onGroup: gk, onItem: ik });
                         }}
-                        data-first={ik === 0}
                         data-even={gk % 2 === 0}
                         data-selected={onGroup === gk && onItem === ik}
-                        className="data-[even=true]:bg-yellow-10 border-t-slate-500 data-[first=true]:border-t-2 data-[selected=true]:bg-muted"
+                        className="data-[even=true]:bg-yellow-10 border-t-slate-500 data-[selected=true]:bg-muted"
                       >
                         <TableCell>{ik}</TableCell>
                         <TableCell className="border-l">{item.name}</TableCell>
@@ -173,6 +172,7 @@ function OrderList({ className }: { className?: string }) {
                     </React.Fragment>
                   );
                 })}
+                <TableRow className="border-2 border-slate-900" />
               </React.Fragment>
             );
           })}
