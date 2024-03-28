@@ -35,6 +35,14 @@ import Options from "./(comps)/options";
 import { Input } from "~/components/ui/input";
 import Link from "next/link";
 import { useItemPageUrl } from "./page";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 
 type Details = RouterOutputs["item"]["get"];
 
@@ -55,13 +63,7 @@ export default function ItemDetail({ itemId }: { itemId: number }) {
         <ItemMenu className="m-2 h-8 w-8" itemId={itemId} />
       </div>
       <h3 className="text-center text-2xl font-semibold">Item</h3>
-      {details.data ? (
-        <div className="mx-4 mt-4 flex flex-col space-y-2">
-          <Item item={details.data} />
-          <Taxes taxes={details.data.taxes} />
-          <Options />
-        </div>
-      ) : null}
+      {details.data ? <Item item={details.data} /> : null}
     </div>
   );
 }
@@ -88,23 +90,58 @@ function Item({ item }: { item: Details }) {
           value={Number(item.price).toFixed(2)}
         />
       </div>
+      <Taxes taxes={item.taxes} />
+      <Stations stations={item.stations} />
+      {/* <Options /> */}
     </div>
   );
 }
 
 function Taxes({ taxes }: { taxes: Details["taxes"] }) {
   return (
-    <div className="no-scrollbar flex overflow-x-scroll px-4">
-      {taxes.map(({ id, name, percent }) => {
-        return (
-          <div
-            className="m-1 flex-shrink-0 rounded p-2 outline"
-            key={"tax" + id?.toString()}
-          >
-            {name}-{percent}%
-          </div>
-        );
-      })}
+    <div className="flex w-full flex-col px-4">
+      <Label>Taxes</Label>
+      {/* fix overflow behavior... or change scroll orientation */}
+      <div className="no-scrollbar flex overflow-x-scroll">
+        {[...taxes].map(({ id, name, percent }, idx) => {
+          return (
+            <Card
+              className="m-1 flex-shrink-0"
+              key={"tax" + id?.toString() + idx}
+            >
+              <CardHeader className="w-[4rem] p-4">
+                <CardTitle>{name}</CardTitle>
+                <CardDescription className="text-right">
+                  {percent}%
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function Stations({ stations }: { stations: Details["stations"] }) {
+  return (
+    <div className="flex w-full flex-col px-4">
+      <Label>Stations</Label>
+      {/* fix overflow behavior... or change scroll orientation */}
+      <div className="no-scrollbar flex overflow-x-scroll">
+        {[...stations].map(({ id, name }, idx) => {
+          return (
+            <Card
+              className="m-1 flex-shrink-0"
+              key={"tax" + id?.toString() + idx}
+            >
+              <CardHeader className="w-[4rem] p-4 text-center">
+                <CardTitle>{name}</CardTitle>
+              </CardHeader>
+            </Card>
+          );
+        })}
+      </div>
     </div>
   );
 }
