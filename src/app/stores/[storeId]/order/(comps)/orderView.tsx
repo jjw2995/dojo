@@ -57,21 +57,22 @@ export default function OrderView({
   children: React.ReactNode;
   orderMode: orderMode;
 }) {
+  // TODO: something wrong with how orderList is interacting with orderButtons
+
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="flex h-screen w-screen max-w-full flex-col rounded-none md:rounded-none">
         <OrderInfoContextProvider>
           <OrderContextProvider>
-            <DialogHeader>
-              <DialogTitle>
-                <TitleOrderInfo orderMode={orderMode} />
-              </DialogTitle>
+            <DialogHeader className="text-start">
+              <TitleOrderInfo orderMode={orderMode} />
             </DialogHeader>
             {/* come back werid lg screen */}
             <div className="flex h-full max-w-full flex-col rounded-none md:flex-row">
-              <div className="h-[20rem] md:h-[54rem] md:w-[45%]">
-                <OrderList className="h-[75%]" />
+              <div className="flex h-[20rem] flex-col md:h-[52rem] md:w-[45%]">
+                {/* <div className="flex h-[20rem] flex-col outline md:h-[50rem] md:w-[45%]"> */}
+                <OrderList className="flex-1" />
                 <ActionButtons type={orderMode} />
               </div>
               <CategoryList className="flex h-[20rem] overflow-y-scroll md:mt-0 md:h-full md:flex-1" />
@@ -87,46 +88,65 @@ function TitleOrderInfo({ orderMode }: { orderMode: orderMode }) {
   const orderInfo = useOrderInfo();
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="ghost" className="text-xl">
-          {orderMode.toUpperCase()}: {orderInfo.tableName}
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Table Info</DialogTitle>
-        </DialogHeader>
+    <DialogTitle className="flex">
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button
+            variant="default"
+            // className=""
+            size="sm"
+            //   className="text- decoration-slate-400 underline-offset-2"
+          >
+            Table Info
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Table Info</DialogTitle>
+          </DialogHeader>
 
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="orderMode" className="text-right">
-              OrderMode
-            </Label>
-            <Input
-              id="orderMode"
-              className="col-span-3"
-              disabled
-              value={orderMode}
-            />
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="orderMode" className="text-right">
+                OrderMode
+              </Label>
+              <Input
+                id="orderMode"
+                className="col-span-3"
+                disabled
+                value={orderMode}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="orderName" className="text-right">
+                Name
+              </Label>
+              <Input
+                id="orderName"
+                className="col-span-3"
+                placeholder="uber #2145"
+                value={orderInfo.tableName}
+                onChange={(e) => {
+                  orderInfo.fn.setTableName(e.target.value);
+                }}
+              />
+            </div>
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="orderName" className="text-right">
-              Name
-            </Label>
-            <Input
-              id="orderName"
-              className="col-span-3"
-              placeholder="uber #2145"
-              value={orderInfo.tableName}
-              onChange={(e) => {
-                orderInfo.fn.setTableName(e.target.value);
-              }}
-            />
-          </div>
+        </DialogContent>
+      </Dialog>
+      <div className="ml-2 flex flex-1">
+        <div className="flex flex-1 basis-1/3 flex-col md:w-[20rem] md:flex-none">
+          <span>
+            {orderInfo.tableName ? orderInfo.tableName : "uber #1253"}
+          </span>
+          <span className="text-sm">{orderMode.toUpperCase()}</span>
         </div>
-      </DialogContent>
-    </Dialog>
+        <div className="flex flex-1 basis-2/3 flex-col">
+          <span>prep by</span>
+          <span>created at</span>
+        </div>
+      </div>
+    </DialogTitle>
   );
 }
 
@@ -209,9 +229,8 @@ function ActionButtons({
       setOpen(false);
     }
   }, [isScreenLg]);
-
   return (
-    <div className={cn("bg-background pt-2 md:relative md:p-2", className)}>
+    <div className={cn("bg-background pt-2 md:static", className)}>
       <div className="grid grid-cols-5 gap-2">
         <Button disabled className="md:h-[3rem] md:text-2xl">
           <X />
