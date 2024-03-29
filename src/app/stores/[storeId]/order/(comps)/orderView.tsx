@@ -58,6 +58,10 @@ export default function OrderView({
   orderMode: orderMode;
 }) {
   // TODO: something wrong with how orderList is interacting with orderButtons
+  //   const [isOpen, setIsOpen] = useState(false);
+  //     const closeOrderView = ()=>{
+  //       setIsOpen(false)
+  //     }
 
   return (
     <Dialog>
