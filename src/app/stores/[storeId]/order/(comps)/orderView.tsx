@@ -229,6 +229,7 @@ function ActionButtons({
       setOpen(false);
     }
   }, [isScreenLg]);
+
   return (
     <div className={cn("bg-background pt-2 md:static", className)}>
       <div className="grid grid-cols-5 gap-2">
@@ -292,6 +293,7 @@ function ActionButtons({
                 type,
               });
             }}
+            disabled={order.isOrderListEmpty}
             className="md:h-[3rem] md:text-2xl"
           >
             Save Order
@@ -340,6 +342,8 @@ CategoryList.displayName = "CategoryList";
 function Category({ category }: { category: Category }): React.ReactNode {
   const items = category.items;
   const order = useOrder();
+
+  console.log(order.cursor);
 
   return (
     <AccordionItem value={"category" + category.id.toString()}>

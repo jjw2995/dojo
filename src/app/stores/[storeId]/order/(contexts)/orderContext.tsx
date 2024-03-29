@@ -28,6 +28,7 @@ type OptionalCursor =
 
 interface OrderContextProps {
   list: OrderList;
+  isOrderListEmpty: boolean;
   cursor: Cursor;
   fn: {
     addItem: (item: Item) => void;
@@ -35,6 +36,7 @@ interface OrderContextProps {
     incCursor: () => void;
     decCursor: () => void;
     addGroup: () => void;
+    // isOrderListEmpty: () => boolean;
   };
 }
 
@@ -52,7 +54,7 @@ const keepOrTrailIdx = (curIdx: number, curLen: number) => {
 
 const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
   const addItem = (item: Item) => {
-    setState((state) => {
+    setOrder((state) => {
       const { cursor, list } = state;
       const stations = item.stations.map((st) => {
         return { ...st, isDone: false };
@@ -71,6 +73,7 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
       if (targetGroup) {
         return {
           ...state,
+          isOrderListEmpty: false,
           list: list.map((itemList, i) => {
             if (i !== cursor.onGroup) {
               return itemList;
@@ -87,6 +90,7 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
       } else {
         return {
           ...state,
+          isOrderListEmpty: false,
           list: [...list, [orderItem]],
           cursor: { ...cursor, onItem: 0, onOption: undefined },
         };
@@ -103,7 +107,7 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
     onItem?: number;
     onOption?: number;
   }) => {
-    setState((prev) => {
+    setOrder((prev) => {
       return {
         ...prev,
         cursor: {
@@ -115,7 +119,7 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
   const incCursor = () => {
-    setState((state) => {
+    setOrder((state) => {
       const { cursor, list } = state;
       if (cursor.onItem === undefined) {
         return state;
@@ -146,7 +150,7 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
   const decCursor = () => {
-    setState((state) => {
+    setOrder((state) => {
       const { cursor, list } = state;
       if (cursor.onItem === undefined) {
         return state;
@@ -166,26 +170,39 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
       if (item.qty < 2) {
         if (targetGroup.length < 2) {
           const trailingGroupIdx =
-            keepOrTrailIdx(curGroupIdx, list.length) ?? 0;
+            keepOrTrailIdx(curGroupIdx, list.length - 1) ?? 0;
+          console.log(
+            `curGroupIdx: ${curGroupIdx}, list.length: ${list.length}`,
+          );
+
+          console.log("in decCursor - trailingGroupIdx: ", trailingGroupIdx);
+
           const nextGroup = list[trailingGroupIdx];
+          const tempOrderList = list.filter((_, gk) => gk !== curGroupIdx);
           return {
             ...state,
-            list: list.filter((_, gk) => gk !== curGroupIdx),
+            list: tempOrderList,
+            isOrderListEmpty: isOrderListEmpty(tempOrderList),
             cursor: {
               onGroup: trailingGroupIdx,
-              onItem: nextGroup ? nextGroup.length - 1 : undefined,
+              onItem:
+                nextGroup && nextGroup.length - 1
+                  ? nextGroup.length - 1
+                  : undefined,
               onOption: undefined,
             },
           };
         }
+        const tempOrderList = list.map((group, gk) => {
+          if (gk !== cursor.onGroup) {
+            return group;
+          }
+          return group.filter((_, ik) => curItemIdx !== ik);
+        });
         return {
           ...state,
-          list: list.map((group, gk) => {
-            if (gk !== cursor.onGroup) {
-              return group;
-            }
-            return group.filter((_, ik) => curItemIdx !== ik);
-          }),
+          list: tempOrderList,
+          isOrderListEmpty: isOrderListEmpty(tempOrderList),
           cursor: {
             ...cursor,
             onItem: keepOrTrailIdx(curItemIdx, targetGroup.length),
@@ -193,25 +210,27 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
         };
       }
 
+      const tempOrderList = list.map((group, gk) => {
+        if (gk !== curGroupIdx) {
+          return group;
+        }
+        return group.map((item, ik) => {
+          if (ik !== cursor.onItem) {
+            return item;
+          }
+          return { ...item, qty: item.qty - 1 };
+        });
+      });
       //   qty > 1
       return {
         ...state,
-        list: list.map((group, gk) => {
-          if (gk !== curGroupIdx) {
-            return group;
-          }
-          return group.map((item, ik) => {
-            if (ik !== cursor.onItem) {
-              return item;
-            }
-            return { ...item, qty: item.qty - 1 };
-          });
-        }),
+        list: tempOrderList,
+        isOrderListEmpty: isOrderListEmpty(tempOrderList),
       };
     });
   };
   const addGroup = () => {
-    setState((state) => {
+    setOrder((state) => {
       const cleanList = state.list.filter((group) => group.length !== 0);
 
       return {
@@ -226,10 +245,15 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
+  const isOrderListEmpty = (orderList: OrderList) => {
+    return !orderList.map((r) => r.length > 0).includes(true);
+  };
+
   //   const addMemo = () => {};
 
   const initState: OrderContextProps = {
     list: new Array<OrderItem[]>(),
+    isOrderListEmpty: true,
     cursor: {
       onGroup: 0,
       onItem: undefined,
@@ -241,13 +265,14 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
       incCursor,
       decCursor,
       addGroup,
+      //   isOrderListEmpty,
     },
   };
 
-  const [state, setState] = useState<OrderContextProps>(initState);
+  const [order, setOrder] = useState<OrderContextProps>(initState);
 
   return (
-    <OrderContext.Provider value={state}>{children}</OrderContext.Provider>
+    <OrderContext.Provider value={order}>{children}</OrderContext.Provider>
   );
 };
 
