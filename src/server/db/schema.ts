@@ -281,9 +281,9 @@ export const orderTable = sqliteTable("order", {
   id: integer("id", { mode: "number" }).primaryKey(),
   storeId: integer("storeId", { mode: "number" }).notNull(),
   dedupeId: integer("dedupeId", { mode: "number" }).notNull(),
-  list: text("list", { mode: "json" }).$type<
-    typeof orderItemListSchema._type
-  >(),
+  list: text("list", { mode: "json" })
+    .$type<typeof orderItemListSchema._type>()
+    .notNull(),
   type: text("type", { enum: ["TABLE", "TOGO", "ONLINE"] }),
   isPaid: integer("isPaid", { mode: "boolean" }).default(false),
   name: text("name", { length: 256 }).notNull(),

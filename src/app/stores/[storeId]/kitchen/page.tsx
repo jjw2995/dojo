@@ -40,48 +40,108 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 
+const NUM_OF_ORDERS = 8;
+
 type stationType = RouterOutputs["station"]["get"][number];
+type Order = RouterOutputs["order"]["getOrders"][number];
+type Orders = Order[] | undefined;
+
 type StationInput = { stationName: string };
 
 const QPARAM = "stationId";
 
 export default function Page() {
+  const useQ = useQueryParam();
   return (
     <div className="flex h-full flex-col">
       <div className="flex flex-row justify-between p-4 text-2xl">
-        <StationSelect />
-        <StationMenu />
+        <StationSelect {...useQ} />
+        <StationMenu {...useQ} />
       </div>
       <OrderList />
     </div>
   );
 }
 
+function filterByStation(
+  orderList: Orders | undefined,
+  stationId: number | undefined,
+) {
+  if (!orderList) return orderList;
+
+  if (!stationId) return orderList;
+
+  const tempOrderList = orderList.map((order) => {
+    return {
+      ...order,
+      list: order.list
+        .map((items) => {
+          const tempItems = items.filter((item) =>
+            item.stations.find((station) => station.id === stationId),
+          );
+
+          if (tempItems.length > 0) {
+            return tempItems;
+          }
+          return undefined;
+        })
+        .filter((r) => r !== undefined),
+    } as Order;
+  });
+
+  return tempOrderList.filter((ol) => ol.list.length > 0);
+}
+
 // paginated orders hourly, completed or not,
 function OrderList() {
+  const q = useQueryParam();
   const orders = api.order.getOrders.useQuery();
-  const [list, setList] = useState(orders.data);
-  //   orders.data..map()
+  const [orderList, setOrderList] = useState<Orders>();
+  useEffect(() => {
+    setOrderList(filterByStation(orders.data, q.stationId));
+  }, [orders.data, q.stationId]);
 
   //   https://stackoverflow.com/questions/43311943/prevent-content-from-expanding-grid-items
   return (
-    <div className="grid h-full snap-x snap-proximity grid-flow-col grid-rows-1 gap-2 overflow-x-scroll bg-pink-200 md:mx-4 md:flex-1 md:grid-flow-row md:grid-cols-4 md:grid-rows-2 md:overflow-hidden">
-      {list?.map((r) => {
-        console.log(r);
-
+    <div className="grid h-full snap-x snap-proximity grid-flow-col grid-rows-1 gap-2 overflow-x-scroll md:mx-4 md:flex-1 md:grid-flow-row md:grid-cols-4 md:grid-rows-2 md:overflow-hidden">
+      {orderList?.slice(0, NUM_OF_ORDERS).map((order) => {
         return (
           <Card
-            key={r.id}
-            className="h-[calc(100%-1rem)] w-[calc(100vw-2rem)] snap-center first:ml-4 last:mr-4 md:w-auto md:first:ml-0 md:last:mr-0"
+            key={`orderId_${order.id}`}
+            className="flex h-[calc(100%-1rem)] w-[calc(100vw-2rem)] snap-center flex-col first:ml-4 last:mr-4 md:w-auto md:first:ml-0 md:last:mr-0"
           >
             <CardHeader>
-              <CardTitle>{r.id}_Card Title</CardTitle>
-              <CardDescription>Card Description</CardDescription>
+              <CardTitle className="flex justify-between">
+                <span>{order.name}</span>
+              </CardTitle>
+              <CardDescription className="flex justify-between">
+                <span>{order.type}</span>
+                <span>{order.createdAt}</span>
+              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <p>Card Content</p>
+            <CardContent className="grid flex-1 grid-cols-1 overflow-y-scroll">
+              <div>
+                {order.list?.map((subOrder, subGIdx) => {
+                  return (
+                    <div className="border-b-2" key={`subOrder${subGIdx}`}>
+                      {subOrder.map((item, idx) => {
+                        return (
+                          <div
+                            key={`orderId_${order.id}_itemId_${item.id}_${idx}`}
+                          >
+                            {item.name}_
+                            {item.stations.map((station) => {
+                              return `${station.name}_${station.id}`;
+                            })}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="bg-slate-300">
               <p>Card Footer</p>
             </CardFooter>
           </Card>
@@ -133,28 +193,35 @@ function useQueryParam() {
     router.replace(`${pathname}?${QPARAM}=${val}`);
   }
 
-  return { resetQueryParam, setQueryParam, stationId };
+  return {
+    resetQueryParam,
+    setQueryParam,
+    stationId: stationId ? Number(stationId) : undefined,
+  };
 }
 
-function StationSelect() {
-  const useQP = useQueryParam();
+function StationSelect({
+  resetQueryParam,
+  setQueryParam,
+  stationId,
+}: ReturnType<typeof useQueryParam>) {
   const stations = api.station.get.useQuery();
   const [isOpen, setIsOpen] = useState(false);
   const [value, setValue] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!useQP.stationId) {
+    if (!stationId) {
       setValue(null);
     }
-  }, [useQP.stationId]);
+  }, [stationId]);
 
   function setSelectValue(val: string) {
     setValue(() => {
       if (val === "_") {
-        useQP.resetQueryParam();
+        resetQueryParam();
         return null;
       }
-      useQP.setQueryParam(val);
+      setQueryParam(val);
       return val;
     });
   }
@@ -254,17 +321,20 @@ function Create({
 }
 
 // function StationMenu({ stationId }: { stationId: number }) {
-function StationMenu() {
+function StationMenu({
+  resetQueryParam,
+  stationId,
+}: Omit<ReturnType<typeof useQueryParam>, "setQueryParam">) {
   const useQP = useQueryParam();
   const util = api.useUtils();
   const d = api.station.delete.useMutation({
     onSuccess: async () => {
       await util.station.get.invalidate();
-      useQP.resetQueryParam();
+      resetQueryParam();
     },
   });
 
-  if (!useQP.stationId) return null;
+  if (!stationId) return null;
 
   return (
     <DropdownMenu>
@@ -277,7 +347,9 @@ function StationMenu() {
           {/* <DropdownMenu.Arrow className="fill-white" /> */}
           <DropdownMenuItem
             onClick={() => {
-              d.mutate({ stationId: Number(useQP.stationId) });
+              if (stationId) {
+                d.mutate({ stationId: stationId });
+              }
             }}
           >
             delete
