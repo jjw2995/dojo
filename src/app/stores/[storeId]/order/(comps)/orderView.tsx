@@ -224,7 +224,6 @@ function ActionButtons({
       void utils.order.getTogoOrders.invalidate();
     },
   });
-  //   console.log(order.list);
 
   useEffect(() => {
     if (isScreenLg) {
@@ -324,7 +323,6 @@ const CategoryList = forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, children, ...props }, ref) => {
   const categories = api.category.get.useQuery();
-  //   console.log(categories.data);
 
   return (
     <div className={className} ref={ref} {...props}>
@@ -346,8 +344,6 @@ CategoryList.displayName = "CategoryList";
 function Category({ category }: { category: Category }): React.ReactNode {
   const items = category.items;
   const order = useOrder();
-
-  console.log(order.cursor);
 
   return (
     <AccordionItem value={"category" + category.id.toString()}>

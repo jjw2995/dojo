@@ -144,7 +144,6 @@ export const memberProcedure = protectedProcedure
     const storesIndex = urlArr?.findIndex((v) => {
       return v === "stores";
     });
-    // console.log("\n\n", urlArr, storesIndex, "\n\n");
 
     //  looks for storeId, Error if not found
     //  potentially flakey

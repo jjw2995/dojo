@@ -48,8 +48,6 @@ export function useItemPageUrl() {
   const createID = searchParams.get(QPARAM.createItemCategoryId);
   const editItemId = searchParams.get(QPARAM.editItemId);
 
-  //   console.log(itemId, createID);
-
   const pathname = usePathname();
 
   function getCreateCategoryUrl(catId: string) {
@@ -89,7 +87,7 @@ export default function Categories() {
         </div>
       </Accordion>
       <CreateCategory />
-      <div className="md:h- fixed w-full md:relative md:flex-1 md:border-l-2">
+      <div className="fixed w-full md:relative md:flex-1 md:border-l-2">
         <RenderOne
           componentArr={[
             createID && <CreateItem categoryId={Number(createID)} />,
@@ -102,7 +100,7 @@ export default function Categories() {
             ),
           ]}
           fallback={
-            <div className="center hidden h-screen items-center justify-center md:flex">
+            <div className="center hidden h-full items-center justify-center md:flex">
               <span className="text-5xl font-semibold text-slate-300">
                 Nothing
               </span>

@@ -63,8 +63,6 @@ export const categoryRouter = createTRPCRouter({
     //   .leftJoin(itemToTaxTable, eq(itemTable.id, itemToTaxTable.itemId))
     //   .leftJoin(taxTable, eq(itemToTaxTable.taxId, taxTable.id));
 
-    // // console.log(rows);
-
     // const res = rows.reduce<
     //   Record<number, { category: Category; items: Item[] }>
     // >((acc, row) => {

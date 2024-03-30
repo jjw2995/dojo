@@ -68,7 +68,6 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
       };
 
       const targetGroup = list[cursor.onGroup];
-      //   console.log(item, orderItem, targetGroup);
 
       if (targetGroup) {
         return {
@@ -171,11 +170,6 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
         if (targetGroup.length < 2) {
           const trailingGroupIdx =
             keepOrTrailIdx(curGroupIdx, list.length - 1) ?? 0;
-          console.log(
-            `curGroupIdx: ${curGroupIdx}, list.length: ${list.length}`,
-          );
-
-          console.log("in decCursor - trailingGroupIdx: ", trailingGroupIdx);
 
           const nextGroup = list[trailingGroupIdx];
           const tempOrderList = list.filter((_, gk) => gk !== curGroupIdx);

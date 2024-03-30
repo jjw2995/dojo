@@ -16,7 +16,6 @@ type CategoryInput = { itemName?: string; itemPrice?: string };
 
 function useToggle<T extends { id: number }>(init?: T[]) {
   const [arr, setArr] = useState<T[]>(init ? init : []);
-  //   console.log(init);
 
   function toggle(obj: T) {
     const index = arr.findIndex((v) => v.id === obj.id);
@@ -69,14 +68,6 @@ export default function EditItemView({
       toggleTaxes.toggleArrInit(details.data?.taxes);
     }
   }, [details.data]);
-  // form.getValues
-  console.log({
-    id: itemId.toString(),
-    // itemName: form.data.itemName,
-    // itemPrice: Number(data.itemPrice),
-    taxIds: toggledTaxes.map((r) => r.id),
-    stationIds: toggledStations.map((r) => r.id),
-  });
 
   const utils = api.useUtils();
   const onSubmit: SubmitHandler<CategoryInput> = (data) => {

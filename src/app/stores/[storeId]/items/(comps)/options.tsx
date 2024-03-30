@@ -58,7 +58,6 @@ function OptionCreate() {
       {/* modifier mode select */}
       {/* <RadioGroup.Root
         onValueChange={(v) => {
-          console.log(v);
         }}
         value={Kind[0]!.value}
       >

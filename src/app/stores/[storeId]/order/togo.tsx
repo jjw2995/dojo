@@ -38,9 +38,6 @@ export default function Togo() {
 }
 
 function Order({ order }: { order: Order }) {
-  console.log(order.createdAt);
-  //   console.log(new Date(order.createdAt));
-
   return (
     <Card>
       <CardHeader className="flex flex-col p-4">

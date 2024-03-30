@@ -126,10 +126,9 @@ function OrderList() {
                     <div className="border-b-2" key={`subOrder${subGIdx}`}>
                       {subOrder.map((item, idx) => {
                         return (
-                          <div
-                            key={`orderId_${order.id}_itemId_${item.id}_${idx}`}
-                          >
-                            {item.name}_
+                          <div key={`itemId_${item.id}_${idx}`}>
+                            <span>{item.qty}</span>
+                            <span className="ml-1">{item.name}</span>
                             {item.stations.map((station) => {
                               return `${station.name}_${station.id}`;
                             })}
@@ -151,46 +150,28 @@ function OrderList() {
   );
 }
 
-// function OrderList() {
-//     const orders = api.order.getOrders.useQuery();
-
-//     return (
-//       <div className="grid h-full snap-x snap-proximity grid-flow-col grid-rows-1 gap-2 overflow-x-scroll bg-pink-200 md:mx-4 md:flex-1 md:grid-flow-row md:grid-cols-4 md:grid-rows-2 md:overflow-hidden">
-//         {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((r) => {
-//           return (
-//             <Card
-//               key={r}
-//               className="h-[calc(100%-1rem)] w-[calc(100vw-2rem)] snap-center first:ml-4 last:mr-4 md:w-auto md:first:ml-0 md:last:mr-0"
-//             >
-//               <CardHeader>
-//                 <CardTitle>{r}_Card Title</CardTitle>
-//                 <CardDescription>Card Description</CardDescription>
-//               </CardHeader>
-//               <CardContent>
-//                 <p>Card Content</p>
-//               </CardContent>
-//               <CardFooter>
-//                 <p>Card Footer</p>
-//               </CardFooter>
-//             </Card>
-//           );
-//         })}
-//       </div>
-//     );
-//   }
-
 function useQueryParam() {
+  // TODO: component update colliding with query param update
+  //   Cannot update a component (`Page`) while rendering a different component (`StationSelect`).
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const stationId = searchParams.get(QPARAM);
 
+  const [url, setUrl] = useState(pathname);
+
+  //   useEffect(() => {
+  //     router.replace(url);
+  //   }, [url]);
+
   function resetQueryParam() {
     router.replace(pathname);
+    // setUrl(pathname);
   }
 
   function setQueryParam(val: string) {
     router.replace(`${pathname}?${QPARAM}=${val}`);
+    // setUrl(`${pathname}?${QPARAM}=${val}`);
   }
 
   return {
@@ -207,23 +188,18 @@ function StationSelect({
 }: ReturnType<typeof useQueryParam>) {
   const stations = api.station.get.useQuery();
   const [isOpen, setIsOpen] = useState(false);
-  const [value, setValue] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!stationId) {
-      setValue(null);
-    }
-  }, [stationId]);
+  //   const [value, setValue] = useState<string | null>(
+  //     stationId ? stationId.toString() : null,
+  //   );
 
   function setSelectValue(val: string) {
-    setValue(() => {
-      if (val === "_") {
-        resetQueryParam();
-        return null;
-      }
+    if (val === "_") {
+      resetQueryParam();
+    } else {
       setQueryParam(val);
-      return val;
-    });
+    }
+    // setValue(() => {
+    // });
   }
 
   return (
@@ -236,8 +212,8 @@ function StationSelect({
       >
         <SelectTrigger className="font-semibol w-[180px] text-xl">
           <SelectValue placeholder="station">
-            {value && stations.data
-              ? stations.data.find((r) => r.id === Number(value))?.name
+            {stationId && stations.data
+              ? stations.data.find((r) => r.id === stationId)?.name
               : "All"}
           </SelectValue>
         </SelectTrigger>
@@ -320,7 +296,6 @@ function Create({
   );
 }
 
-// function StationMenu({ stationId }: { stationId: number }) {
 function StationMenu({
   resetQueryParam,
   stationId,
