@@ -36,9 +36,9 @@ import EditItemView from "./editItem";
 
 type Category = RouterOutputs["category"]["get"][number];
 const QPARAM = {
-  itemId: "itemId",
-  createItemCategoryId: "createItemCategoryId",
-  editItemId: "editItemId",
+  itemId: "id",
+  createItemCategoryId: "create_item_category_id",
+  editItemId: "edit_item_id",
 };
 
 export function useItemPageUrl() {
@@ -54,11 +54,11 @@ export function useItemPageUrl() {
     return `${pathname}?${QPARAM.createItemCategoryId}=${catId}`;
   }
   function getItemDetailUrl(itemId: string) {
-    return `${pathname}?itemId=${itemId}`;
+    return `${pathname}?${QPARAM.itemId}=${itemId}`;
   }
 
   function getEditItemUrl(itemId: string) {
-    return `${pathname}?editItemId=${itemId}`;
+    return `${pathname}?${QPARAM.editItemId}=${itemId}`;
   }
 
   return {

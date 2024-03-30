@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "db:push": "dotenv drizzle-kit push:sqlite",
-    "db:pull": "dotenv drizzle-kit generate:sqlite --custom",
-    "db:studio": "dotenv drizzle-kit studio",
+    "dbpush": "dotenv drizzle-kit push:sqlite",
+    "dbpull": "dotenv drizzle-kit generate:sqlite --custom",
+    "dbstudio": "dotenv drizzle-kit studio --verbose",
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start"

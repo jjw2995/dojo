@@ -1,7 +1,7 @@
 import { relations, sql } from "drizzle-orm";
 
 import { type AdapterAccount } from "next-auth/adapters";
-import { orderItemListSchema } from "../customTypes";
+import { type orderItemListSchema } from "../customTypes";
 import {
   index,
   integer,
@@ -20,23 +20,6 @@ import {
  */
 
 export const sqliteTable = sqliteTableCreator((name) => `dojo_${name}`);
-
-// export const posts = mysqlTable(
-//   "post",
-//   {
-//     id: biginteger("id",{mode:"number"}, { mode: "number" }).primaryKey().autoincrement(),
-//     name: varchar("name", { length: 256 }),
-//     createdById: varchar("createdById", { length: 255 }).notNull(),
-//     createdAt: timestamp("created_at")
-//       .default(sql`CURRENT_TIMESTAMP`)
-//       .notNull(),
-//     updatedAt: timestamp("updatedAt").onUpdateNow(),
-//   },
-//   (example) => ({
-//     createdByIdIdx: index("createdById_idx").on(example.createdById),
-//     nameIndex: index("name_idx").on(example.name),
-//   }),
-// );
 
 export const users = sqliteTable("user", {
   id: text("id").notNull().primaryKey(),

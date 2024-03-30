@@ -3,7 +3,7 @@
 import { type ChangeEvent, useState, useEffect } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { api } from "~/trpc/react";
-import { RouterOutputs } from "~/trpc/shared";
+import { type RouterOutputs } from "~/trpc/shared";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Button } from "~/components/ui/button";
@@ -50,7 +50,6 @@ export default function EditItemView({
   const details = api.item.get.useQuery({ itemId: Number(itemId) });
   const initItem = details.data;
   const router = useRouter();
-  const pathname = usePathname();
   const form = useForm<CategoryInput>({
     values: { itemName: initItem?.name, itemPrice: initItem?.price.toString() },
   });

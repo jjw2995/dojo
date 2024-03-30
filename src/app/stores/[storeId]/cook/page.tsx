@@ -42,7 +42,6 @@ import {
 
 const NUM_OF_ORDERS = 8;
 
-type stationType = RouterOutputs["station"]["get"][number];
 type Order = RouterOutputs["order"]["getOrders"][number];
 type Orders = Order[] | undefined;
 
@@ -51,12 +50,12 @@ type StationInput = { stationName: string };
 const QPARAM = "stationId";
 
 export default function Page() {
-  const useQ = useQueryParam();
+  const useQP = useQueryParam();
   return (
     <div className="flex h-full flex-col">
       <div className="flex flex-row justify-between p-4 text-2xl">
-        <StationSelect {...useQ} />
-        <StationMenu {...useQ} />
+        <StationSelect {...useQP} />
+        <StationMenu {...useQP} />
       </div>
       <OrderList />
     </div>
@@ -148,37 +147,6 @@ function OrderList() {
       })}
     </div>
   );
-}
-
-function useQueryParam() {
-  // TODO: component update colliding with query param update
-  //   Cannot update a component (`Page`) while rendering a different component (`StationSelect`).
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const stationId = searchParams.get(QPARAM);
-
-  const [url, setUrl] = useState(pathname);
-
-  //   useEffect(() => {
-  //     router.replace(url);
-  //   }, [url]);
-
-  function resetQueryParam() {
-    router.replace(pathname);
-    // setUrl(pathname);
-  }
-
-  function setQueryParam(val: string) {
-    router.replace(`${pathname}?${QPARAM}=${val}`);
-    // setUrl(`${pathname}?${QPARAM}=${val}`);
-  }
-
-  return {
-    resetQueryParam,
-    setQueryParam,
-    stationId: stationId ? Number(stationId) : undefined,
-  };
 }
 
 function StationSelect({
@@ -300,7 +268,6 @@ function StationMenu({
   resetQueryParam,
   stationId,
 }: Omit<ReturnType<typeof useQueryParam>, "setQueryParam">) {
-  const useQP = useQueryParam();
   const util = api.useUtils();
   const d = api.station.delete.useMutation({
     onSuccess: async () => {
@@ -319,7 +286,6 @@ function StationMenu({
 
       <DropdownMenuPortal>
         <DropdownMenuContent align="end">
-          {/* <DropdownMenu.Arrow className="fill-white" /> */}
           <DropdownMenuItem
             onClick={() => {
               if (stationId) {
@@ -333,4 +299,35 @@ function StationMenu({
       </DropdownMenuPortal>
     </DropdownMenu>
   );
+}
+
+function useQueryParam() {
+  // TODO: component update colliding with query param update
+  //   Cannot update a component (`Page`) while rendering a different component (`StationSelect`).
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const stationId = searchParams.get(QPARAM);
+
+  //   const [url, setUrl] = useState(pathname);
+
+  //   useEffect(() => {
+  //     router.replace(url);
+  //   }, [url]);
+
+  function resetQueryParam() {
+    router.replace(pathname);
+    // setUrl(pathname);
+  }
+
+  function setQueryParam(val: string) {
+    router.replace(`${pathname}?${QPARAM}=${val}`);
+    // setUrl(`${pathname}?${QPARAM}=${val}`);
+  }
+
+  return {
+    resetQueryParam,
+    setQueryParam,
+    stationId: stationId ? Number(stationId) : undefined,
+  };
 }

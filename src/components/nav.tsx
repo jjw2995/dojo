@@ -47,9 +47,9 @@ export default function Nav({
         </Link>
         <Link
           className={`flex flex-col items-center text-center ${
-            isWordInPath("kitchen") ? "text-foreground" : ""
+            isWordInPath("cook") ? "text-foreground" : ""
           }`}
-          href={`/stores/${storeId}/kitchen`}
+          href={`/stores/${storeId}/cook`}
         >
           <CookingPot className="md:h-8 md:w-8" />
           cook
