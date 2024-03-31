@@ -36,12 +36,47 @@ export const orderRouter = createTRPCRouter({
     return await ctx.db
       .select()
       .from(orderTable)
-      .where(
-        and(eq(orderTable.isPaid, false), eq(orderTable.storeId, ctx.storeId)),
-      )
+      .where(eq(orderTable.storeId, ctx.storeId))
       .orderBy(orderTable.createdAt)
       .limit(100);
   }),
+
+  setStaionDone: memberProcedure
+    .input(z.object({ orderId: z.number(), stationId: z.number().optional() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.transaction(async (tx) => {
+        const [prevOrder] = await tx
+          .select()
+          .from(orderTable)
+          .where(eq(orderTable.id, input.orderId));
+
+        if (!prevOrder) return;
+
+        const updateList = prevOrder.list.map((subList) => {
+          return subList.map((item) => {
+            if (input.stationId) {
+              return {
+                ...item,
+                stations: item.stations.map((station) =>
+                  station.id === input.stationId
+                    ? { ...station, isDone: true }
+                    : station,
+                ),
+              };
+            } else {
+              return { ...item, isServed: true };
+            }
+          });
+        });
+
+        const [updatedOrder] = await tx
+          .update(orderTable)
+          .set({ list: updateList })
+          .where(eq(orderTable.id, input.orderId))
+          .returning();
+        return updatedOrder;
+      });
+    }),
 
   getTogoOrders: memberProcedure.query(async ({ ctx }) => {
     return await ctx.db

@@ -24,6 +24,7 @@ const orderItemSchema = z.object({
   price: z.number(),
   qty: z.number(),
   isPaid: z.boolean().default(false),
+  isServed: z.boolean().default(false),
   stations: z.array(stationSchema),
   taxes: z.array(taxSchema),
   options: z.array(optionSchema),

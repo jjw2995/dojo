@@ -40,10 +40,12 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 
-const NUM_OF_ORDERS = 8;
-
 type Order = RouterOutputs["order"]["getOrders"][number];
 type Orders = Order[] | undefined;
+
+type List = Order["list"];
+
+type OrderWithStation = Order & { isCurStationDone: boolean };
 
 type StationInput = { stationName: string };
 
@@ -65,65 +67,111 @@ export default function Page() {
 function filterByStation(
   orderList: Orders | undefined,
   stationId: number | undefined,
-) {
-  if (!orderList) return orderList;
+): OrderWithStation[] | undefined {
+  if (!orderList) return undefined;
 
-  if (!stationId) return orderList;
+  if (!stationId) {
+    return orderList.map((order) => {
+      return {
+        ...order,
+        isCurStationDone: order.list.every((r) => r.every((v) => v.isServed)),
+      };
+    });
+  }
+
+  //   let tempOrderList
 
   const tempOrderList = orderList.map((order) => {
+    let stations: boolean[] = [];
+    const tempList = order.list.map((items) => {
+      const tempItems = items.filter((item) =>
+        item.stations.find((station) => {
+          if (station.id === stationId) {
+            stations.push(station.isDone);
+            return true;
+          }
+          return false;
+        }),
+      );
+
+      if (tempItems.length > 0) {
+        return tempItems;
+      }
+      return undefined;
+    });
+    let b: List = [];
+
+    tempList.forEach((r) => {
+      if (r) {
+        b.push(r);
+      }
+    });
+
     return {
       ...order,
-      list: order.list
-        .map((items) => {
-          const tempItems = items.filter((item) =>
-            item.stations.find((station) => station.id === stationId),
-          );
-
-          if (tempItems.length > 0) {
-            return tempItems;
-          }
-          return undefined;
-        })
-        .filter((r) => r !== undefined),
-    } as Order;
+      list: b,
+      isCurStationDone: stations.every((r) => r),
+    };
   });
 
   return tempOrderList.filter((ol) => ol.list.length > 0);
 }
 
 // paginated orders hourly, completed or not,
+// TODO: optimize with react-window OR virtualized
 function OrderList() {
   const q = useQueryParam();
   const orders = api.order.getOrders.useQuery();
-  const [orderList, setOrderList] = useState<Orders>();
+  const [orderList, setOrderList] = useState<
+    Array<OrderWithStation> | undefined
+  >();
+  const setDone = api.order.setStaionDone.useMutation({
+    onSuccess(data, variables) {
+      setOrderList((prev) => {
+        if (!prev) {
+          return prev;
+        }
+
+        return prev.map((r) => {
+          if (r.id === variables.orderId) {
+            return { ...r, isCurStationDone: true };
+          }
+          return r;
+        });
+      });
+    },
+  });
   useEffect(() => {
-    setOrderList(filterByStation(orders.data, q.stationId));
+    let a = filterByStation(orders.data, q.stationId);
+
+    setOrderList(a);
   }, [orders.data, q.stationId]);
 
-  //   https://stackoverflow.com/questions/43311943/prevent-content-from-expanding-grid-items
   return (
-    <div className="grid h-full snap-x snap-proximity grid-flow-col grid-rows-1 gap-2 overflow-x-scroll md:mx-4 md:flex-1 md:grid-flow-row md:grid-cols-4 md:grid-rows-2 md:overflow-hidden">
-      {orderList?.slice(0, NUM_OF_ORDERS).map((order) => {
+    <div className="grid h-full snap-x snap-mandatory grid-flow-col grid-rows-1 gap-2 overflow-x-scroll md:gap-4">
+      {orderList?.map((order) => {
         return (
           <Card
             key={`orderId_${order.id}`}
-            className="flex h-[calc(100%-1rem)] w-[calc(100vw-2rem)] snap-center flex-col first:ml-4 last:mr-4 md:w-auto md:first:ml-0 md:last:mr-0"
+            className="flex h-[calc(100%-1rem)] w-[calc(100vw-2rem)] snap-center flex-col first:ml-4 last:mr-4 md:w-[calc(20vw)] md:snap-start md:scroll-ml-2 md:last:mr-[75vw]"
           >
             <CardHeader>
               <CardTitle className="flex justify-between">
-                <span>{order.name}</span>
+                {order.id}_<span>{order.name}</span>
               </CardTitle>
               <CardDescription className="flex justify-between">
                 <span>{order.type}</span>
-                <span>{order.createdAt}</span>
+                <span>
+                  {order.createdAt}_{order.isCurStationDone ? "done" : "no"}
+                </span>
               </CardDescription>
             </CardHeader>
             <CardContent className="grid flex-1 grid-cols-1 overflow-y-scroll">
               <div>
-                {order.list?.map((subOrder, subGIdx) => {
+                {order.list?.map((subList, subListIdx) => {
                   return (
-                    <div className="border-b-2" key={`subOrder${subGIdx}`}>
-                      {subOrder.map((item, idx) => {
+                    <div className="border-b-2" key={`subList${subListIdx}`}>
+                      {subList.map((item, idx) => {
                         return (
                           <div key={`itemId_${item.id}_${idx}`}>
                             <span>{item.qty}</span>
@@ -139,8 +187,14 @@ function OrderList() {
                 })}
               </div>
             </CardContent>
-            <CardFooter className="bg-slate-300">
-              <p>Card Footer</p>
+            <CardFooter className="justify-end">
+              <Button
+                onClick={() => {
+                  setDone.mutate({ orderId: order.id, stationId: q.stationId });
+                }}
+              >
+                done
+              </Button>
             </CardFooter>
           </Card>
         );
