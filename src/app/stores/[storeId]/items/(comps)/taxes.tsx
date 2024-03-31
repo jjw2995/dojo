@@ -55,7 +55,7 @@ export default function Taxes({
           <Plus className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="h-[20rem]">
         <Tabs defaultValue="tab1">
           <DialogHeader>
             <DialogTitle>Taxes</DialogTitle>
@@ -140,9 +140,8 @@ function TaxCreate() {
             })}
           />
         </div>
-        {/* </div> */}
       </form>
-      <DialogFooter className="justify-center gap-2 pt-8">
+      <DialogFooter className="pt-auto mt-auto justify-center gap-2">
         <Button type="submit" form="taxCreate">
           create tax
         </Button>
@@ -163,7 +162,7 @@ function TaxAssign({
 
   return (
     <div>
-      <ScrollArea className="h-36 w-full flex-1 rounded-md border">
+      <ScrollArea className="h-[12rem] w-full flex-1 rounded-md border">
         {taxes.data?.map((v) => {
           return (
             <div key={v.id}>
