@@ -64,87 +64,25 @@ export default function Page() {
   );
 }
 
-function filterByStation(
-  orderList: Orders | undefined,
-  stationId: number | undefined,
-): OrderWithStation[] | undefined {
-  if (!orderList) return undefined;
-
-  if (!stationId) {
-    return orderList.map((order) => {
-      return {
-        ...order,
-        isCurStationDone: order.list.every((r) => r.every((v) => v.isServed)),
-      };
-    });
-  }
-
-  //   let tempOrderList
-
-  const tempOrderList = orderList.map((order) => {
-    let stations: boolean[] = [];
-    const tempList = order.list.map((items) => {
-      const tempItems = items.filter((item) =>
-        item.stations.find((station) => {
-          if (station.id === stationId) {
-            stations.push(station.isDone);
-            return true;
-          }
-          return false;
-        }),
-      );
-
-      if (tempItems.length > 0) {
-        return tempItems;
-      }
-      return undefined;
-    });
-    let b: List = [];
-
-    tempList.forEach((r) => {
-      if (r) {
-        b.push(r);
-      }
-    });
-
-    return {
-      ...order,
-      list: b,
-      isCurStationDone: stations.every((r) => r),
-    };
-  });
-
-  return tempOrderList.filter((ol) => ol.list.length > 0);
-}
-
 // paginated orders hourly, completed or not,
 // TODO: optimize with react-window OR virtualized
 function OrderList() {
   const q = useQueryParam();
+  const utils = api.useUtils();
   const orders = api.order.getOrders.useQuery();
-  const [orderList, setOrderList] = useState<
-    Array<OrderWithStation> | undefined
-  >();
+  const [orderList, setOrderList] = useState<OrderWithStation[] | undefined>();
   const setDone = api.order.setStaionDone.useMutation({
     onSuccess(data, variables) {
-      setOrderList((prev) => {
-        if (!prev) {
-          return prev;
-        }
-
-        return prev.map((r) => {
-          if (r.id === variables.orderId) {
-            return { ...r, isCurStationDone: true };
-          }
-          return r;
-        });
+      utils.order.getOrders.setData(undefined, (prev) => {
+        return _setStationDone(prev, variables.orderId, variables.stationId);
       });
     },
   });
   useEffect(() => {
-    let a = filterByStation(orders.data, q.stationId);
+    let a = _filterByStation(orders.data, q.stationId);
+    const { orders: updateOrders } = _sortDone(a);
 
-    setOrderList(a);
+    setOrderList(updateOrders);
   }, [orders.data, q.stationId]);
 
   return (
@@ -384,4 +322,112 @@ function useQueryParam() {
     setQueryParam,
     stationId: stationId ? Number(stationId) : undefined,
   };
+}
+
+function _setStationDone(
+  orders: Orders,
+  orderId: number,
+  stationId: number | undefined,
+): Orders {
+  return orders?.map((order) => {
+    if (orderId !== order.id) return order;
+
+    return {
+      ...order,
+      list: order.list.map((subList) => {
+        return subList.map((item) => {
+          if (!stationId) {
+            return { ...item, isServed: true };
+          }
+          return {
+            ...item,
+            stations: item.stations.map((station) => {
+              if (stationId !== station.id) {
+                return station;
+              }
+              return { ...station, isDone: true };
+            }),
+          };
+        });
+      }),
+    };
+  });
+}
+
+// sortDone(orders: OrderWithStation[] | undefined):
+// (number | undefined)[] |
+// (number | OrderWithStation[])[]
+
+function _sortDone(orders: OrderWithStation[] | undefined) {
+  let tempDoneOrders: OrderWithStation[] = [];
+  let tempStillOrders: OrderWithStation[] = [];
+
+  if (!orders) {
+    const index = -1;
+    return { orders, index };
+  }
+
+  orders.forEach((order) => {
+    if (order.isCurStationDone) {
+      tempDoneOrders.push(order);
+    } else {
+      tempStillOrders.push(order);
+    }
+  });
+  const index = tempDoneOrders.length;
+  const arr = [...tempDoneOrders, ...tempStillOrders];
+  return { orders: arr, index };
+}
+
+function _filterByStation(
+  orders: Orders | undefined,
+  stationId: number | undefined,
+): OrderWithStation[] | undefined {
+  if (!orders) return undefined;
+
+  if (!stationId) {
+    return orders.map((order) => {
+      return {
+        ...order,
+        isCurStationDone: order.list.every((r) => r.every((v) => v.isServed)),
+      };
+    });
+  }
+
+  //   let temporders
+
+  const tempOrders = orders.map((order) => {
+    let stations: boolean[] = [];
+    const tempList = order.list.map((items) => {
+      const tempItems = items.filter((item) =>
+        item.stations.find((station) => {
+          if (station.id === stationId) {
+            stations.push(station.isDone);
+            return true;
+          }
+          return false;
+        }),
+      );
+
+      if (tempItems.length > 0) {
+        return tempItems;
+      }
+      return undefined;
+    });
+    let b: List = [];
+
+    tempList.forEach((r) => {
+      if (r) {
+        b.push(r);
+      }
+    });
+
+    return {
+      ...order,
+      list: b,
+      isCurStationDone: stations.every((r) => r),
+    };
+  });
+
+  return tempOrders.filter((ol) => ol.list.length > 0);
 }
