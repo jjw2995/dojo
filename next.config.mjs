@@ -3,8 +3,30 @@
  * for Docker builds.
  */
 await import("./src/env.mjs");
+import withPWAInit from "@ducanh2912/next-pwa";
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+  reactStrictMode: true,
 
-export default config;
+  /**
+   * If you have `experimental: { appDir: true }` set, then you must comment the below `i18n` config
+   * out.
+   *
+   * @see https://github.com/vercel/next.js/issues/41980
+   */
+  i18n: {
+    locales: ["en"],
+    defaultLocale: "en",
+  },
+};
+
+const withPWA = withPWAInit({
+  dest: "public",
+  // disable: process.env.NODE_ENV === "development",
+  register: true,
+  scope: "/app",
+  sw: "service-worker.js",
+});
+
+export default withPWA(config);
