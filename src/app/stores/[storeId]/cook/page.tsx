@@ -79,8 +79,8 @@ function OrderList() {
     },
   });
   useEffect(() => {
-    let a = _filterByStation(orders.data, q.stationId);
-    const { orders: updateOrders } = _sortDone(a);
+    const a = _filterByStation(orders.data, q.stationId);
+    const [updateOrders] = _sortDone(a);
 
     setOrderList(updateOrders);
   }, [orders.data, q.stationId]);
@@ -91,11 +91,12 @@ function OrderList() {
         return (
           <Card
             key={`orderId_${order.id}`}
-            className="flex h-[calc(100%-1rem)] w-[calc(100vw-2rem)] snap-center flex-col first:ml-4 last:mr-4 md:w-[calc(20vw)] md:snap-start md:scroll-ml-2 md:last:mr-[75vw]"
+            data-isDone={order.isCurStationDone}
+            className="flex h-[calc(100%-1rem)] w-[calc(100vw-2rem)] snap-center flex-col first:ml-4 last:mr-4 md:w-[calc(20vw)] md:snap-start md:scroll-ml-2 md:last:mr-[75vw] [&[data-isDone=true]]:bg-slate-300"
           >
             <CardHeader>
               <CardTitle className="flex justify-between">
-                {order.id}_<span>{order.name}</span>
+                <span>{order.name}</span>
               </CardTitle>
               <CardDescription className="flex justify-between">
                 <span>{order.type}</span>
@@ -158,8 +159,6 @@ function StationSelect({
     } else {
       setQueryParam(val);
     }
-    // setValue(() => {
-    // });
   }
 
   return (
@@ -354,17 +353,14 @@ function _setStationDone(
   });
 }
 
-// sortDone(orders: OrderWithStation[] | undefined):
-// (number | undefined)[] |
-// (number | OrderWithStation[])[]
-
 function _sortDone(orders: OrderWithStation[] | undefined) {
-  let tempDoneOrders: OrderWithStation[] = [];
-  let tempStillOrders: OrderWithStation[] = [];
+  const tempDoneOrders: OrderWithStation[] = [];
+  const tempStillOrders: OrderWithStation[] = [];
 
   if (!orders) {
     const index = -1;
-    return { orders, index };
+    const arr: OrderWithStation[] | undefined = undefined;
+    return [arr, index] as const;
   }
 
   orders.forEach((order) => {
@@ -376,7 +372,7 @@ function _sortDone(orders: OrderWithStation[] | undefined) {
   });
   const index = tempDoneOrders.length;
   const arr = [...tempDoneOrders, ...tempStillOrders];
-  return { orders: arr, index };
+  return [arr, index] as const;
 }
 
 function _filterByStation(
@@ -397,7 +393,7 @@ function _filterByStation(
   //   let temporders
 
   const tempOrders = orders.map((order) => {
-    let stations: boolean[] = [];
+    const stations: boolean[] = [];
     const tempList = order.list.map((items) => {
       const tempItems = items.filter((item) =>
         item.stations.find((station) => {
@@ -414,7 +410,7 @@ function _filterByStation(
       }
       return undefined;
     });
-    let b: List = [];
+    const b: List = [];
 
     tempList.forEach((r) => {
       if (r) {

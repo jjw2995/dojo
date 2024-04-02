@@ -27,7 +27,7 @@ export default function Togo() {
           return <Order order={order} key={`${order.id}_${ind}`} />;
         })}
       </div>
-      <OrderView orderMode="TOGO">
+      <OrderView orderMode="TOGO" isCreate>
         <Button className="fixed bottom-[6rem] right-[1rem] h-[3rem] w-[3rem] -translate-x-1/2 rounded-full p-2 lg:bottom-[6rem] lg:right-[6rem]">
           <Plus />
         </Button>

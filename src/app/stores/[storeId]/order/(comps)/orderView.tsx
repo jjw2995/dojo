@@ -53,31 +53,36 @@ type Category = RouterOutputs["category"]["get"][number];
 export default function OrderView({
   children,
   orderMode,
+  isCreate,
 }: {
   children: React.ReactNode;
   orderMode: orderMode;
+  isCreate: boolean;
 }) {
   // TODO: something wrong with how orderList is interacting with orderButtons
-  //   const [isOpen, setIsOpen] = useState(false);
-  //     const closeOrderView = ()=>{
-  //       setIsOpen(false)
-  //     }
+  const [isOpen, setIsOpen] = useState(false);
+  const closeOrderView = () => {
+    setIsOpen(false);
+  };
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="flex h-screen w-screen max-w-full flex-col rounded-none md:rounded-none">
         <OrderInfoContextProvider>
           <OrderContextProvider>
             <DialogHeader className="text-start">
-              <TitleOrderInfo orderMode={orderMode} />
+              <TitleOrderInfo orderMode={orderMode} startOpen={isCreate} />
             </DialogHeader>
             {/* come back werid lg screen */}
             <div className="flex h-full max-w-full flex-col rounded-none md:flex-row">
               <div className="flex h-[20rem] flex-col md:h-[52rem] md:w-[45%]">
                 {/* <div className="flex h-[20rem] flex-col outline md:h-[50rem] md:w-[45%]"> */}
                 <OrderList className="flex-1" />
-                <ActionButtons type={orderMode} />
+                <ActionButtons
+                  type={orderMode}
+                  closeOrderView={closeOrderView}
+                />
               </div>
               <CategoryList className="flex h-[20rem] overflow-y-scroll md:mt-0 md:h-full md:flex-1" />
             </div>
@@ -88,19 +93,21 @@ export default function OrderView({
   );
 }
 
-function TitleOrderInfo({ orderMode }: { orderMode: orderMode }) {
+function TitleOrderInfo({
+  orderMode,
+  startOpen,
+}: {
+  orderMode: orderMode;
+  startOpen: boolean;
+}) {
   const orderInfo = useOrderInfo();
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <DialogTitle className="flex">
-      <Dialog>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button
-            variant="default"
-            // className=""
-            size="sm"
-            //   className="text- decoration-slate-400 underline-offset-2"
-          >
+          <Button variant="default" size="sm">
             Table Info
           </Button>
         </DialogTrigger>
@@ -209,9 +216,11 @@ function OrderList({ className }: { className?: string }) {
 function ActionButtons({
   className,
   type,
+  closeOrderView,
 }: {
   className?: string;
   type: orderMode;
+  closeOrderView: () => void;
 }) {
   const isScreenLg = useIsScreenLg();
   const [isOpen, setOpen] = useState(false);
@@ -222,6 +231,7 @@ function ActionButtons({
     onSuccess: () => {
       // order.fn.clearList()
       void utils.order.getTogoOrders.invalidate();
+      closeOrderView();
     },
   });
 

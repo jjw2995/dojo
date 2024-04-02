@@ -52,7 +52,7 @@ export default function ItemDetail({ itemId }: { itemId: number }) {
   const pathname = usePathname();
 
   return (
-    <div className="h-screen flex-col bg-background">
+    <div className="flex-col bg-background">
       <div className="flex justify-between md:justify-end">
         <ChevronLeft
           className="m-2 h-8 w-8 md:hidden"
