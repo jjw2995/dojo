@@ -34,7 +34,6 @@ import { RouterOutputs } from "~/trpc/shared";
 import Options from "./(comps)/options";
 import { Input } from "~/components/ui/input";
 import Link from "next/link";
-import { useItemPageUrl } from "./page";
 import {
   Card,
   CardContent,
@@ -43,6 +42,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { useItemPageUrl } from "./(comps)/utils";
 
 type Details = RouterOutputs["item"]["get"];
 
