@@ -5,6 +5,8 @@
 await import("./src/env.mjs");
 import withPWAInit from "@ducanh2912/next-pwa";
 
+// https://ducanh-next-pwa.vercel.app/docs/next-pwa/getting-started
+
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
