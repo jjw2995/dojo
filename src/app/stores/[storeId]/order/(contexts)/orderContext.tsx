@@ -65,6 +65,7 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
         options: [],
         qty: 1,
         isPaid: false,
+        isServed: false,
       };
 
       const targetGroup = list[cursor.onGroup];
