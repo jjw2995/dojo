@@ -91,7 +91,7 @@ export default function EditItemView({
   };
 
   return (
-    <div className="bg- flex h-screen flex-col bg-background text-2xl">
+    <div className="flex h-screen flex-col bg-background md:h-full">
       <ChevronLeft
         className="m-2 h-8 w-8"
         onClick={() => {
@@ -103,7 +103,7 @@ export default function EditItemView({
         onSubmit={form.handleSubmit(onSubmit)}
         className="mx-4 flex flex-col space-y-2"
       >
-        <h1 className="text-center">Edit Item</h1>
+        <h1 className="text-center text-2xl">Edit Item</h1>
         <div className="px-4">
           <Label htmlFor="itemName">Name</Label>
           <Input

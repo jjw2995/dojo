@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <div className="flex h-screen w-screen animate-pulse items-center justify-center text-center text-2xl font-semibold">
+    <div className="animate-pulse text-3xl font-semibold text-slate-500 md:text-4xl">
       loading
     </div>
   );

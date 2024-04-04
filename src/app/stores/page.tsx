@@ -35,12 +35,10 @@ export default function Stores() {
               {stores.data ? (
                 stores.data.map(({ store }) => {
                   return (
-                    <Link href={`/stores/${store.id}/home`} key={store.id}>
+                    <Link href={`/stores/${store.id}/items`} key={store.id}>
                       <Card>
                         <CardHeader>
-                          <CardTitle className="text-xl">
-                            {store.name}
-                          </CardTitle>
+                          <CardTitle className="text-">{store.name}</CardTitle>
                         </CardHeader>
                       </Card>
                     </Link>

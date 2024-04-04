@@ -10,13 +10,17 @@ export default function BaseAuth({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    if (status == "unauthenticated") {
+    if (status === "unauthenticated") {
       router.push("/");
     }
   }, [status, router]);
 
   if (status !== "authenticated") {
-    return <Loading />;
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Loading />
+      </div>
+    );
   } else {
     return <>{children}</>;
   }

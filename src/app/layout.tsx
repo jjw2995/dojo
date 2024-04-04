@@ -58,6 +58,7 @@ export const metadata: Metadata = {
     },
     description: APP_DESCRIPTION,
   },
+  icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
 export const viewport: Viewport = {

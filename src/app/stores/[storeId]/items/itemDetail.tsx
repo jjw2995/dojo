@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  ChevronLeft,
-  Cross,
-  DeleteIcon,
-  Edit,
-  MoreVertical,
-  Trash,
-  X,
-} from "lucide-react";
+import { ChevronLeft, Edit, MoreVertical, Trash } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   AlertDialog,
@@ -36,9 +28,7 @@ import { Input } from "~/components/ui/input";
 import Link from "next/link";
 import {
   Card,
-  CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
@@ -52,7 +42,7 @@ export default function ItemDetail({ itemId }: { itemId: number }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex-col bg-background">
+    <div className="flex h-screen flex-col bg-background md:h-full">
       <div className="flex justify-between md:justify-end">
         <ChevronLeft
           className="m-2 h-8 w-8 md:hidden"
@@ -62,7 +52,7 @@ export default function ItemDetail({ itemId }: { itemId: number }) {
         />
         <ItemMenu className="m-2 h-8 w-8" itemId={itemId} />
       </div>
-      <h3 className="text-center text-2xl font-semibold">Item</h3>
+      <h1 className="my-2 text-center text-2xl">Item</h1>
       {details.data ? <Item item={details.data} /> : null}
     </div>
   );
@@ -73,9 +63,7 @@ function Item({ item }: { item: Details }) {
     return null;
   }
   return (
-    <div className="flex flex-col space-y-4">
-      {/* <Label>{item.name}</Label>
-      <Label>${item.price}</Label> */}
+    <div className="mx-4 flex flex-col space-y-2">
       <div className="px-4">
         <Label htmlFor="itemName">Name</Label>
         <Input id="itemName" placeholder="item name" value={item.name} />
@@ -99,7 +87,7 @@ function Item({ item }: { item: Details }) {
 
 function Taxes({ taxes }: { taxes: Details["taxes"] }) {
   return (
-    <div className="flex w-full flex-col px-4">
+    <div className="flex w-full flex-col px-4 py-2">
       <Label>Taxes</Label>
       {/* fix overflow behavior... or change scroll orientation */}
       <div className="no-scrollbar flex overflow-x-scroll">
@@ -125,7 +113,7 @@ function Taxes({ taxes }: { taxes: Details["taxes"] }) {
 
 function Stations({ stations }: { stations: Details["stations"] }) {
   return (
-    <div className="flex w-full flex-col px-4">
+    <div className="flex w-full flex-col px-4 py-2">
       <Label>Stations</Label>
       {/* fix overflow behavior... or change scroll orientation */}
       <div className="no-scrollbar flex overflow-x-scroll">

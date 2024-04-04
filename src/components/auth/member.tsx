@@ -12,20 +12,28 @@ export default function MemberAuth({
   children: React.ReactNode;
   storeId: string;
 }) {
-  const { data: isMember, isLoading } = api.store.isMember.useQuery({
+  const {
+    data: isMember,
+    isLoading,
+    error,
+  } = api.store.isMember.useQuery({
     storeId,
   });
 
   const router = useRouter();
 
   useEffect(() => {
-    if (isMember === false) {
+    if (!isLoading && !isMember) {
       router.push("/stores");
     }
   }, [isLoading, router, isMember]);
 
   if (isLoading || !isMember) {
-    return <Loading />;
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Loading />
+      </div>
+    );
   } else {
     return <>{children}</>;
   }

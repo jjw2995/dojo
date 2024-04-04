@@ -43,17 +43,26 @@ export default function Categories() {
 
   return (
     <div className="flex h-full">
-      <Accordion className="no-scrollbar flex-1 overflow-auto" type="multiple">
-        <div className="relative md:mx-4 md:mb-0">
-          {categories.data?.map((category) => {
-            return (
-              <Category key={`catId_${category.id}`} category={category} />
-            );
-          })}
+      {categories.data ? (
+        <Accordion
+          className="no-scrollbar flex-1 overflow-auto"
+          type="multiple"
+        >
+          <div className="relative md:mx-4 md:mb-0">
+            {categories.data.map((category) => {
+              return (
+                <Category key={`catId_${category.id}`} category={category} />
+              );
+            })}
+          </div>
+        </Accordion>
+      ) : (
+        <div className="flex h-full w-full items-center justify-center text-center text-3xl font-semibold text-slate-400 md:text-4xl">
+          add category
         </div>
-      </Accordion>
+      )}
       <CreateCategory />
-      <div className="fixed w-full md:relative md:flex-1 md:border-l-2">
+      <div className="fixed w-full md:static md:flex-1 md:border-l-2">
         <RenderOne
           componentArr={[
             createID && <CreateItem categoryId={Number(createID)} />,

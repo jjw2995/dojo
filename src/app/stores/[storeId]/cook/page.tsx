@@ -59,14 +59,14 @@ export default function Page() {
         <StationSelect {...useQP} />
         <StationMenu {...useQP} />
       </div>
-      <OrderList />
+      <CookList />
     </div>
   );
 }
 
 // paginated orders hourly, completed or not,
 // TODO: optimize with react-window OR virtualized
-function OrderList() {
+function CookList() {
   const q = useQueryParam();
   const utils = api.useUtils();
   const orders = api.order.getOrders.useQuery();
@@ -85,9 +85,17 @@ function OrderList() {
     setOrderList(updateOrders);
   }, [orders.data, q.stationId]);
 
+  if (!orderList) {
+    return (
+      <div className="flex h-full w-full items-center justify-center text-center text-3xl font-semibold text-slate-400 md:text-4xl">
+        waiting...
+      </div>
+    );
+  }
+
   return (
     <div className="grid h-full snap-x snap-mandatory grid-flow-col grid-rows-1 gap-2 overflow-x-scroll md:gap-4">
-      {orderList?.map((order) => {
+      {orderList.map((order) => {
         return (
           <Card
             key={`orderId_${order.id}`}
