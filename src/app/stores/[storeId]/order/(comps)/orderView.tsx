@@ -84,7 +84,7 @@ export default function OrderView({
                   closeOrderView={closeOrderView}
                 />
               </div>
-              <CategoryList className="flex h-[20rem] overflow-y-scroll md:mt-0 md:h-full md:flex-1" />
+              <CategoryList className="flex h-[20rem] overflow-y-auto pt-4 md:mt-0 md:h-full md:flex-1" />
             </div>
           </OrderContextProvider>
         </OrderInfoContextProvider>
@@ -145,17 +145,23 @@ function TitleOrderInfo({
           </div>
         </DialogContent>
       </Dialog>
-      <div className="ml-2 flex flex-1">
-        <div className="flex flex-1 basis-1/3 flex-col md:w-[20rem] md:flex-none">
-          <span>
-            {orderInfo.tableName ? orderInfo.tableName : "uber #1253"}
+      <div className="ml-2 flex flex-1 md:ml-4">
+        <div className="flex flex-1 basis-1/3 flex-col gap-1 md:w-[20rem] md:flex-none">
+          <span className="text-xs text-muted-foreground">
+            {orderMode.toUpperCase()}
           </span>
-          <span className="text-sm">{orderMode.toUpperCase()}</span>
+          <div className="md:text-xl">
+            {orderInfo.tableName ? (
+              <span>{orderInfo.tableName}</span>
+            ) : (
+              <span className="text-muted-foreground">table name</span>
+            )}
+          </div>
         </div>
-        <div className="flex flex-1 basis-2/3 flex-col">
+        {/* <div className="flex flex-1 basis-2/3 flex-col">
           <span>prep by</span>
           <span>created at</span>
-        </div>
+        </div> */}
       </div>
     </DialogTitle>
   );
@@ -168,7 +174,7 @@ function OrderList({ className }: { className?: string }) {
 
   return (
     // https://github.com/shadcn-ui/ui/issues/1151
-    <div className={cn("overflow-y-scroll", className)}>
+    <div className={cn("overflow-y-auto", className)}>
       <Table>
         <TableHeader className="sticky top-0 bg-background">
           <TableRow className="pointer-events-none">

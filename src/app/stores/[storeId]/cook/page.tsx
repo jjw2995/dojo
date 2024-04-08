@@ -94,13 +94,13 @@ function CookList() {
   }
 
   return (
-    <div className="grid h-full snap-x snap-mandatory grid-flow-col grid-rows-1 gap-2 overflow-x-scroll md:gap-4">
+    <div className="grid h-full snap-x snap-mandatory grid-flow-col grid-rows-1 gap-2 overflow-x-auto md:gap-4">
       {orderList.map((order) => {
         return (
           <Card
             key={`orderId_${order.id}`}
             data-isDone={order.isCurStationDone}
-            className="flex h-[calc(100%-1rem)] w-[calc(100vw-2rem)] snap-center flex-col first:ml-4 last:mr-4 md:w-[calc(20vw)] md:snap-start md:scroll-ml-2 md:last:mr-[75vw] [&[data-isDone=true]]:bg-slate-300"
+            className="flex h-[calc(100%-1rem)] w-[calc(100vw-2rem)] snap-center flex-col first:ml-4 last:mr-4 md:w-[20vw] md:snap-start md:scroll-ml-2 md:last:mr-[75vw] [&[data-isDone=true]]:bg-slate-300"
           >
             <CardHeader>
               <CardTitle className="flex justify-between">
@@ -113,7 +113,7 @@ function CookList() {
                 </span>
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid flex-1 grid-cols-1 overflow-y-scroll">
+            <CardContent className="grid flex-1 grid-cols-1 overflow-y-auto">
               <div>
                 {order.list?.map((subList, subListIdx) => {
                   return (

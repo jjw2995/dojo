@@ -7,20 +7,21 @@ import {
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { useState } from "react";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-
-const Kind = [
-  { value: "single", desc: "sg desc" },
-  { value: "multiple", desc: "ml desc" },
-];
+import { Button } from "~/components/ui/button";
+import { Plus } from "lucide-react";
 
 export default function Options() {
   return (
     <Dialog>
-      <DialogTrigger>Open</DialogTrigger>
+      <DialogTrigger asChild>
+        <Button className=" m-2 p-2">
+          <Plus className="h-4 w-4" />
+        </Button>
+      </DialogTrigger>
       <DialogContent className="h-[60%]">
         <Tabs defaultValue="create">
           <DialogTitle className="mb-2">Options</DialogTitle>
@@ -38,59 +39,86 @@ export default function Options() {
   );
 }
 
-type OptionInput = { optionName: string };
+type OptionInput = {
+  optionName: string;
+  numChoices: number;
+  minSelect: number;
+  maxSelect: number;
+
+  options: { name: string; price: number }[];
+};
 function OptionCreate() {
-  // minSelect 0 === not mandatory
-  const [option, setOption] = useState({
-    numChoices: 1,
-    minSelect: 0,
-    maxSelect: 1,
-  });
   const form = useForm<OptionInput>();
+  //   error with useFieldArray, it just says string not assignable to
+  const options = useFieldArray({ name: "options", control: form.control });
+
+  const numChoices = form.watch("numChoices", 0);
+
+  console.log(form.watch());
+  console.log(numChoices);
+
+  function getInteger(strNum: string | undefined | number) {
+    if (!strNum) return 0;
+    return Number(Number(strNum).toFixed(0));
+  }
 
   return (
-    <form>
+    <form className="flex flex-col space-y-2">
       <Input
         placeholder="option name"
         {...form.register("optionName", { required: true })}
       />
 
-      {/* modifier mode select */}
-      {/* <RadioGroup.Root
-        onValueChange={(v) => {
-        }}
-        value={Kind[0]!.value}
-      >
-        {Kind.map((v) => {
-          return (
-            <div className="flex items-center" key={v.value}>
-              <RadioGroup.Item value={v.value} className="flex" id={v.value}>
-                <RadioGroup.Indicator className="absolute h-4 w-4 bg-black" />
-              </RadioGroup.Item>
-              <Label className="pl-10" htmlFor={v.value}>
-                {v.value}
-              </Label>
-            </div>
-          );
-        })}
-      </RadioGroup.Root> */}
-
-      <div>
+      <div className="flex items-center justify-between">
         <Label htmlFor="">number of choices</Label>
-        <Input type="number" value={option.numChoices} name="" id="" />
+        <Input
+          type="number"
+          className="w-20"
+          {...form.register("numChoices", {
+            // required: true,
+            valueAsNumber: true,
+            value: 0,
+          })}
+        />
       </div>
 
-      <div>
-        <Label htmlFor="">min selection</Label>
-        <Input type="number" value={option.minSelect} name="" id="" />
+      <div className="flex items-center justify-between">
+        <Label htmlFor="">toggle at least...</Label>
+        <Input
+          type="number"
+          className="w-20"
+          {...form.register("minSelect", {
+            required: true,
+            valueAsNumber: true,
+            value: 0,
+            disabled: numChoices < 1,
+          })}
+        />
       </div>
 
-      <div>
-        <Label htmlFor="">max selection</Label>
-        <Input type="number" value={option.maxSelect} name="" id="" />
+      <div className="flex items-center justify-between">
+        <Label htmlFor="">toggle at most...</Label>
+        <Input
+          type="number"
+          className="w-20"
+          {...form.register("maxSelect", {
+            required: true,
+            valueAsNumber: true,
+            disabled: numChoices < 1,
+          })}
+        />
       </div>
-
-      {/*  */}
+      <div className="flex h-[10rem] overflow-y-auto">
+        <div className="flex-1">
+          {/* form.watch("numChoices", 0) CLAIMS its returning a number
+          IT IS NOT */}
+          {Array(getInteger(numChoices))
+            .fill({ name: "name", price: 0 })
+            .map((r, i) => {
+              return <div>???{i}</div>;
+            })}
+        </div>
+      </div>
     </form>
   );
 }

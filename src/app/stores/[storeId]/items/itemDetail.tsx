@@ -80,14 +80,17 @@ function Item({ item }: { item: Details }) {
       </div>
       <Taxes taxes={item.taxes} />
       <Stations stations={item.stations} />
-      {/* <Options /> */}
+      <div className="px-4">
+        <Label htmlFor="itemPrice">Options</Label>
+        <Options />
+      </div>
     </div>
   );
 }
 
 function Taxes({ taxes }: { taxes: Details["taxes"] }) {
   return (
-    <div className="flex w-full flex-col px-4 py-2">
+    <div className="flex h-full w-full flex-col px-4 py-2">
       <Label>Taxes</Label>
       {/* fix overflow behavior... or change scroll orientation */}
       <div className="no-scrollbar flex overflow-x-scroll">

@@ -45,7 +45,7 @@ export default function Page({ params }: { params: { storeId: string } }) {
         setTabParam(value);
       }}
     >
-      <div className="sticky top-0 flex justify-center bg-background pt-2 md:py-4">
+      <div className="sticky top-0 flex justify-center bg-background py-2 md:py-4">
         <TabsList className="w-full md:w-96">
           <TabsTrigger className="text-xl md:text-2xl" value="table" disabled>
             table
@@ -58,11 +58,13 @@ export default function Page({ params }: { params: { storeId: string } }) {
           </TabsTrigger>
         </TabsList>
       </div>
-      <TabsContent value="table"></TabsContent>
-      <TabsContent value="togo">
-        <Togo />
-      </TabsContent>
-      <TabsContent value="all"></TabsContent>
+      <div className="pt-2">
+        <TabsContent value="table"></TabsContent>
+        <TabsContent value="togo">
+          <Togo />
+        </TabsContent>
+        <TabsContent value="all"></TabsContent>
+      </div>
     </Tabs>
   );
 }

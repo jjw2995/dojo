@@ -31,6 +31,8 @@ It will be considered sucessful if acquaintance's sandwich shop (that does not u
 
 #### Items
 
+This page is where user would register items in their menu. Allow CRUD of items, assign taxes and options.
+
 - [ ] CRUD category (CRD)
 
   - [x] create category
@@ -59,7 +61,43 @@ It will be considered sucessful if acquaintance's sandwich shop (that does not u
   - [ ] CRUD option
   - [ ] assign options
 
+- [ ] create options
+- [ ] delete options
+- [ ] edit options
+
+I don't know what kind of option I want
+
+boolean
+select one (1~many, toggle only one)
+select
+
+number of togglable
+toggle at least...
+toggle at most...
+
+4 selectable, toggle 0~1
+
+Initially, I was trying to build the most complete modifier, but decided against it and reined back a little.
+
+I decided to first build "multi choice toggle".
+
+With [# of choices, min choices, max choices], I can effectively cover single choice on/off, multi-choice choose none ~ all.
+
+With # of choices, a choice name & choice cost
+
+Options with counters, more akin to drink category will be implemented later with
+
+I thought about allowing items point to same modifiers, but it would be messy in cases where the
+
+It is better to keep modifiers separate, but allow user to copy & edit from other item modifiers.
+
+having their
+
+I used CSS bottom:0 with the fixed position property which pushes the element to the footer and fixes it so when the keyboard is raised it pushes it upwards automatically.
+
 #### Order
+
+This page is where hall would use to input orders and receive payments.
 
 - [x] OrderView component
 
@@ -81,6 +119,8 @@ It will be considered sucessful if acquaintance's sandwich shop (that does not u
 - [ ] online
 
 #### Cook
+
+This page is for the kitchen stations. Selecting a station will only show items relevent to it.
 
 - [x] create stations
 - [x] delete stations
@@ -104,6 +144,103 @@ It will be considered sucessful if acquaintance's sandwich shop (that does not u
 - [ ] work hour logger
 
 ## Tech log
+
+<details>
+<summary>
+Is it react-hook-form or is it just me? potential gotchas
+</summary>
+
+<br/>
+TLDR;
+
+1. `watch("numberField",{default:0})` does not return a number (returns string for some reason)
+2. If you use useFieldArray with useForm (and have defined formType), define your fieldArrayType within the formType and align the name (...doc does show this I just missed it).
+
+## 1 `toFixed` is not a function of "Number" type
+
+```js
+type OptionInput = {
+  numChoices: number;
+};
+
+const form = useForm<OptionInput>();
+const numChoices = form.watch("numChoices", 0);
+
+//          vvv Error "cannot find toFixed prop"
+numChoices.toFixed(0)
+```
+
+According to docs and TS LSP, `numChoices.toFixed(0)` shouldn't have any problem as it returns Number and default value of 0 otherwise.
+
+But when I call it, throws an error `numChoices.toFixed is not a function`, meaning that it did not return a type Number.
+
+<br/>
+
+In reality, it is returning a string as below works as expected.
+
+```jsx
+Number(numChoices).toFixed(0);
+```
+
+I am guessing that RHF is using JSDOC to interface with the app developers and mistake is made somewhere in the chain. I'll report this at later time.
+
+<br/>
+<br/>
+
+## 2 Define array field in original useForm hook
+
+I was trying to have a form with meta information and an array of fields.
+
+For example, I wanted to represent a modifer as below with multiple options that could be toggled.
+
+```js
+type OptionInput = {
+  someMetaInfo: string;
+  options: { name: string; price: number }[];
+};
+```
+
+I searched for RHF way to do array of inputs and landed on [`useFieldArray()` method](https://react-hook-form.com/docs/usefieldarray).
+
+Following the doc, I came to code below midway.
+
+```jsx
+type OptionInput = {
+  someMetaInfo: string;
+};
+function OptionCreate() {
+  const form = useForm<OptionInput>();
+                                   // vvv Error
+  const options = useFieldArray({ name: "options", control: form.control });
+
+  return <></>
+}
+```
+
+where "name" field errors with the following `Type 'string' is not assignable to type 'never'.` I was confused and read the doc again but I was just following along.
+
+Maybe... I need to define the array in formType and useFieldArray needs to refer to it correctly.
+
+```jsx
+type OptionInput = {
+  someMetaInfo: string;
+  options: { name: string; price: number }[];
+};
+function OptionCreate() {
+  const form = useForm<OptionInput>();
+  const options = useFieldArray({ name: "options", control: form.control });
+
+  return <></>
+}
+```
+
+And no error.
+
+### edit
+
+RHF does show how to use useFieldArray in TS, I just didn't notice the TS toggle till now. Number issue on form.watch is still valid though.
+
+</details>
 
 <details>
 <summary>
