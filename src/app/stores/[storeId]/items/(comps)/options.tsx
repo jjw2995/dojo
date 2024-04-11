@@ -7,6 +7,8 @@ import {
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
+import { type ChangeEvent } from "react";
+
 import { useFieldArray, useForm } from "react-hook-form";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -83,6 +85,29 @@ function OptionCreate({ itemId }: { itemId: number }) {
               valueAsNumber: true,
               value: 0,
               disabled: choicesArr.length < 1,
+              onChange(e: ChangeEvent<HTMLInputElement>) {
+                if (e.target.value !== "") {
+                  e.target.value = Math.min(
+                    Math.max(0, Number(e.target.value)),
+                    choicesArr.length,
+                  ).toString();
+
+                  //   console.log(form.getValues("maxSelect"));
+
+                  if (
+                    form.getValues("maxSelect") &&
+                    form.getValues("maxSelect").toString() !== ""
+                  ) {
+                    form.setValue(
+                      "maxSelect",
+                      Math.max(
+                        Number(e.target.value),
+                        form.getValues("maxSelect"),
+                      ),
+                    );
+                  }
+                }
+              },
             })}
           />
         </div>
@@ -96,6 +121,17 @@ function OptionCreate({ itemId }: { itemId: number }) {
               required: true,
               valueAsNumber: true,
               disabled: choicesArr.length < 1,
+              onChange(e) {
+                if (e.target.value !== "") {
+                  e.target.value = Math.min(
+                    Math.max(
+                      form.getValues("minSelect"),
+                      Number(e.target.value),
+                    ),
+                    choicesArr.length,
+                  ).toString();
+                }
+              },
             })}
           />
         </div>

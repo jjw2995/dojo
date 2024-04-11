@@ -57,8 +57,7 @@ This page is where user would register items in their menu. Allow CRUD of items,
 - [x] Assign taxes
 
 - [ ] option
-
-  - [ ] CRUD option (C)
+  - [ ] CRUD option (CR)
 
 I used CSS bottom:0 with the fixed position property which pushes the element to the footer and fixes it so when the keyboard is raised it pushes it upwards automatically.
 
