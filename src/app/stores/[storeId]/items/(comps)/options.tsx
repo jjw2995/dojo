@@ -66,7 +66,7 @@ function OptionCreate({ itemId }: { itemId: number }) {
 
   return (
     <div className="mt-6 flex flex-col space-y-3">
-      <div className="flex items-center justify-between">
+      <div className="mx-2 flex items-center justify-between">
         <Label htmlFor="">option name</Label>
         <Input
           className="w-60 text-end"
@@ -74,7 +74,7 @@ function OptionCreate({ itemId }: { itemId: number }) {
           {...form.register("name", { required: true })}
         />
       </div>
-      <div className="flex items-end justify-between">
+      <div className="mx-2 flex items-end justify-between">
         <div className="text-center">
           <Label htmlFor="">min select</Label>
           <Input
