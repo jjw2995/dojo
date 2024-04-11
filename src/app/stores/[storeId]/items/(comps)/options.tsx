@@ -1,7 +1,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
@@ -9,21 +8,15 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 import { useFieldArray, useForm } from "react-hook-form";
-import { useState } from "react";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Button } from "~/components/ui/button";
 import { Plus, X } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
+import { Card, CardContent } from "~/components/ui/card";
+import { api } from "~/trpc/react";
+import { z } from "zod";
 
-export default function Options() {
+export default function OptionModal({ itemId }: { itemId: number }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -39,7 +32,7 @@ export default function Options() {
             <TabsTrigger value="edit">Edit</TabsTrigger>
           </TabsList>
           <TabsContent value="create">
-            <OptionCreate />
+            <OptionCreate itemId={itemId} />
           </TabsContent>
           <TabsContent value="edit">Change your password here.</TabsContent>
         </Tabs>
@@ -48,19 +41,27 @@ export default function Options() {
   );
 }
 
-type OptionInput = {
-  optionName: string;
-  minSelect: number;
-  maxSelect: number;
-  choices: { name: string; price: number }[];
-};
-function OptionCreate() {
-  const form = useForm<OptionInput>();
+export const optionInputSchema = z.object({
+  name: z.string(),
+  minSelect: z.number(),
+  maxSelect: z.number(),
+  choices: z.array(z.object({ name: z.string(), price: z.number() })),
+});
+
+type OptionInputType = typeof optionInputSchema._type;
+
+function OptionCreate({ itemId }: { itemId: number }) {
+  const form = useForm<OptionInputType>();
+  const optionCreate = api.option.create.useMutation({
+    onSuccess(data, variables, context) {
+      form.reset();
+    },
+  });
   //   error with useFieldArray, it just says string not assignable to
   const choices = useFieldArray({ name: "choices", control: form.control });
 
   const choicesArr = form.watch("choices", []);
-  console.log(choicesArr.length);
+
   return (
     <div className="mt-6 flex flex-col space-y-3">
       <div className="flex items-center justify-between">
@@ -68,7 +69,7 @@ function OptionCreate() {
         <Input
           className="w-60 text-end"
           placeholder="option name"
-          {...form.register("optionName", { required: true })}
+          {...form.register("name", { required: true })}
         />
       </div>
       <div className="flex items-end justify-between">
@@ -118,28 +119,28 @@ function OptionCreate() {
               <Card key={field.id} className="relative m-2 p-4">
                 <Button
                   variant="ghost"
-                  className="absolute left-1 top-1 m-0 flex h-6 w-6 rounded-full p-0 focus:bg-red-500 focus:text-accent"
+                  className="absolute left-1 top-1 m-0 flex h-6 w-6 rounded-full p-0 focus:bg-red-600 focus:text-accent"
                   onBlur={() => {
                     onFocus = false;
                   }}
-                  onClick={(e) => {
+                  onClick={() => {
                     if (onFocus) {
                       choices.remove(index);
                     }
                     onFocus = true;
-                    // choices.remove()
                   }}
                 >
                   <X className="h-4 w-4 translate-x-[0.5px]" />
                 </Button>
                 <CardContent className="ml-4 space-y-1 p-0">
                   <div className="flex items-center justify-between tracking-tight">
-                    <Label className="text-sm leading-tight">option name</Label>
+                    <Label className="text-sm leading-tight">selectable</Label>
                     <Input
                       {...form.register(`choices.${index}.name` as const, {
                         required: true,
                       })}
                       className="w-36"
+                      placeholder="name"
                     />
                   </div>
                   <div className="flex items-center justify-between tracking-tight">
@@ -160,7 +161,13 @@ function OptionCreate() {
           })}
         </div>
       </div>
-      <Button>create option</Button>
+      <Button
+        onClick={() => {
+          optionCreate.mutate({ ...form.getValues(), itemId: itemId });
+        }}
+      >
+        create option
+      </Button>
     </div>
   );
 }

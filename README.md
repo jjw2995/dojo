@@ -58,40 +58,7 @@ This page is where user would register items in their menu. Allow CRUD of items,
 
 - [ ] option
 
-  - [ ] CRUD option
-  - [ ] assign options
-
-- [ ] create options
-- [ ] delete options
-- [ ] edit options
-
-I don't know what kind of option I want
-
-boolean
-select one (1~many, toggle only one)
-select
-
-number of togglable
-toggle at least...
-toggle at most...
-
-4 selectable, toggle 0~1
-
-Initially, I was trying to build the most complete modifier, but decided against it and reined back a little.
-
-I decided to first build "multi choice toggle".
-
-With [# of choices, min choices, max choices], I can effectively cover single choice on/off, multi-choice choose none ~ all.
-
-With # of choices, a choice name & choice cost
-
-Options with counters, more akin to drink category will be implemented later with
-
-I thought about allowing items point to same modifiers, but it would be messy in cases where the
-
-It is better to keep modifiers separate, but allow user to copy & edit from other item modifiers.
-
-having their
+  - [ ] CRUD option (C)
 
 I used CSS bottom:0 with the fixed position property which pushes the element to the footer and fixes it so when the keyboard is raised it pushes it upwards automatically.
 
@@ -144,6 +111,36 @@ This page is for the kitchen stations. Selecting a station will only show items 
 - [ ] work hour logger
 
 ## Tech log
+
+<details>
+<summary>
+</summary>
+
+TODO: talk about option schema (multiple item ref OR single) & start small with multi selectable.
+
+boolean
+select one (1~many, toggle only one)
+select
+
+number of togglable
+toggle at least...
+toggle at most...
+
+4 selectable, toggle 0~1
+
+Initially, I was trying to build the most complete modifier, but decided against it and reined back a little.
+
+I decided to first build "multi choice toggle". With [# of choices, min choices, max choices], I can effectively cover single choice on/off, multi-choice choose none ~ all.
+
+With # of choices, a choice name & choice cost
+
+Options with counters, more akin to drink category will be implemented later with
+
+I thought about allowing items point to same modifiers, but it would be messy in cases where the
+
+It is better to keep modifiers separate, but allow user to copy & edit from other item modifiers.
+
+</details>
 
 <details>
 <summary>

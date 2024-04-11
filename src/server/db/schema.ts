@@ -10,7 +10,7 @@ import {
   sqliteTableCreator,
   text,
 } from "drizzle-orm/sqlite-core";
-// import { OrderItem } from "../customTypes";
+import { optionInputSchema } from "~/app/stores/[storeId]/items/(comps)/options";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -178,29 +178,21 @@ export const itemsRelations = relations(itemTable, ({ many, one }) => ({
 
 export const optionTable = sqliteTable("option", {
   id: integer("id", { mode: "number" }).primaryKey(),
+  name: text("name", { length: 256 }).notNull(),
   itemId: integer("itemId", { mode: "number" }).notNull(),
+  minSelect: integer("minSelect", { mode: "number" }).notNull(),
+  maxSelect: integer("maxSelect", { mode: "number" }).notNull(),
+  choices: text("choices", { mode: "json" })
+    .$type<typeof optionInputSchema.shape.choices._type>()
+    .notNull(),
+  // optionInputSchema -> choices type
 });
 export const optionsRelations = relations(optionTable, ({ many, one }) => ({
   item: one(itemTable, {
     fields: [optionTable.itemId],
     references: [itemTable.id],
   }),
-  optionElements: many(optionElementTable),
 }));
-
-export const optionElementTable = sqliteTable("optionElement", {
-  id: integer("id", { mode: "number" }).primaryKey(),
-  optionId: integer("optionId", { mode: "number" }).notNull(),
-});
-export const optionElementsRelations = relations(
-  optionElementTable,
-  ({ one }) => ({
-    option: one(optionTable, {
-      fields: [optionElementTable.optionId],
-      references: [optionTable.id],
-    }),
-  }),
-);
 
 export const itemToStationTable = sqliteTable(
   "itemToStation",
@@ -258,7 +250,6 @@ export const itemsToTaxesRelations = relations(itemToTaxTable, ({ one }) => ({
     references: [taxTable.id],
   }),
 }));
-// orderItemList
 
 export const orderTable = sqliteTable("order", {
   id: integer("id", { mode: "number" }).primaryKey(),
@@ -276,15 +267,3 @@ export const orderTable = sqliteTable("order", {
     .notNull(),
   //   updatedAt: integer("updatedAt",{mode:"timestamp"}),
 });
-
-// emailVerified: integer("emailVerified", {
-//     mode: "timestamp_ms",
-//   }).default(sql`CURRENT_TIMESTAMP`),
-
-/**
- *
- * kitchen view
- * - allow addition
- * - assign
- *
- */

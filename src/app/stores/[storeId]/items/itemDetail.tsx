@@ -23,7 +23,7 @@ import { Label } from "~/components/ui/label";
 // import Link from "next/link";
 import { api } from "~/trpc/react";
 import { RouterOutputs } from "~/trpc/shared";
-import Options from "./(comps)/options";
+import OptionModal from "./(comps)/options";
 import { Input } from "~/components/ui/input";
 import Link from "next/link";
 import {
@@ -82,7 +82,8 @@ function Item({ item }: { item: Details }) {
       <Stations stations={item.stations} />
       <div className="px-4">
         <Label htmlFor="itemPrice">Options</Label>
-        <Options />
+        <OptionModal itemId={item.id} />
+        <Options options={item.options} />
       </div>
     </div>
   );
@@ -110,6 +111,16 @@ function Taxes({ taxes }: { taxes: Details["taxes"] }) {
           );
         })}
       </div>
+    </div>
+  );
+}
+
+function Options({ options }: { options: Details["options"] }) {
+  return (
+    <div>
+      {options.map((r) => {
+        return <div>{r.name}</div>;
+      })}
     </div>
   );
 }

@@ -11,7 +11,6 @@ import {
   itemTable,
   itemToStationTable,
   itemToTaxTable,
-  optionElementTable,
   optionTable,
   stationTable,
   taxTable,
@@ -41,10 +40,15 @@ async function getItemDetails(db: typeof DB, itemId: number) {
       })
     ).map((r) => r.station);
 
+    const options = await tx.query.optionTable.findMany({
+      where: eq(optionTable.itemId, itemId),
+    });
+
     return {
       ...item,
       taxes,
       stations,
+      options,
     };
   });
 }
@@ -207,24 +211,24 @@ export const itemRouter = createTRPCRouter({
           .delete(itemToStationTable)
           .where(eq(itemToStationTable.itemId, input.itemId));
 
-        const optionIds = await tx
-          .select({ id: optionTable.id })
-          .from(optionTable)
-          .where(eq(optionTable.itemId, input.itemId));
-        await tx
-          .delete(optionTable)
-          .where(eq(optionTable.itemId, input.itemId));
+        // const optionIds = await tx
+        //   .select({ id: optionTable.id })
+        //   .from(optionTable)
+        //   .where(eq(optionTable.itemId, input.itemId));
+        // await tx
+        //   .delete(optionTable)
+        //   .where(eq(optionTable.itemId, input.itemId));
 
-        if (optionIds.length) {
-          await tx.delete(optionElementTable).where(
-            inArray(
-              optionElementTable.optionId,
-              optionIds.map((r) => {
-                return r.id;
-              }),
-            ),
-          );
-        }
+        // if (optionIds.length) {
+        //   await tx.delete(optionElementTable).where(
+        //     inArray(
+        //       optionElementTable.optionId,
+        //       optionIds.map((r) => {
+        //         return r.id;
+        //       }),
+        //     ),
+        //   );
+        // }
       });
     }),
 });
