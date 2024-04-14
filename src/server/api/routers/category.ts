@@ -32,6 +32,7 @@ export const categoryRouter = createTRPCRouter({
             itemsToStations: {
               with: { station: { columns: { storeId: false } } },
             },
+            options: true,
           },
         },
       },

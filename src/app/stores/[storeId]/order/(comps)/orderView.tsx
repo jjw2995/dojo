@@ -17,7 +17,7 @@ import {
   NotebookPen,
 } from "lucide-react";
 import { Button } from "~/components/ui/button";
-import React, { forwardRef, useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useMemo, useState } from "react";
 import useIsScreenLg from "~/components/customHooks/useIsScreenLg";
 import {
   Accordion,
@@ -46,6 +46,8 @@ import {
   useOrderInfo,
 } from "../(contexts)/orderInfoContext";
 import { type orderMode } from "~/components/enums";
+import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
+import { string } from "zod";
 
 type Category = RouterOutputs["category"]["get"][number];
 
@@ -65,6 +67,18 @@ export default function OrderView({
     setIsOpen(false);
   };
 
+  //   <div className="flex h-full max-w-full flex-col rounded-none md:flex-row">
+  //   <div className="flex h-[20rem] flex-col md:h-[52rem] md:w-[45%]">
+  //     {/* <div className="flex h-[20rem] flex-col outline md:h-[50rem] md:w-[45%]"> */}
+  //     <OrderList className="flex-1" />
+  //     <ActionButtons
+  //       type={orderMode}
+  //       closeOrderView={closeOrderView}
+  //     />
+  //   </div>
+  //   <CategoryList className="flex h-[20rem] overflow-y-auto pt-4 md:mt-0 md:h-full md:flex-1" />
+  // </div>
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -74,11 +88,10 @@ export default function OrderView({
             <DialogHeader className="text-start">
               <TitleOrderInfo orderMode={orderMode} startOpen={isCreate} />
             </DialogHeader>
-            {/* come back werid lg screen */}
             <div className="flex h-full max-w-full flex-col rounded-none md:flex-row">
-              <div className="flex h-[20rem] flex-col md:h-[52rem] md:w-[45%]">
-                {/* <div className="flex h-[20rem] flex-col outline md:h-[50rem] md:w-[45%]"> */}
-                <OrderList className="flex-1" />
+              <div className=" flex h-[20rem] flex-col md:h-full md:w-[40%]">
+                <OrderList className="h-[20rem] grow" />
+                {/* comeback fix button position on md screen */}
                 <ActionButtons
                   type={orderMode}
                   closeOrderView={closeOrderView}
@@ -378,13 +391,118 @@ function Category({ category }: { category: Category }): React.ReactNode {
             key={`${item.id}_${idx.toString()}`}
             className="py-2 pl-8 text-lg"
             onClick={(e) => {
-              order.fn.addItem(item);
+              if (!(item.options.length > 0)) {
+                order.fn.addItem(item);
+              }
             }}
           >
-            {item.name}-${item.price}
+            {item.options.length > 0 ? (
+              <OptionsModal item={item} />
+            ) : (
+              <>
+                {item.name}-${item.price}
+              </>
+            )}
           </AccordionContent>
         );
       })}
     </AccordionItem>
+  );
+}
+
+function OptionsModal({ item }: { item: Category["items"][number] }) {
+  const [toggledOptions, setToggledOptions] = useState<string[][]>(
+    Array(item.options.length).fill([]),
+  );
+
+  const areConstraintsMet = useMemo(() => {
+    return item.options.every((opt, idx) => {
+      console.log("???");
+
+      const curOption = toggledOptions[idx];
+      if (!curOption || curOption.length < opt.minSelect) {
+        return false;
+      } else {
+        return true;
+      }
+    });
+  }, [toggledOptions]);
+  console.log(areConstraintsMet);
+
+  const setChoicesArr = (choicesArr: string[], index: number) => {
+    const nextToggledOptions = toggledOptions.map((prev, i) => {
+      if (i !== index) {
+        return prev;
+      }
+      return choicesArr;
+    });
+    setToggledOptions(() => {
+      return nextToggledOptions;
+    });
+  };
+
+  return (
+    <Dialog
+      onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          setToggledOptions(Array(item.options.length).fill([]));
+        }
+      }}
+    >
+      <DialogTrigger asChild>
+        <div>
+          {item.name}-${item.price}
+        </div>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>{item.name}</DialogHeader>
+        {item.options.map((option, optIdx) => {
+          // verify option constraints are met, check b4 addItem
+          const setToggles = (arr: string[]) => {
+            const arrLen = arr.length;
+
+            if (option.maxSelect < arrLen) {
+              setChoicesArr(arr.slice(arrLen - option.maxSelect), optIdx);
+            } else {
+              setChoicesArr(arr, optIdx);
+            }
+          };
+
+          return (
+            <div key={option.id}>
+              <div
+                className="data-[satisfied=false]:text-red-600"
+                data-satisfied={
+                  toggledOptions[optIdx]!.length >= option.minSelect
+                }
+              >
+                {option.name}
+              </div>
+              <ToggleGroup
+                type="multiple"
+                value={toggledOptions[optIdx]}
+                className="gap-6"
+                onValueChange={(e) => {
+                  setToggles(Array.from(e.values()));
+                }}
+              >
+                {option.choices.map((choice, i) => {
+                  return (
+                    <ToggleGroupItem
+                      key={`choice_${i}_${choice.name}`}
+                      value={i.toString()}
+                    >
+                      {choice.name}
+                    </ToggleGroupItem>
+                  );
+                })}
+              </ToggleGroup>
+            </div>
+          );
+        })}
+
+        <Button disabled={!areConstraintsMet}>add item</Button>
+      </DialogContent>
+    </Dialog>
   );
 }

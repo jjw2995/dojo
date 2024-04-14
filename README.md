@@ -111,6 +111,9 @@ This page is for the kitchen stations. Selecting a station will only show items 
 
 ## Tech log
 
+- deciding how to do option modal in orderView
+  conditional branching, always render conditional
+
 <details>
 <summary>
 </summary>
@@ -138,6 +141,8 @@ Options with counters, more akin to drink category will be implemented later wit
 I thought about allowing items point to same modifiers, but it would be messy in cases where the
 
 It is better to keep modifiers separate, but allow user to copy & edit from other item modifiers.
+
+creating options was easy but to modify them at Order, it will require cursor fn changes
 
 </details>
 
