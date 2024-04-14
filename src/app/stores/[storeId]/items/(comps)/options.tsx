@@ -83,7 +83,6 @@ function OptionCreate({ itemId }: { itemId: number }) {
             {...form.register("minSelect", {
               required: true,
               valueAsNumber: true,
-              value: 0,
               disabled: choicesArr.length < 1,
               onChange(e: ChangeEvent<HTMLInputElement>) {
                 if (e.target.value !== "") {
@@ -91,8 +90,6 @@ function OptionCreate({ itemId }: { itemId: number }) {
                     Math.max(0, Number(e.target.value)),
                     choicesArr.length,
                   ).toString();
-
-                  //   console.log(form.getValues("maxSelect"));
 
                   if (
                     form.getValues("maxSelect") &&
