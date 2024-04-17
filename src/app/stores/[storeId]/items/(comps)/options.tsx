@@ -110,8 +110,6 @@ function OptionCreate({ itemId }: { itemId: number }) {
 
   const choicesArr = form.watch("choices", []);
 
-  console.log(form.watch());
-
   return (
     <div className="mt- flex flex-col space-y-3">
       <div className="mx-2 flex items-center justify-between">
@@ -132,27 +130,27 @@ function OptionCreate({ itemId }: { itemId: number }) {
               required: true,
               valueAsNumber: true,
               disabled: choicesArr.length < 1,
-              //   onChange(e: ChangeEvent<HTMLInputElement>) {
-              //     if (e.target.value !== "") {
-              //       e.target.value = Math.min(
-              //         Math.max(0, Number(e.target.value)),
-              //         choicesArr.length,
-              //       ).toString();
+              onChange(e: ChangeEvent<HTMLInputElement>) {
+                if (e.target.value !== "") {
+                  e.target.value = Math.min(
+                    Math.max(0, Number(e.target.value)),
+                    choicesArr.length,
+                  ).toString();
 
-              //       if (
-              //         form.getValues("maxSelect") &&
-              //         form.getValues("maxSelect").toString() !== ""
-              //       ) {
-              //         form.setValue(
-              //           "maxSelect",
-              //           Math.max(
-              //             Number(e.target.value),
-              //             form.getValues("maxSelect"),
-              //           ),
-              //         );
-              //       }
-              //     }
-              //   },
+                  if (
+                    form.getValues("maxSelect") &&
+                    form.getValues("maxSelect").toString() !== ""
+                  ) {
+                    form.setValue(
+                      "maxSelect",
+                      Math.max(
+                        Number(e.target.value),
+                        form.getValues("maxSelect"),
+                      ),
+                    );
+                  }
+                }
+              },
             })}
           />
         </div>
