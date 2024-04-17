@@ -93,7 +93,7 @@ export const optionInputSchema = z.object({
   name: z.string(),
   minSelect: z.number(),
   maxSelect: z.number(),
-  choices: z.array(z.object({ name: z.string(), price: z.number() })),
+  choices: z.array(z.object({ name: z.string().min(1), price: z.number() })),
 });
 
 type OptionInputType = typeof optionInputSchema._type;
@@ -109,6 +109,8 @@ function OptionCreate({ itemId }: { itemId: number }) {
   const choices = useFieldArray({ name: "choices", control: form.control });
 
   const choicesArr = form.watch("choices", []);
+
+  console.log(form.watch());
 
   return (
     <div className="mt- flex flex-col space-y-3">
@@ -130,27 +132,27 @@ function OptionCreate({ itemId }: { itemId: number }) {
               required: true,
               valueAsNumber: true,
               disabled: choicesArr.length < 1,
-              onChange(e: ChangeEvent<HTMLInputElement>) {
-                if (e.target.value !== "") {
-                  e.target.value = Math.min(
-                    Math.max(0, Number(e.target.value)),
-                    choicesArr.length,
-                  ).toString();
+              //   onChange(e: ChangeEvent<HTMLInputElement>) {
+              //     if (e.target.value !== "") {
+              //       e.target.value = Math.min(
+              //         Math.max(0, Number(e.target.value)),
+              //         choicesArr.length,
+              //       ).toString();
 
-                  if (
-                    form.getValues("maxSelect") &&
-                    form.getValues("maxSelect").toString() !== ""
-                  ) {
-                    form.setValue(
-                      "maxSelect",
-                      Math.max(
-                        Number(e.target.value),
-                        form.getValues("maxSelect"),
-                      ),
-                    );
-                  }
-                }
-              },
+              //       if (
+              //         form.getValues("maxSelect") &&
+              //         form.getValues("maxSelect").toString() !== ""
+              //       ) {
+              //         form.setValue(
+              //           "maxSelect",
+              //           Math.max(
+              //             Number(e.target.value),
+              //             form.getValues("maxSelect"),
+              //           ),
+              //         );
+              //       }
+              //     }
+              //   },
             })}
           />
         </div>
@@ -162,6 +164,7 @@ function OptionCreate({ itemId }: { itemId: number }) {
             className="w-20 text-end"
             {...form.register("maxSelect", {
               required: true,
+
               valueAsNumber: true,
               disabled: choicesArr.length < 1,
               onChange(e) {
@@ -241,6 +244,7 @@ function OptionCreate({ itemId }: { itemId: number }) {
         </div>
       </div>
       <Button
+        disabled={!form.formState.isValid || choicesArr.length < 1}
         onClick={() => {
           optionCreate.mutate({ ...form.getValues(), itemId: itemId });
         }}
