@@ -13,7 +13,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Button } from "~/components/ui/button";
-import { Plus, X } from "lucide-react";
+import { Edit, Plus, X } from "lucide-react";
 import { Card, CardContent } from "~/components/ui/card";
 import { api } from "~/trpc/react";
 import { z } from "zod";
@@ -49,24 +49,39 @@ function OptionEdit({ itemId }: { itemId: number }) {
   const useUtil = api.useUtils();
   const options = api.option.getByItemId.useQuery({ itemId });
   const deleteOption = api.option.deleteOption.useMutation({
-    onSuccess: () => {
-      useUtil.option.getByItemId.invalidate({ itemId });
+    onSuccess: (data, variables) => {
+      useUtil.option.getByItemId.setData({ itemId }, (prev) => {
+        return prev?.filter((opt) => {
+          return opt.id !== variables.optionId;
+        });
+      });
     },
   });
 
   return (
-    <div className="w-full gap-4 bg-cyan-300">
-      {options.data?.map((r) => {
+    <div className="h-[30rem] w-full space-y-2 overflow-y-auto">
+      {options.data?.map((option, idx) => {
         return (
-          <div className="flex justify-end">
-            <div>{r.name}</div>
-            <Button
-              onClick={() => {
-                deleteOption.mutate({ optionId: r.id });
-              }}
-            >
-              x
-            </Button>
+          <div
+            key={idx}
+            className="flex items-center justify-between rounded-md p-2 shadow-sm outline -outline-offset-2 outline-slate-200"
+          >
+            <Label className="w-[60%] overflow-hidden text-ellipsis">
+              {option.name}
+            </Label>
+            <div className="space-x-2">
+              <Button disabled size="sm" variant="ghost" onClick={() => {}}>
+                <Edit />
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => {
+                  deleteOption.mutate({ optionId: option.id });
+                }}
+              >
+                <X />
+              </Button>
+            </div>
           </div>
         );
       })}
