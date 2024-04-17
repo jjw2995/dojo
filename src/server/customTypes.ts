@@ -1,8 +1,7 @@
 import { z } from "zod";
 
-const optionSchema = z.object({
-  id: z.number(),
-  description: z.string(),
+const modifierSchema = z.object({
+  name: z.string(),
   price: z.number(),
 });
 
@@ -27,7 +26,7 @@ const orderItemSchema = z.object({
   isServed: z.boolean().default(false),
   stations: z.array(stationSchema),
   taxes: z.array(taxSchema),
-  options: z.array(optionSchema),
+  modifiers: z.array(modifierSchema),
 });
 
 const orderItemListSchema = z.array(z.array(orderItemSchema));
@@ -38,7 +37,7 @@ const orderTypeSchema = z.enum(["TABLE", "TODO", "ONLINE"]);
 
 export {
   taxSchema,
-  optionSchema,
+  modifierSchema,
   stationSchema,
   orderItemSchema,
   orderItemListSchema,

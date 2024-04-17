@@ -2,6 +2,7 @@
 
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -184,6 +185,8 @@ function OrderList({ className }: { className?: string }) {
   const order = useOrder();
   const { cursor, list } = order;
   const { onGroup, onItem, onOption } = cursor;
+
+  //   console.log(list);
 
   return (
     // https://github.com/shadcn-ui/ui/issues/1151
@@ -411,14 +414,13 @@ function Category({ category }: { category: Category }): React.ReactNode {
 }
 
 function OptionsModal({ item }: { item: Category["items"][number] }) {
-  const [toggledOptions, setToggledOptions] = useState<string[][]>(
+  const order = useOrder();
+  const [toggledOptions, setToggledOptions] = useState<number[][]>(
     Array(item.options.length).fill([]),
   );
 
   const areConstraintsMet = useMemo(() => {
     return item.options.every((opt, idx) => {
-      console.log("???");
-
       const curOption = toggledOptions[idx];
       if (!curOption || curOption.length < opt.minSelect) {
         return false;
@@ -427,9 +429,8 @@ function OptionsModal({ item }: { item: Category["items"][number] }) {
       }
     });
   }, [toggledOptions]);
-  console.log(areConstraintsMet);
 
-  const setChoicesArr = (choicesArr: string[], index: number) => {
+  const setChoicesArr = (choicesArr: number[], index: number) => {
     const nextToggledOptions = toggledOptions.map((prev, i) => {
       if (i !== index) {
         return prev;
@@ -458,7 +459,7 @@ function OptionsModal({ item }: { item: Category["items"][number] }) {
         <DialogHeader>{item.name}</DialogHeader>
         {item.options.map((option, optIdx) => {
           // verify option constraints are met, check b4 addItem
-          const setToggles = (arr: string[]) => {
+          const setToggles = (arr: number[]) => {
             const arrLen = arr.length;
 
             if (option.maxSelect < arrLen) {
@@ -469,7 +470,7 @@ function OptionsModal({ item }: { item: Category["items"][number] }) {
           };
 
           return (
-            <div key={option.id}>
+            <div key={option.id} className="space-y-2">
               <div
                 className="data-[satisfied=false]:text-red-600"
                 data-satisfied={
@@ -480,10 +481,10 @@ function OptionsModal({ item }: { item: Category["items"][number] }) {
               </div>
               <ToggleGroup
                 type="multiple"
-                value={toggledOptions[optIdx]}
-                className="gap-6"
+                value={toggledOptions[optIdx]?.map((r) => r.toString())}
+                className="justify-start gap-6"
                 onValueChange={(e) => {
-                  setToggles(Array.from(e.values()));
+                  setToggles(Array.from(e.values()).map((r) => Number(r)));
                 }}
               >
                 {option.choices.map((choice, i) => {
@@ -491,8 +492,11 @@ function OptionsModal({ item }: { item: Category["items"][number] }) {
                     <ToggleGroupItem
                       key={`choice_${i}_${choice.name}`}
                       value={i.toString()}
+                      className="flex flex-col"
+                      variant="outline"
                     >
-                      {choice.name}
+                      <span>{choice.name}</span>
+                      <span>${choice.price}</span>
                     </ToggleGroupItem>
                   );
                 })}
@@ -501,7 +505,41 @@ function OptionsModal({ item }: { item: Category["items"][number] }) {
           );
         })}
 
-        <Button disabled={!areConstraintsMet}>add item</Button>
+        <Button
+          disabled={!areConstraintsMet}
+          onClick={() => {
+            let modifiers = item.options.flatMap((opt, oidx) => {
+              const choices = opt.choices.filter((chc, cidx) => {
+                return toggledOptions[oidx]?.includes(cidx);
+              });
+              return choices.map((r) => {
+                return { ...r, optionId: opt.id };
+              });
+            });
+            // flatChoices
+            order.fn.addItem({ ...item, modifiers });
+          }}
+        >
+          add item
+        </Button>
+
+        <DialogClose
+          disabled={!areConstraintsMet}
+          onClick={() => {
+            let modifiers = item.options.flatMap((opt, oidx) => {
+              const choices = opt.choices.filter((chc, cidx) => {
+                return toggledOptions[oidx]?.includes(cidx);
+              });
+              return choices.map((r) => {
+                return { ...r, optionId: opt.id };
+              });
+            });
+            // flatChoices
+            order.fn.addItem({ ...item, modifiers });
+          }}
+        >
+          add item
+        </DialogClose>
       </DialogContent>
     </Dialog>
   );

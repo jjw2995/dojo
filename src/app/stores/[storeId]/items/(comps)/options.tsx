@@ -231,6 +231,16 @@ function OptionCreate({ itemId }: { itemId: number }) {
                       {...form.register(`choices.${index}.price` as const, {
                         required: true,
                         valueAsNumber: true,
+                        onChange: (e: ChangeEvent<HTMLInputElement>) => {
+                          const str = e.target.value || "";
+                          const fixed = Number(str).toFixed(2);
+                          if (fixed.length < str.length) {
+                            form.setValue(
+                              `choices.${index}.price` as const,
+                              Number(fixed),
+                            );
+                          }
+                        },
                       })}
                       className="w-36"
                     />

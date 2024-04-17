@@ -6,10 +6,13 @@ type OrderItem = typeof orderItemSchema._type;
 
 type Category = RouterOutputs["category"]["get"][number];
 
+type a = RouterOutputs["order"]["getOrders"][number];
+
 // TODO: replace with db def in the future
 // type Option = { description: string; price: number; id: string };
 
-type Item = Category["items"][number];
+type BaseItem = Category["items"][number];
+type Item = BaseItem & { modifiers?: { name: string; price: number }[] };
 // type Item = Category["items"][number] & { options?: Option[] };
 
 // export type OrderList = Array<OrderItem[]>;
@@ -62,7 +65,7 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
       const orderItem: OrderItem = {
         ...item,
         stations,
-        options: [],
+        modifiers: [],
         qty: 1,
         isPaid: false,
         isServed: false,
