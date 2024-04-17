@@ -2,7 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, memberProcedure, passcodeProcedure } from "../trpc";
 import { optionInputSchema } from "~/app/stores/[storeId]/items/(comps)/options";
 import { optionTable } from "~/server/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 export const optionRouter = createTRPCRouter({
   create: passcodeProcedure
@@ -24,5 +24,15 @@ export const optionRouter = createTRPCRouter({
         .select()
         .from(optionTable)
         .where(eq(optionTable.itemId, input.itemId));
+    }),
+
+  deleteOption: passcodeProcedure
+    .input(z.object({ optionId: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db
+        .delete(optionTable)
+        .where(eq(optionTable.id, input.optionId))
+        .returning();
+      // eq(optionTable.storeId, input.user)
     }),
 });

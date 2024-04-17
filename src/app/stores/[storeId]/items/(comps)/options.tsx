@@ -26,20 +26,51 @@ export default function OptionModal({ itemId }: { itemId: number }) {
           <Plus className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="">
+      <DialogContent>
         <Tabs defaultValue="create">
-          <DialogTitle className="mb-2">Options</DialogTitle>
+          <DialogTitle>Options</DialogTitle>
           <TabsList className="w-full">
             <TabsTrigger value="create">Create</TabsTrigger>
             <TabsTrigger value="edit">Edit</TabsTrigger>
           </TabsList>
-          <TabsContent value="create">
+          <TabsContent value="create" className="h-[30rem]">
             <OptionCreate itemId={itemId} />
           </TabsContent>
-          <TabsContent value="edit">Change your password here.</TabsContent>
+          <TabsContent value="edit" className="h-[30rem]">
+            <OptionEdit itemId={itemId} />
+          </TabsContent>
         </Tabs>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function OptionEdit({ itemId }: { itemId: number }) {
+  const useUtil = api.useUtils();
+  const options = api.option.getByItemId.useQuery({ itemId });
+  const deleteOption = api.option.deleteOption.useMutation({
+    onSuccess: () => {
+      useUtil.option.getByItemId.invalidate({ itemId });
+    },
+  });
+
+  return (
+    <div className="w-full gap-4 bg-cyan-300">
+      {options.data?.map((r) => {
+        return (
+          <div className="flex justify-end">
+            <div>{r.name}</div>
+            <Button
+              onClick={() => {
+                deleteOption.mutate({ optionId: r.id });
+              }}
+            >
+              x
+            </Button>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
@@ -65,7 +96,7 @@ function OptionCreate({ itemId }: { itemId: number }) {
   const choicesArr = form.watch("choices", []);
 
   return (
-    <div className="mt-6 flex flex-col space-y-3">
+    <div className="mt- flex flex-col space-y-3">
       <div className="mx-2 flex items-center justify-between">
         <Label htmlFor="">option name</Label>
         <Input
@@ -144,8 +175,8 @@ function OptionCreate({ itemId }: { itemId: number }) {
         </Button>
       </div>
 
-      <div className="py-4">
-        <div className="h-[14rem] overflow-y-auto">
+      <div className="py-2">
+        <div className="h-[18rem] overflow-y-auto">
           {choices.fields.map((field, index) => {
             let onFocus = false;
             return (
