@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { orderItemListSchema, orderItemSchema } from "~/server/customTypes";
 import { type RouterOutputs } from "~/trpc/shared";
 
@@ -29,7 +29,7 @@ type OptionalCursor =
   | Omit<Cursor, "onItem">
   | Cursor;
 
-interface OrderContextProps {
+interface OrderListContextProps {
   list: OrderList;
   isOrderListEmpty: boolean;
   cursor: Cursor;
@@ -39,11 +39,14 @@ interface OrderContextProps {
     incCursor: () => void;
     decCursor: () => void;
     addGroup: () => void;
+    setList: (orderList: OrderList) => void;
     // isOrderListEmpty: () => boolean;
   };
 }
 
-const OrderContext = React.createContext<OrderContextProps | null>(null);
+const OrderListContext = React.createContext<OrderListContextProps | null>(
+  null,
+);
 
 const keepOrTrailIdx = (curIdx: number, curLen: number) => {
   if (curLen === 0) {
@@ -55,7 +58,11 @@ const keepOrTrailIdx = (curIdx: number, curLen: number) => {
   return curIdx - 1;
 };
 
-const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
+const OrderListContextProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const addItem = (item: Item) => {
     setOrder((state) => {
       const { cursor, list } = state;
@@ -65,7 +72,7 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
       const orderItem: OrderItem = {
         ...item,
         stations,
-        modifiers: [],
+        modifiers: item.modifiers ?? [],
         qty: 1,
         isPaid: false,
         isServed: false,
@@ -247,9 +254,15 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
     return !orderList.map((r) => r.length > 0).includes(true);
   };
 
+  const setList = (orderList: OrderList) => {
+    setOrder((prev) => {
+      return { ...prev, list: orderList };
+    });
+  };
+
   //   const addMemo = () => {};
 
-  const initState: OrderContextProps = {
+  const initState: OrderListContextProps = {
     list: new Array<OrderItem[]>(),
     isOrderListEmpty: true,
     cursor: {
@@ -263,23 +276,30 @@ const OrderContextProvider = ({ children }: { children: React.ReactNode }) => {
       incCursor,
       decCursor,
       addGroup,
+      setList,
       //   isOrderListEmpty,
     },
   };
 
-  const [order, setOrder] = useState<OrderContextProps>(initState);
+  const [order, setOrder] = useState<OrderListContextProps>(initState);
+
+  const contextOrder = useMemo(() => {
+    return order;
+  }, [order]);
 
   return (
-    <OrderContext.Provider value={order}>{children}</OrderContext.Provider>
+    <OrderListContext.Provider value={contextOrder}>
+      {children}
+    </OrderListContext.Provider>
   );
 };
 
-const useOrder = () => {
-  const c = useContext(OrderContext);
+const useOrderList = () => {
+  const c = useContext(OrderListContext);
   if (!c) {
     throw new Error("orderContext not initialized");
   }
   return c;
 };
 
-export { OrderContextProvider, useOrder };
+export { OrderListContextProvider, useOrderList };

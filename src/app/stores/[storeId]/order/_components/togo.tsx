@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "~/trpc/react";
-import OrderView from "./(comps)/orderView";
+import OrderView from "./orderView";
 import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
 import {
@@ -38,14 +38,16 @@ export default function Togo() {
 
 function Order({ order }: { order: Order }) {
   return (
-    <Card>
-      <CardHeader className="flex flex-col p-4">
-        <CardTitle>{order.name}</CardTitle>
-        <CardDescription className="flex justify-between">
-          <span>{order.type}</span>
-          <span className="">{getTimeString(new Date(order.createdAt))}</span>
-        </CardDescription>
-      </CardHeader>
-    </Card>
+    <OrderView orderMode="TOGO" order={order}>
+      <Card>
+        <CardHeader className="flex flex-col p-4">
+          <CardTitle>{order.name}</CardTitle>
+          <CardDescription className="flex justify-between">
+            <span>{order.type}</span>
+            <span className="">{getTimeString(new Date(order.createdAt))}</span>
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    </OrderView>
   );
 }

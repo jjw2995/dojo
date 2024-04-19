@@ -4,7 +4,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { useEffect } from "react";
-import Togo from "./togo";
+import Togo from "./_components/togo";
 
 /**
  * order

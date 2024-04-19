@@ -41,152 +41,93 @@ import { RouterOutputs } from "~/trpc/shared";
 import { cn } from "~/components/lib/utils";
 import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
-import { OrderContextProvider, useOrder } from "../(contexts)/orderContext";
+import {
+  OrderListContextProvider,
+  useOrderList,
+} from "../../_contexts/orderContext";
 import {
   OrderInfoContextProvider,
   useOrderInfo,
-} from "../(contexts)/orderInfoContext";
+} from "../../_contexts/orderInfoContext";
 import { type orderMode } from "~/components/enums";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
-import { string } from "zod";
 
 type Category = RouterOutputs["category"]["get"][number];
+type Order = RouterOutputs["order"]["getOrders"][number];
 
-// TODO: oderview layout cleanup
-export default function OrderView({
-  children,
-  orderMode,
-  isCreate,
-}: {
+interface OrderViewProp {
   children: React.ReactNode;
   orderMode: orderMode;
-  isCreate: boolean;
-}) {
-  // TODO: something wrong with how orderList is interacting with orderButtons
+  isCreate?: boolean;
+  order?: Order;
+}
+
+export default function Page(props: OrderViewProp) {
+  return (
+    <OrderInfoContextProvider>
+      <OrderListContextProvider>
+        <OrderView {...props} />
+      </OrderListContextProvider>
+    </OrderInfoContextProvider>
+  );
+}
+
+// TODO: oderview layout cleanup
+// export default
+
+function OrderView({
+  children,
+  isCreate = false,
+  orderMode,
+  order,
+}: OrderViewProp) {
   const [isOpen, setIsOpen] = useState(false);
   const closeOrderView = () => {
     setIsOpen(false);
   };
-
-  //   <div className="flex h-full max-w-full flex-col rounded-none md:flex-row">
-  //   <div className="flex h-[20rem] flex-col md:h-[52rem] md:w-[45%]">
-  //     {/* <div className="flex h-[20rem] flex-col outline md:h-[50rem] md:w-[45%]"> */}
-  //     <OrderList className="flex-1" />
-  //     <ActionButtons
-  //       type={orderMode}
-  //       closeOrderView={closeOrderView}
-  //     />
-  //   </div>
-  //   <CategoryList className="flex h-[20rem] overflow-y-auto pt-4 md:mt-0 md:h-full md:flex-1" />
-  // </div>
+  //   console.log(order);
+  //   const a = useOrderList();
+  //   if (order) {
+  //     a.fn.setList(order.list);
+  //   }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="flex h-screen w-screen max-w-full flex-col rounded-none md:rounded-none">
-        <OrderInfoContextProvider>
-          <OrderContextProvider>
-            <DialogHeader className="text-start">
-              <TitleOrderInfo orderMode={orderMode} startOpen={isCreate} />
-            </DialogHeader>
-            <div className="flex h-full max-w-full flex-col rounded-none md:flex-row">
-              <div className=" flex h-[20rem] flex-col md:h-full md:w-[40%]">
-                <OrderList className="h-[20rem] grow" />
-                {/* comeback fix button position on md screen */}
-                <ActionButtons
-                  type={orderMode}
-                  closeOrderView={closeOrderView}
-                />
-              </div>
-              <CategoryList className="flex h-[20rem] overflow-y-auto pt-4 md:mt-0 md:h-full md:flex-1" />
-            </div>
-          </OrderContextProvider>
-        </OrderInfoContextProvider>
+        <DialogHeader className="text-start">
+          <TitleOrderInfo orderMode={orderMode} startOpen={isCreate} />
+        </DialogHeader>
+        <div className="flex h-full max-w-full flex-col rounded-none md:flex-row">
+          <div className=" flex h-[20rem] flex-col md:h-full md:w-[40%]">
+            <OrderList className="h-[20rem] grow" initOrder={order} />
+            <ActionButtons type={orderMode} closeOrderView={closeOrderView} />
+          </div>
+          <CategoryList className="flex h-[20rem] overflow-y-auto pt-4 md:mt-0 md:h-full md:flex-1" />
+        </div>
       </DialogContent>
     </Dialog>
   );
 }
 
-function TitleOrderInfo({
-  orderMode,
-  startOpen,
+function OrderList({
+  className,
+  initOrder,
 }: {
-  orderMode: orderMode;
-  startOpen: boolean;
+  className?: string;
+  initOrder?: Order;
 }) {
+  const order = useOrderList();
   const orderInfo = useOrderInfo();
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <DialogTitle className="flex">
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
-          <Button variant="default" size="sm">
-            Table Info
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Table Info</DialogTitle>
-          </DialogHeader>
-
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="orderMode" className="text-right">
-                OrderMode
-              </Label>
-              <Input
-                id="orderMode"
-                className="col-span-3"
-                disabled
-                value={orderMode}
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="orderName" className="text-right">
-                Name
-              </Label>
-              <Input
-                id="orderName"
-                className="col-span-3"
-                placeholder="uber #2145"
-                value={orderInfo.tableName}
-                onChange={(e) => {
-                  orderInfo.fn.setTableName(e.target.value);
-                }}
-              />
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-      <div className="ml-2 flex flex-1 md:ml-4">
-        <div className="flex flex-1 basis-1/3 flex-col gap-1 md:w-[20rem] md:flex-none">
-          <span className="text-xs text-muted-foreground">
-            {orderMode.toUpperCase()}
-          </span>
-          <div className="md:text-xl">
-            {orderInfo.tableName ? (
-              <span>{orderInfo.tableName}</span>
-            ) : (
-              <span className="text-muted-foreground">table name</span>
-            )}
-          </div>
-        </div>
-        {/* <div className="flex flex-1 basis-2/3 flex-col">
-          <span>prep by</span>
-          <span>created at</span>
-        </div> */}
-      </div>
-    </DialogTitle>
-  );
-}
-
-function OrderList({ className }: { className?: string }) {
-  const order = useOrder();
   const { cursor, list } = order;
   const { onGroup, onItem, onOption } = cursor;
 
-  //   console.log(list);
+  useEffect(() => {
+    if (initOrder) {
+      order.fn.setList(initOrder.list);
+      orderInfo.fn.setTableName(initOrder.name);
+    }
+  }, []);
 
   return (
     // https://github.com/shadcn-ui/ui/issues/1151
@@ -205,6 +146,8 @@ function OrderList({ className }: { className?: string }) {
             return (
               <React.Fragment key={`subgroup_${gk}`}>
                 {listGroup.map((item, ik) => {
+                  //   console.log(item.modifiers);
+
                   return (
                     <React.Fragment key={`item_${ik}`}>
                       <TableRow
@@ -222,6 +165,30 @@ function OrderList({ className }: { className?: string }) {
                           ${item.price.toFixed(2)}
                         </TableCell>
                       </TableRow>
+
+                      {item.modifiers?.map((mod, midx) => {
+                        return (
+                          <TableRow
+                            key={`modifier_${midx}`}
+                            onClick={(e) => {
+                              order.fn.setCursor({ onGroup: gk, onItem: ik });
+                            }}
+                            data-selected={onGroup === gk && onItem === ik}
+                            className="data-[even=true]:bg-yellow-10 border-t-slate-500 data-[selected=true]:bg-muted"
+                          >
+                            <TableCell></TableCell>
+                            <TableCell className="border-l">
+                              {mod.name}
+                            </TableCell>
+                            <TableCell></TableCell>
+                            <TableCell className="text-right">
+                              {mod.price
+                                ? `$${mod.price.toFixed(2)}`
+                                : undefined}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </React.Fragment>
                   );
                 })}
@@ -246,7 +213,7 @@ function ActionButtons({
 }) {
   const isScreenLg = useIsScreenLg();
   const [isOpen, setOpen] = useState(false);
-  const order = useOrder();
+  const order = useOrderList();
   const info = useOrderInfo();
   const utils = api.useUtils();
   const orderCreate = api.order.create.useMutation({
@@ -375,7 +342,7 @@ CategoryList.displayName = "CategoryList";
 
 function Category({ category }: { category: Category }): React.ReactNode {
   const items = category.items;
-  const order = useOrder();
+  const order = useOrderList();
 
   return (
     <AccordionItem value={"category" + category.id.toString()}>
@@ -414,7 +381,7 @@ function Category({ category }: { category: Category }): React.ReactNode {
 }
 
 function OptionsModal({ item }: { item: Category["items"][number] }) {
-  const order = useOrder();
+  const order = useOrderList();
   const [toggledOptions, setToggledOptions] = useState<number[][]>(
     Array(item.options.length).fill([]),
   );
@@ -542,5 +509,79 @@ function OptionsModal({ item }: { item: Category["items"][number] }) {
         </DialogClose>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function TitleOrderInfo({
+  orderMode,
+  startOpen,
+}: {
+  orderMode: orderMode;
+  startOpen: boolean;
+}) {
+  const orderInfo = useOrderInfo();
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <DialogTitle className="flex">
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button variant="default" size="sm">
+            Table Info
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Table Info</DialogTitle>
+          </DialogHeader>
+
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="orderMode" className="text-right">
+                OrderMode
+              </Label>
+              <Input
+                id="orderMode"
+                className="col-span-3"
+                disabled
+                value={orderMode}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="orderName" className="text-right">
+                Name
+              </Label>
+              <Input
+                id="orderName"
+                className="col-span-3"
+                placeholder="uber #2145"
+                value={orderInfo.tableName}
+                onChange={(e) => {
+                  orderInfo.fn.setTableName(e.target.value);
+                }}
+              />
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <div className="ml-2 flex flex-1 md:ml-4">
+        <div className="flex flex-1 basis-1/3 flex-col gap-1 md:w-[20rem] md:flex-none">
+          <span className="text-xs text-muted-foreground">
+            {orderMode.toUpperCase()}
+          </span>
+          <div className="md:text-xl">
+            {orderInfo.tableName ? (
+              <span>{orderInfo.tableName}</span>
+            ) : (
+              <span className="text-muted-foreground">table name</span>
+            )}
+          </div>
+        </div>
+        {/* <div className="flex flex-1 basis-2/3 flex-col">
+            <span>prep by</span>
+            <span>created at</span>
+          </div> */}
+      </div>
+    </DialogTitle>
   );
 }

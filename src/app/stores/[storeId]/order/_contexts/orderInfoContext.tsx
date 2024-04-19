@@ -26,6 +26,12 @@ const OrderInfoContextProvider = ({
     });
   };
 
+  //   const initialize = (name: string) => {
+  //     setState((prev) => {
+  //       return { ...prev, tableName: name };
+  //     });
+  //   };
+
   const initState: OrderInfoContextProps = {
     tableName: "",
     fn: {
