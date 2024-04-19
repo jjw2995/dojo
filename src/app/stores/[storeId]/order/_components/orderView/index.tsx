@@ -124,7 +124,7 @@ function OrderList({
 
   useEffect(() => {
     if (initOrder) {
-      order.fn.setList(initOrder.list);
+      order.fn.initialize(initOrder.list);
       orderInfo.fn.setTableName(initOrder.name);
     }
   }, []);

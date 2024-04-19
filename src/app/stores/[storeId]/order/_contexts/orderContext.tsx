@@ -39,7 +39,7 @@ interface OrderListContextProps {
     incCursor: () => void;
     decCursor: () => void;
     addGroup: () => void;
-    setList: (orderList: OrderList) => void;
+    initialize: (orderList: OrderList) => void;
     // isOrderListEmpty: () => boolean;
   };
 }
@@ -254,9 +254,17 @@ const OrderListContextProvider = ({
     return !orderList.map((r) => r.length > 0).includes(true);
   };
 
-  const setList = (orderList: OrderList) => {
+  const initialize = (orderList: OrderList) => {
     setOrder((prev) => {
-      return { ...prev, list: orderList };
+      const onGroup = orderList.length - 1;
+      const gr = orderList[onGroup];
+      const onItem = gr ? gr.length - 1 : undefined;
+
+      return {
+        ...prev,
+        list: orderList,
+        cursor: { ...prev.cursor, onGroup, onItem },
+      };
     });
   };
 
@@ -276,7 +284,7 @@ const OrderListContextProvider = ({
       incCursor,
       decCursor,
       addGroup,
-      setList,
+      initialize,
       //   isOrderListEmpty,
     },
   };
