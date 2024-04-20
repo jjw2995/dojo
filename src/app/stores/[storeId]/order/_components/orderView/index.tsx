@@ -62,20 +62,10 @@ interface OrderViewProp {
   order?: Order;
 }
 
-export default function Page(props: OrderViewProp) {
-  return (
-    <OrderInfoContextProvider>
-      <OrderListContextProvider>
-        <OrderView {...props} />
-      </OrderListContextProvider>
-    </OrderInfoContextProvider>
-  );
-}
-
 // TODO: oderview layout cleanup
 // export default
 
-function OrderView({
+export default function OrderView({
   children,
   isCreate = false,
   orderMode,
@@ -85,26 +75,28 @@ function OrderView({
   const closeOrderView = () => {
     setIsOpen(false);
   };
-  //   console.log(order);
-  //   const a = useOrderList();
-  //   if (order) {
-  //     a.fn.setList(order.list);
-  //   }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="flex h-screen w-screen max-w-full flex-col rounded-none md:rounded-none">
-        <DialogHeader className="text-start">
-          <TitleOrderInfo orderMode={orderMode} startOpen={isCreate} />
-        </DialogHeader>
-        <div className="flex h-full max-w-full flex-col rounded-none md:flex-row">
-          <div className=" flex h-[20rem] flex-col md:h-full md:w-[40%]">
-            <OrderList className="h-[20rem] grow" initOrder={order} />
-            <ActionButtons type={orderMode} closeOrderView={closeOrderView} />
-          </div>
-          <CategoryList className="flex h-[20rem] overflow-y-auto pt-4 md:mt-0 md:h-full md:flex-1" />
-        </div>
+        <OrderInfoContextProvider>
+          <OrderListContextProvider>
+            <DialogHeader className="text-start">
+              <TitleOrderInfo orderMode={orderMode} startOpen={isCreate} />
+            </DialogHeader>
+            <div className="flex h-full max-w-full flex-col rounded-none md:flex-row">
+              <div className=" flex h-[20rem] flex-col md:h-full md:w-[40%]">
+                <OrderList className="h-[20rem] grow" initOrder={order} />
+                <ActionButtons
+                  type={orderMode}
+                  closeOrderView={closeOrderView}
+                />
+              </div>
+              <CategoryList className="flex h-[20rem] overflow-y-auto pt-4 md:mt-0 md:h-full md:flex-1" />
+            </div>
+          </OrderListContextProvider>
+        </OrderInfoContextProvider>
       </DialogContent>
     </Dialog>
   );
@@ -121,6 +113,8 @@ function OrderList({
   const orderInfo = useOrderInfo();
   const { cursor, list } = order;
   const { onGroup, onItem, onOption } = cursor;
+
+  console.log(list);
 
   useEffect(() => {
     if (initOrder) {
@@ -232,6 +226,8 @@ function ActionButtons({
     }
   }, [isScreenLg]);
 
+  console.log(info.tableName);
+
   return (
     <div className={cn("bg-background pt-2 md:static", className)}>
       <div className="grid grid-cols-5 gap-2">
@@ -295,7 +291,7 @@ function ActionButtons({
                 type,
               });
             }}
-            disabled={order.isOrderListEmpty}
+            disabled={order.isOrderListEmpty || info.tableName.length === 0}
             className="md:h-[3rem] md:text-2xl"
           >
             Save Order

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, memberProcedure, passcodeProcedure } from "../trpc";
-import { optionInputSchema } from "~/app/stores/[storeId]/items/(comps)/options";
+import { optionInputSchema } from "~/app/stores/[storeId]/items/_components/options";
 import { optionTable } from "~/server/db/schema";
 import { and, eq } from "drizzle-orm";
 

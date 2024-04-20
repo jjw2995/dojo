@@ -6,6 +6,7 @@ import React, { useContext, useState } from "react";
 interface OrderInfoContextProps {
   tableName: string;
   //   decCursor: () => void;
+  isInfoValid: () => boolean;
   fn: {
     setTableName: (name: string) => void;
   };
@@ -32,8 +33,14 @@ const OrderInfoContextProvider = ({
   //     });
   //   };
 
+  const isInfoValid = () => {
+    // for some reason, this keeps reseting to "", maybe PWA issue?
+    return state.tableName.length > 0;
+  };
+
   const initState: OrderInfoContextProps = {
     tableName: "",
+    isInfoValid,
     fn: {
       setTableName,
     },

@@ -77,7 +77,11 @@ This page is where hall would use to input orders and receive payments.
 
 - [x] orderListView
 - [x] order edit, add items or delete
-- [ ] view saved orders
+- [x] view saved orders
+
+- [ ] add marker to tell apart saved from new items
+- [ ] tell apart item specific modifiers from memos
+- [ ] fix highlight to individual cursorable element
 - [ ] edit saved orders
 
 - [ ] togo

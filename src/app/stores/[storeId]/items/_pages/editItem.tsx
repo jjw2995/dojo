@@ -10,7 +10,7 @@ import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
-import Taxes from "./(comps)/taxes";
+import Taxes from "../_components/taxes";
 
 type CategoryInput = { itemName?: string; itemPrice?: string };
 

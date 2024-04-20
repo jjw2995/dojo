@@ -23,8 +23,8 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { RouterOutputs } from "~/trpc/shared";
 import { useRouter } from "next/navigation";
-import ItemDetail from "./itemDetail";
-import CreateItem from "./createItem";
+import ItemDetail from "./_pages/itemDetail";
+import CreateItem from "./_pages/createItem";
 import {
   Dialog,
   DialogContent,
@@ -32,8 +32,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import EditItemView from "./editItem";
-import { useItemPageUrl } from "./(comps)/utils";
+import EditItemView from "./_pages/editItem";
+import { useItemPageUrl } from "./_components/utils";
 
 type Category = RouterOutputs["category"]["get"][number];
 
@@ -43,7 +43,7 @@ export default function Categories() {
 
   return (
     <div className="flex h-full">
-      {categories.data ? (
+      {categories.data?.length ? (
         <Accordion
           className="no-scrollbar flex-1 overflow-auto"
           type="multiple"
@@ -57,7 +57,7 @@ export default function Categories() {
           </div>
         </Accordion>
       ) : (
-        <div className="flex h-full w-full items-center justify-center text-center text-3xl font-semibold text-slate-400 md:text-4xl">
+        <div className="flex h-full w-full items-center justify-center text-center text-3xl font-semibold text-slate-400 md:flex-1 md:text-4xl">
           add category
         </div>
       )}

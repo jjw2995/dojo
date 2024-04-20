@@ -23,7 +23,7 @@ import { Label } from "~/components/ui/label";
 // import Link from "next/link";
 import { api } from "~/trpc/react";
 import { RouterOutputs } from "~/trpc/shared";
-import OptionModal from "./(comps)/options";
+import OptionModal from "../_components/options";
 import { Input } from "~/components/ui/input";
 import Link from "next/link";
 import {
@@ -32,7 +32,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { useItemPageUrl } from "./(comps)/utils";
+import { useItemPageUrl } from "../_components/utils";
 
 type Details = RouterOutputs["item"]["get"];
 

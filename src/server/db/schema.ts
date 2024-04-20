@@ -10,7 +10,7 @@ import {
   sqliteTableCreator,
   text,
 } from "drizzle-orm/sqlite-core";
-import { optionInputSchema } from "~/app/stores/[storeId]/items/(comps)/options";
+import { optionInputSchema } from "~/app/stores/[storeId]/items/_components/options";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -54,9 +54,6 @@ export const accounts = sqliteTable(
   (account) => ({
     compoundKey: primaryKey(account.provider, account.providerAccountId),
     userIdIdx: index("accounts_userId_idx").on(account.userId),
-    // compoundKey: primaryKey({
-    //     columns: [account.provider, account.providerAccountId],
-    //   }),
   }),
 );
 
@@ -67,8 +64,10 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
 export const sessions = sqliteTable(
   "session",
   {
-    sessionToken: text("sessionToken", { length: 255 }).notNull().primaryKey(),
-    userId: text("userId", { length: 255 }).notNull(),
+    sessionToken: text("sessionToken").notNull().primaryKey(),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
     expires: integer("expires", { mode: "timestamp" }).notNull(),
   },
   (session) => ({
