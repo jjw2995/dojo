@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import React, { forwardRef, useEffect, useMemo, useState } from "react";
-import useIsScreenLg from "~/components/customHooks/useIsScreenLg";
 import {
   Accordion,
   AccordionContent,
@@ -51,6 +50,7 @@ import {
 } from "../../_contexts/orderInfoContext";
 import { type orderMode } from "~/components/enums";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
+import useScreenSize from "~/components/customHooks/useScreenSize";
 
 type Category = RouterOutputs["category"]["get"][number];
 type Order = RouterOutputs["order"]["getOrders"][number];
@@ -205,7 +205,7 @@ function ActionButtons({
   type: orderMode;
   closeOrderView: () => void;
 }) {
-  const isScreenLg = useIsScreenLg();
+  const useScreen = useScreenSize();
   const [isOpen, setOpen] = useState(false);
   const order = useOrderList();
   const info = useOrderInfo();
@@ -219,12 +219,12 @@ function ActionButtons({
   });
 
   useEffect(() => {
-    if (isScreenLg) {
+    if (useScreen.isLg) {
       setOpen(true);
     } else {
       setOpen(false);
     }
-  }, [isScreenLg]);
+  }, [useScreen.isLg]);
 
   console.log(info.tableName);
 
@@ -299,7 +299,7 @@ function ActionButtons({
         </Collapsible.Content>
         <div className="flex justify-center">
           <Collapsible.Trigger
-            disabled={isScreenLg}
+            disabled={useScreen.isLg}
             onClick={() => {
               setOpen((r) => !r);
             }}
