@@ -70,9 +70,9 @@ This page is where hall would use to input orders and receive payments.
   - [x] responsive layout
     - [x] category-item listView
     - [x] orderListView
-    - [] actionButtonView
+    - [ ] actionButtonView
       - [x] view
-      - [] button functional (30%)
+      - [ ] button functional (30%)
   - [x] createOrder
 
 - [x] orderListView
@@ -95,8 +95,11 @@ This page is for the kitchen stations. Selecting a station will only show items 
 - [x] create stations
 - [x] delete stations
 - [ ] show orders
+
   - [x] filter by station
   - [ ]
+
+- [ ] use react-virtualized (for speed & sync scroll between rows)
 - [ ] show orders realtime (websocket ably, SSE? pubsub?)
   - [ ] realtime new order append
   - [ ] (maybe?) realtime station_specific isDone update

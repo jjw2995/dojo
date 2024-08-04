@@ -75,6 +75,7 @@
 @layer base {
   * {
     @apply border-border;
+    /* scrollbar-gutter: stable both-edges; */
   }
   body {
     @apply bg-background text-foreground;
@@ -102,9 +103,11 @@
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
-
   .no-scrollbar {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
+  }
+  .blu {
+    @apply bg-blue-400;
   }
 }

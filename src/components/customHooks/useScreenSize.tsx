@@ -22,7 +22,7 @@ export default function useScreenSize() {
   }
 
   function isMd() {
-    return width >= SCREEN_THREASH_HOLD.MD;
+    return SCREEN_THREASH_HOLD.LG > width && width >= SCREEN_THREASH_HOLD.MD;
   }
 
   function isSm() {
