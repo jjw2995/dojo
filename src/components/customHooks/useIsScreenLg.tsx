@@ -1,9 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 
-const SCREEN_THREASH_HOLD = { LG: 768, MD: 576 };
-
-export default function useScreenSize() {
+export default function useIsScreenLg() {
   const [width, setWidth] = useState(window.innerWidth);
 
   useEffect(() => {
@@ -17,17 +15,5 @@ export default function useScreenSize() {
     };
   }, []);
 
-  function isLg() {
-    return width >= SCREEN_THREASH_HOLD.LG;
-  }
-
-  function isMd() {
-    return width >= SCREEN_THREASH_HOLD.MD;
-  }
-
-  function isSm() {
-    return width < SCREEN_THREASH_HOLD.MD;
-  }
-
-  return { isLg: isLg(), isMd: isMd(), isSm: isSm() };
+  return width >= 768;
 }

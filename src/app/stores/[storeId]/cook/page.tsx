@@ -40,19 +40,10 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 
-// import List from "react-virtualized/dist/commonjs/List";
-import {
-  AutoSizer,
-  Grid,
-  GridCellRenderer,
-  List,
-  ListRowRenderer,
-} from "react-virtualized";
-
 type Order = RouterOutputs["order"]["getOrders"][number];
 type Orders = Order[] | undefined;
 
-type OrderList = Order["list"];
+type List = Order["list"];
 
 type OrderWithStation = Order & { isCurStationDone: boolean };
 
@@ -61,40 +52,25 @@ type StationInput = { stationName: string };
 const QPARAM = "stationId";
 
 export default function Page() {
-  const queryParam = useQueryParam();
-
-  const orders = api.order.getOrders.useQuery();
-  const [orderList, setOrderList] = useState<OrderWithStation[]>([]);
-
-  useEffect(() => {
-    const a = _filterByStation(orders.data, queryParam.stationId);
-    const [updateOrders] = _sortDone(a);
-
-    setOrderList(updateOrders);
-  }, [orders.data, queryParam.stationId]);
-
+  const useQP = useQueryParam();
   return (
     <div className="flex h-full flex-col">
-      <div className="flex flex-row justify-between p-2 text-2xl">
-        <StationSelect {...queryParam} />
-        <StationMenu {...queryParam} />
+      <div className="flex flex-row justify-between p-4 text-2xl">
+        <StationSelect {...useQP} />
+        <StationMenu {...useQP} />
       </div>
-
-      <CookList orderList={orderList} stationId={queryParam.stationId} />
+      <CookList />
     </div>
   );
 }
 
 // paginated orders hourly, completed or not,
 // TODO: optimize with react-window OR virtualized
-function CookList({
-  orderList,
-  stationId,
-}: {
-  orderList: OrderWithStation[];
-  stationId: number | undefined;
-}) {
+function CookList() {
+  const q = useQueryParam();
   const utils = api.useUtils();
+  const orders = api.order.getOrders.useQuery();
+  const [orderList, setOrderList] = useState<OrderWithStation[] | undefined>();
   const setDone = api.order.setStaionDone.useMutation({
     onSuccess(data, variables) {
       utils.order.getOrders.setData(undefined, (prev) => {
@@ -102,6 +78,12 @@ function CookList({
       });
     },
   });
+  useEffect(() => {
+    const a = _filterByStation(orders.data, q.stationId);
+    const [updateOrders] = _sortDone(a);
+
+    setOrderList(updateOrders);
+  }, [orders.data, q.stationId]);
 
   if (!orderList) {
     return (
@@ -111,102 +93,59 @@ function CookList({
     );
   }
 
-  const cellRenderer: GridCellRenderer = ({ columnIndex, style, key }) => {
-    const order = orderList[columnIndex];
-
-    if (!order) {
-      return null;
-    }
-
-    return (
-      <div style={style} key={key} className="flex">
-        <Card
-          data-isDone={order.isCurStationDone}
-          className="m-2 flex flex-grow flex-col p-2"
-          // className="flex h-[calc(100%-1rem)] w-[calc(100vw-2rem)] snap-center flex-col first:ml-4 last:mr-4 md:w-[20vw] md:snap-start md:scroll-ml-2 md:last:mr-[75vw] [&[data-isDone=true]]:bg-slate-300"
-        >
-          <CardHeader>
-            <CardTitle className="flex justify-between">
-              <span>{order.name}</span>
-            </CardTitle>
-            <CardDescription className="flex justify-between">
-              <span>{order.type}</span>
-              <span>
-                {order.createdAt}_{order.isCurStationDone ? "done" : "no"}
-              </span>
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex-grow ">
-            {/* <CardContent className="grid flex-1 grid-cols-1 overflow-y-auto bg-slate-300"> */}
-            <div>
-              {order.list?.map((subList, subListIdx) => {
-                return (
-                  <div className="border-b-2" key={`subList${subListIdx}`}>
-                    {subList.map((item, idx) => {
-                      return (
-                        <div key={`itemId_${item.id}_${idx}`}>
-                          <span>{item.qty}</span>
-                          <span className="ml-1">{item.name}</span>
-                          {item.stations.map((station) => {
-                            return `${station.name}_${station.id}`;
-                          })}
-                        </div>
-                      );
-                    })}
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-          <CardFooter className="justify-end">
-            <Button
-              onClick={() => {
-                setDone.mutate({ orderId: order.id, stationId: stationId });
-              }}
-            >
-              done
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
-    );
-  };
-
-  const getRightDivisor = (width: number) => {
-    const W = 320;
-    const Limit = 20;
-    const div = width / W;
-    const mod = width % W;
-
-    const a = Math.floor(div) + (mod > W - Limit ? 1 : 0);
-    if (a !== 0) return a;
-    return 1;
-  };
-
   return (
-    <div
-      // className="grid h-full snap-x snap-mandatory grid-flow-col grid-rows-1 gap-2 overflow-x-auto bg-slate-300 md:gap-4"
-      className="flex h-full"
-    >
-      <div className="flex-1">
-        <AutoSizer>
-          {({ height, width }) => (
-            <Grid
-              className="snap-x snap-mandatory snap-always"
-              //   onScroll={(e) => {
-              //     console.log(e.clientHeight);
-              //   }}
-              width={width}
-              height={height}
-              columnWidth={width / getRightDivisor(width)}
-              columnCount={orderList.length}
-              rowHeight={height - 5}
-              rowCount={1}
-              cellRenderer={cellRenderer}
-            />
-          )}
-        </AutoSizer>
-      </div>
+    <div className="grid h-full snap-x snap-mandatory grid-flow-col grid-rows-1 gap-2 overflow-x-auto md:gap-4">
+      {orderList.map((order) => {
+        return (
+          <Card
+            key={`orderId_${order.id}`}
+            data-isDone={order.isCurStationDone}
+            className="flex h-[calc(100%-1rem)] w-[calc(100vw-2rem)] snap-center flex-col first:ml-4 last:mr-4 md:w-[20vw] md:snap-start md:scroll-ml-2 md:last:mr-[75vw] [&[data-isDone=true]]:bg-slate-300"
+          >
+            <CardHeader>
+              <CardTitle className="flex justify-between">
+                <span>{order.name}</span>
+              </CardTitle>
+              <CardDescription className="flex justify-between">
+                <span>{order.type}</span>
+                <span>
+                  {order.createdAt}_{order.isCurStationDone ? "done" : "no"}
+                </span>
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid flex-1 grid-cols-1 overflow-y-auto">
+              <div>
+                {order.list?.map((subList, subListIdx) => {
+                  return (
+                    <div className="border-b-2" key={`subList${subListIdx}`}>
+                      {subList.map((item, idx) => {
+                        return (
+                          <div key={`itemId_${item.id}_${idx}`}>
+                            <span>{item.qty}</span>
+                            <span className="ml-1">{item.name}</span>
+                            {item.stations.map((station) => {
+                              return `${station.name}_${station.id}`;
+                            })}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+            <CardFooter className="justify-end">
+              <Button
+                onClick={() => {
+                  setDone.mutate({ orderId: order.id, stationId: q.stationId });
+                }}
+              >
+                done
+              </Button>
+            </CardFooter>
+          </Card>
+        );
+      })}
     </div>
   );
 }
@@ -369,12 +308,20 @@ function useQueryParam() {
   const searchParams = useSearchParams();
   const stationId = searchParams.get(QPARAM);
 
+  //   const [url, setUrl] = useState(pathname);
+
+  //   useEffect(() => {
+  //     router.replace(url);
+  //   }, [url]);
+
   function resetQueryParam() {
     router.replace(pathname);
+    // setUrl(pathname);
   }
 
   function setQueryParam(val: string) {
     router.replace(`${pathname}?${QPARAM}=${val}`);
+    // setUrl(`${pathname}?${QPARAM}=${val}`);
   }
 
   return {
@@ -414,13 +361,13 @@ function _setStationDone(
   });
 }
 
-function _sortDone(orders: OrderWithStation[]): [OrderWithStation[], number] {
+function _sortDone(orders: OrderWithStation[] | undefined) {
   const tempDoneOrders: OrderWithStation[] = [];
   const tempStillOrders: OrderWithStation[] = [];
 
   if (!orders) {
     const index = -1;
-    const arr: OrderWithStation[] = [];
+    const arr: OrderWithStation[] | undefined = undefined;
     return [arr, index] as const;
   }
 
@@ -439,8 +386,8 @@ function _sortDone(orders: OrderWithStation[]): [OrderWithStation[], number] {
 function _filterByStation(
   orders: Orders | undefined,
   stationId: number | undefined,
-): OrderWithStation[] {
-  if (!orders) return [];
+): OrderWithStation[] | undefined {
+  if (!orders) return undefined;
 
   if (!stationId) {
     return orders.map((order) => {
@@ -471,7 +418,7 @@ function _filterByStation(
       }
       return undefined;
     });
-    const b: OrderList = [];
+    const b: List = [];
 
     tempList.forEach((r) => {
       if (r) {
