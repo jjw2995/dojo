@@ -67,7 +67,7 @@ export default function Page() {
 // paginated orders hourly, completed or not,
 // TODO: optimize with react-window OR virtualized
 function CookList() {
-  const q = useQueryParam();
+  const queryParam = useQueryParam();
   const utils = api.useUtils();
   const orders = api.order.getOrders.useQuery();
   const [orderList, setOrderList] = useState<OrderWithStation[] | undefined>();
@@ -79,11 +79,11 @@ function CookList() {
     },
   });
   useEffect(() => {
-    const a = _filterByStation(orders.data, q.stationId);
+    const a = _filterByStation(orders.data, queryParam.stationId);
     const [updateOrders] = _sortDone(a);
 
     setOrderList(updateOrders);
-  }, [orders.data, q.stationId]);
+  }, [orders.data, queryParam.stationId]);
 
   if (!orderList) {
     return (
@@ -100,7 +100,7 @@ function CookList() {
           <Card
             key={`orderId_${order.id}`}
             data-isDone={order.isCurStationDone}
-            className="flex h-[calc(100%-1rem)] w-[calc(100vw-2rem)] snap-center flex-col first:ml-4 last:mr-4 md:w-[20vw] md:snap-start md:scroll-ml-2 md:last:mr-[75vw] [&[data-isDone=true]]:bg-slate-300"
+            className="flex h-[calc(100%-1rem)] w-[calc(100vw-3rem)] snap-center flex-col first:ml-6 last:mr-6 md:w-80 md:snap-start md:scroll-ml-2 md:last:mr-[calc(100vw-20rem)] [&[data-isDone=true]]:bg-slate-300"
           >
             <CardHeader>
               <CardTitle className="flex justify-between">
@@ -137,7 +137,10 @@ function CookList() {
             <CardFooter className="justify-end">
               <Button
                 onClick={() => {
-                  setDone.mutate({ orderId: order.id, stationId: q.stationId });
+                  setDone.mutate({
+                    orderId: order.id,
+                    stationId: queryParam.stationId,
+                  });
                 }}
               >
                 done

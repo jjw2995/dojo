@@ -37,7 +37,7 @@ import { useItemPageUrl } from "./_components/utils";
 
 type Category = RouterOutputs["category"]["get"][number];
 
-export default function Categories() {
+export default function Page() {
   const categories = api.category.get.useQuery();
   const { createID, itemId, editItemId, getItemDetailUrl } = useItemPageUrl();
 
