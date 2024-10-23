@@ -119,7 +119,7 @@ function Options({ options }: { options: Details["options"] }) {
   return (
     <div>
       {options.map((r) => {
-        return <div>{r.name}</div>;
+        return <div key={r.id}>{r.name}</div>;
       })}
     </div>
   );

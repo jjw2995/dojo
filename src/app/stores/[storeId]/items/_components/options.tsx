@@ -70,7 +70,7 @@ function OptionEdit({ itemId }: { itemId: number }) {
               {option.name}
             </Label>
             <div className="space-x-2">
-              <Button disabled size="sm" variant="ghost" onClick={() => {}}>
+              <Button disabled size="sm" variant="ghost">
                 <Edit />
               </Button>
               <Button
@@ -165,7 +165,7 @@ function OptionCreate({ itemId }: { itemId: number }) {
 
               valueAsNumber: true,
               disabled: choicesArr.length < 1,
-              onChange(e) {
+              onChange(e: ChangeEvent<HTMLInputElement>) {
                 if (e.target.value !== "") {
                   e.target.value = Math.min(
                     Math.max(

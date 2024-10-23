@@ -471,7 +471,7 @@ function OptionsModal({ item }: { item: Category["items"][number] }) {
         <Button
           disabled={!areConstraintsMet}
           onClick={() => {
-            let modifiers = item.options.flatMap((opt, oidx) => {
+            const modifiers = item.options.flatMap((opt, oidx) => {
               const choices = opt.choices.filter((chc, cidx) => {
                 return toggledOptions[oidx]?.includes(cidx);
               });
@@ -489,7 +489,7 @@ function OptionsModal({ item }: { item: Category["items"][number] }) {
         <DialogClose
           disabled={!areConstraintsMet}
           onClick={() => {
-            let modifiers = item.options.flatMap((opt, oidx) => {
+            const modifiers = item.options.flatMap((opt, oidx) => {
               const choices = opt.choices.filter((chc, cidx) => {
                 return toggledOptions[oidx]?.includes(cidx);
               });
