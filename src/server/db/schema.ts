@@ -19,7 +19,7 @@ import { optionInputSchema } from "~/app/stores/[storeId]/items/_components/opti
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
 
-export const sqliteTable = sqliteTableCreator((name) => `dojo_${name}`);
+export const sqliteTable = sqliteTableCreator((name) => `${name}`);
 
 export const users = sqliteTable("user", {
   id: text("id").notNull().primaryKey(),
