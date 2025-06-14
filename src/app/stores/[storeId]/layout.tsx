@@ -1,21 +1,23 @@
 "use client";
 
+import { use } from "react";
 import MemberAuth from "~/components/auth/member";
 import Nav from "~/components/nav";
 // import { api } from "~/trpc/react";
 
 export default function StoreLayout({
-  children,
-  params,
+	children,
+	params,
 }: {
-  children: React.ReactNode;
-  params: {
-    storeId: string;
-  };
+	children: React.ReactNode;
+	params: Promise<{
+		storeId: string;
+	}>;
 }) {
-  return (
-    <MemberAuth storeId={params.storeId}>
-      <Nav storeId={params.storeId}>{children}</Nav>
-    </MemberAuth>
-  );
+	const { storeId } = use(params);
+	return (
+		<MemberAuth storeId={storeId}>
+			<Nav storeId={storeId}>{children}</Nav>
+		</MemberAuth>
+	);
 }

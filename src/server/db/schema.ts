@@ -254,7 +254,7 @@ export const orderTable = sqliteTable("order", {
   id: integer("id", { mode: "number" }).primaryKey(),
   storeId: integer("storeId", { mode: "number" }).notNull(),
   dedupeId: integer("dedupeId", { mode: "number" }).notNull(),
-  list: text("list", { mode: "json" })
+  itemList: text("itemList", { mode: "json" })
     .$type<typeof orderItemListSchema._type>()
     .notNull(),
   type: text("type", { enum: ["TABLE", "TOGO", "ONLINE"] }),

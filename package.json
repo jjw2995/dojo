@@ -5,7 +5,8 @@
   "scripts": {
     "build": "next build",
     "dbpush": "dotenv drizzle-kit push:sqlite",
-    "dbpull": "dotenv drizzle-kit generate:sqlite --custom",
+    "dbgen": "dotenv drizzle-kit generate:sqlite",
+    "dbmig": "dotenv drizzle-kit migrate:sqlite",
     "dbstudio": "dotenv drizzle-kit studio --verbose",
     "dev": "next dev",
     "lint": "next lint",
@@ -46,7 +47,7 @@
     "clsx": "^2.1.0",
     "drizzle-orm": "^0.28.6",
     "lucide-react": "^0.309.0",
-    "next": "^14.1.4",
+    "next": "^15.3.3",
     "next-auth": "^4.23.0",
     "next-themes": "^0.2.1",
     "react": "18.2.0",
@@ -66,17 +67,21 @@
     "@typescript-eslint/parser": "^6.3.0",
     "autoprefixer": "^10.4.14",
     "dotenv-cli": "^7.3.0",
-    "drizzle-kit": "^0.19.13",
+    "drizzle-kit": "^0.19.1",
     "eslint": "^8.47.0",
     "eslint-config-next": "^13.5.4",
     "postcss": "^8.4.27",
-    "prettier": "^3.0.0",
-    "prettier-plugin-tailwindcss": "^0.5.1",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.5.14",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.1.6"
   },
   "ct3aMetadata": {
     "initVersion": "7.22.0"
   },
-  "packageManager": "pnpm@8.5.1"
+  "packageManager": "pnpm@8.5.1",
+  "overrides": {
+    "ajv": "^8.17.1",
+    "whatwg-url": "^14.0.0"
+  }
 }

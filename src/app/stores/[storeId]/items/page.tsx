@@ -45,8 +45,9 @@ export default function Page() {
     <div className="flex h-full">
       {categories.data?.length ? (
         <Accordion
-          className="no-scrollbar flex-1 overflow-auto"
-          type="multiple"
+        className="no-scrollbar flex-1 overflow-auto"
+        type="multiple"
+        
         >
           <div className="relative md:mx-4 md:mb-0">
             {categories.data.map((category) => {

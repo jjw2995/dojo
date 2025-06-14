@@ -7,10 +7,11 @@ import { TRPCReactProvider } from "~/trpc/react";
 import SessionCC from "~/components/provider/session";
 import { ThemeProvider } from "~/components/provider/theme";
 import { Metadata, Viewport } from "next";
+import React from "react";
 
 const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
+	subsets: ["latin"],
+	variable: "--font-sans",
 });
 
 // export const metadata = {
@@ -25,65 +26,66 @@ const APP_TITLE_TEMPLATE = "%s - Dojo";
 const APP_DESCRIPTION = "POS, made for you";
 
 export const metadata: Metadata = {
-  applicationName: APP_NAME,
-  title: {
-    default: APP_DEFAULT_TITLE,
-    template: APP_TITLE_TEMPLATE,
-  },
-  description: APP_DESCRIPTION,
-  manifest: "/manifest.json",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: APP_DEFAULT_TITLE,
-    // startUpImage: [],
-  },
-  formatDetection: {
-    telephone: false,
-  },
-  openGraph: {
-    type: "website",
-    siteName: APP_NAME,
-    title: {
-      default: APP_DEFAULT_TITLE,
-      template: APP_TITLE_TEMPLATE,
-    },
-    description: APP_DESCRIPTION,
-  },
-  twitter: {
-    card: "summary",
-    title: {
-      default: APP_DEFAULT_TITLE,
-      template: APP_TITLE_TEMPLATE,
-    },
-    description: APP_DESCRIPTION,
-  },
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+	applicationName: APP_NAME,
+	title: {
+		default: APP_DEFAULT_TITLE,
+		template: APP_TITLE_TEMPLATE,
+	},
+	description: APP_DESCRIPTION,
+	manifest: "/manifest.json",
+	appleWebApp: {
+		capable: true,
+		statusBarStyle: "default",
+		title: APP_DEFAULT_TITLE,
+		// startUpImage: [],
+	},
+	formatDetection: {
+		telephone: false,
+	},
+	openGraph: {
+		type: "website",
+		siteName: APP_NAME,
+		title: {
+			default: APP_DEFAULT_TITLE,
+			template: APP_TITLE_TEMPLATE,
+		},
+		description: APP_DESCRIPTION,
+	},
+	twitter: {
+		card: "summary",
+		title: {
+			default: APP_DEFAULT_TITLE,
+			template: APP_TITLE_TEMPLATE,
+		},
+		description: APP_DESCRIPTION,
+	},
+	icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
 export const viewport: Viewport = {
-  themeColor: "#FFFFFF",
+	themeColor: "#FFFFFF",
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }) {
-  return (
-    <html lang="en" className="">
-      <body className={`font-sans ${inter.variable}`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <TRPCReactProvider headers={headers()}>
-            <SessionCC>{children}</SessionCC>
-          </TRPCReactProvider>
-        </ThemeProvider>
-      </body>
-    </html>
-  );
+	const Headers = React.use(headers())
+	return (
+		<html lang="en" className="">
+			<body className={`font-sans ${inter.variable}`}>
+				<ThemeProvider
+					attribute="class"
+					defaultTheme="system"
+					enableSystem
+					disableTransitionOnChange
+				>
+					<TRPCReactProvider headers={Headers}>
+						<SessionCC>{children}</SessionCC>
+					</TRPCReactProvider>
+				</ThemeProvider>
+			</body>
+		</html>
+	);
 }
