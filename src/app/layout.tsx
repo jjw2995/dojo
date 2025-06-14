@@ -73,7 +73,8 @@ export default function RootLayout({
 }) {
 	const Headers = React.use(headers())
 	return (
-		<html lang="en" className="">
+		<html lang="en" className="" suppressHydrationWarning>
+			<head />
 			<body className={`font-sans ${inter.variable}`}>
 				<ThemeProvider
 					attribute="class"
