@@ -82,6 +82,7 @@
   "packageManager": "pnpm@8.5.1",
   "overrides": {
     "ajv": "^8.17.1",
-    "whatwg-url": "^14.0.0"
+    "whatwg-url": "^14.0.0",
+    "@radix-ui/react-focus-scope": "1.1.1"
   }
 }

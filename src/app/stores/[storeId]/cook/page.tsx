@@ -57,7 +57,7 @@ export default function Page() {
 		<div className="flex h-full flex-col">
 			<div className="flex flex-row justify-between p-4 text-2xl">
 				<StationSelect {...useQP} />
-				{/* <StationMenu {...useQP} /> */}
+				<StationMenu {...useQP} />
 			</div>
 			<CookList />
 		</div>
@@ -160,9 +160,6 @@ function StationSelect({
 }: ReturnType<typeof useQueryParam>) {
 	const stations = api.station.get.useQuery();
 	const [isOpen, setIsOpen] = useState(false);
-	//   const [value, setValue] = useState<string | null>(
-	//     stationId ? stationId.toString() : null,
-	//   );
 
 	function setSelectValue(val: string) {
 		if (val === "_") {
@@ -204,9 +201,9 @@ function StationSelect({
 					>
 						+ add station
 					</div>
+					<Create isOpen={isOpen} setIsOpen={setIsOpen} />
 				</SelectContent>
 			</Select>
-			<Create isOpen={isOpen} setIsOpen={setIsOpen} />
 		</>
 	);
 }
@@ -257,7 +254,7 @@ function Create({
 				</form>
 				<DialogFooter className="justify-center gap-2">
 					<DialogClose asChild>
-						<Button variant="destructive">cancel</Button>
+						<Button variant="destructive" >cancel</Button>
 					</DialogClose>
 					<Button type="submit">create</Button>
 				</DialogFooter>
