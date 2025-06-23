@@ -71,7 +71,7 @@ export default function RootLayout({
 }: {
 	children: React.ReactNode;
 }) {
-	const Headers = React.use(headers())
+	const Headers = headers()
 	return (
 		<html lang="en" className="" suppressHydrationWarning>
 			<head />

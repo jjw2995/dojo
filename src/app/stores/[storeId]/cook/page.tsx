@@ -161,6 +161,12 @@ function StationSelect({
 	const stations = api.station.get.useQuery();
 	const [isOpen, setIsOpen] = useState(false);
 
+	useEffect(() => {
+		return () => {
+			document.body.style.pointerEvents = "auto";
+		};
+	}, []);
+
 	function setSelectValue(val: string) {
 		if (val === "_") {
 			resetQueryParam();
@@ -201,9 +207,9 @@ function StationSelect({
 					>
 						+ add station
 					</div>
-					<Create isOpen={isOpen} setIsOpen={setIsOpen} />
 				</SelectContent>
 			</Select>
+			<Create isOpen={isOpen} setIsOpen={setIsOpen} />
 		</>
 	);
 }
@@ -230,6 +236,11 @@ function Create({
 			},
 		);
 	};
+	useEffect(() => {
+		return () => {
+			document.body.style.pointerEvents = "auto";
+		};
+	}, []);
 
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -254,7 +265,7 @@ function Create({
 				</form>
 				<DialogFooter className="justify-center gap-2">
 					<DialogClose asChild>
-						<Button variant="destructive" >cancel</Button>
+						<Button variant="destructive">cancel</Button>
 					</DialogClose>
 					<Button type="submit">create</Button>
 				</DialogFooter>
@@ -308,20 +319,13 @@ function useQueryParam() {
 	const searchParams = useSearchParams();
 	const stationId = searchParams.get(QPARAM);
 
-	//   const [url, setUrl] = useState(pathname);
-
-	//   useEffect(() => {
-	//     router.replace(url);
-	//   }, [url]);
 
 	function resetQueryParam() {
 		router.replace(pathname);
-		// setUrl(pathname);
 	}
 
 	function setQueryParam(val: string) {
 		router.replace(`${pathname}?${QPARAM}=${val}`);
-		// setUrl(`${pathname}?${QPARAM}=${val}`);
 	}
 
 	return {

@@ -1,4 +1,4 @@
-"use client";
+"kse client";
 
 import { use } from "react";
 import MemberAuth from "~/components/auth/member";
@@ -10,14 +10,13 @@ export default function StoreLayout({
 	params,
 }: {
 	children: React.ReactNode;
-	params: Promise<{
+	params: {
 		storeId: string;
-	}>;
+	};
 }) {
-	const { storeId } = use(params);
 	return (
-		<MemberAuth storeId={storeId}>
-			<Nav storeId={storeId}>{children}</Nav>
+		<MemberAuth storeId={params.storeId}>
+			<Nav storeId={params.storeId}>{children}</Nav>
 		</MemberAuth>
 	);
 }
