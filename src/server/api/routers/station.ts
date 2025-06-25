@@ -43,7 +43,7 @@ export const stationRouter = createTRPCRouter({
 			});
 		}),
 
-	// check item reference, if so, veri...? or just two different things
+	// TODO: Error if item ref exist, delete otherwise
 	delete: passcodeProcedure
 		.input(z.object({ stationId: z.number() }))
 		.mutation(async ({ ctx, input }) => {

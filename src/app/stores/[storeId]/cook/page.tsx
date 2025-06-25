@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { api } from "~/trpc/react";
 import type { RouterOutputs } from "~/trpc/shared";
@@ -17,9 +17,11 @@ import {
 	Dialog,
 	DialogClose,
 	DialogContent,
+	DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
+	DialogTrigger,
 } from "~/components/ui/dialog";
 import {
 	DropdownMenu,
@@ -59,52 +61,43 @@ export default function Page() {
 				<StationSelect {...useQP} />
 				<StationMenu {...useQP} />
 			</div>
-			<CookList />
+			<OrderList />
 		</div>
 	);
 }
 
 // paginated orders hourly, completed or not,
 // TODO: optimize with react-window OR virtualized
-function CookList() {
-	const queryParam = useQueryParam();
+function OrderList() {
+	const q = useQueryParam();
 	const utils = api.useUtils();
 	const orders = api.order.getOrders.useQuery();
 	const [orderList, setOrderList] = useState<OrderWithStation[] | undefined>();
 	const setDone = api.order.setStaionDone.useMutation({
 		onSuccess(data, variables) {
 			utils.order.getOrders.setData(undefined, (prev) => {
-				return setStationDone(prev, variables.orderId, variables.stationId);
+				return _setStationDone(prev, variables.orderId, variables.stationId);
 			});
 		},
 	});
 	useEffect(() => {
-		const stationOrders = filterByStation(orders.data, queryParam.stationId);
-		const [updateOrders] = sortDone(stationOrders);
+		let a = _filterByStation(orders.data, q.stationId);
+		const { orders: updateOrders } = _sortDone(a);
 
 		setOrderList(updateOrders);
-	}, [orders.data, queryParam.stationId]);
-
-	if (!orderList) {
-		return (
-			<div className="flex h-full w-full items-center justify-center text-center text-3xl font-semibold text-slate-400 md:text-4xl">
-				waiting...
-			</div>
-		);
-	}
+	}, [orders.data, q.stationId]);
 
 	return (
-		<div className="grid h-full snap-x snap-mandatory grid-flow-col grid-rows-1 gap-2 overflow-x-auto md:gap-4">
-			{orderList.map((order) => {
+		<div className="grid h-full snap-x snap-mandatory grid-flow-col grid-rows-1 gap-2 overflow-x-scroll md:gap-4">
+			{orderList?.map((order) => {
 				return (
 					<Card
 						key={`orderId_${order.id}`}
-						data-isDone={order.isCurStationDone}
-						className="flex h-[calc(100%-1rem)] w-[calc(100vw-3rem)] snap-center flex-col first:ml-6 last:mr-6 md:w-80 md:snap-start md:scroll-ml-2 md:last:mr-[calc(100vw-20rem)] [&[data-isDone=true]]:bg-slate-300"
+						className="flex h-[calc(100%-1rem)] w-[calc(100vw-2rem)] snap-center flex-col first:ml-4 last:mr-4 md:w-[calc(20vw)] md:snap-start md:scroll-ml-2 md:last:mr-[75vw]"
 					>
 						<CardHeader>
 							<CardTitle className="flex justify-between">
-								<span>{order.name}</span>
+								{order.id}_<span>{order.name}</span>
 							</CardTitle>
 							<CardDescription className="flex justify-between">
 								<span>{order.type}</span>
@@ -113,7 +106,7 @@ function CookList() {
 								</span>
 							</CardDescription>
 						</CardHeader>
-						<CardContent className="grid flex-1 grid-cols-1 overflow-y-auto">
+						<CardContent className="grid flex-1 grid-cols-1 overflow-y-scroll">
 							<div>
 								{order.itemList?.map((subList, subListIdx) => {
 									return (
@@ -137,10 +130,7 @@ function CookList() {
 						<CardFooter className="justify-end">
 							<Button
 								onClick={() => {
-									setDone.mutate({
-										orderId: order.id,
-										stationId: queryParam.stationId,
-									});
+									setDone.mutate({ orderId: order.id, stationId: q.stationId });
 								}}
 							>
 								done
@@ -160,12 +150,6 @@ function StationSelect({
 }: ReturnType<typeof useQueryParam>) {
 	const stations = api.station.get.useQuery();
 	const [isOpen, setIsOpen] = useState(false);
-
-	useEffect(() => {
-		return () => {
-			document.body.style.pointerEvents = "auto";
-		};
-	}, []);
 
 	function setSelectValue(val: string) {
 		if (val === "_") {
@@ -209,12 +193,12 @@ function StationSelect({
 					</div>
 				</SelectContent>
 			</Select>
-			<Create isOpen={isOpen} setIsOpen={setIsOpen} />
+			<StationCreate isOpen={isOpen} setIsOpen={setIsOpen} />
 		</>
 	);
 }
 
-function Create({
+function StationCreate({
 	isOpen,
 	setIsOpen,
 }: {
@@ -236,11 +220,6 @@ function Create({
 			},
 		);
 	};
-	useEffect(() => {
-		return () => {
-			document.body.style.pointerEvents = "auto";
-		};
-	}, []);
 
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -262,13 +241,13 @@ function Create({
 							/>
 						</div>
 					</div>
+					<DialogFooter className="justify-center gap-2">
+						<DialogClose asChild>
+							<Button variant="destructive">cancel</Button>
+						</DialogClose>
+						<Button type="submit">create</Button>
+					</DialogFooter>
 				</form>
-				<DialogFooter className="justify-center gap-2">
-					<DialogClose asChild>
-						<Button variant="destructive">cancel</Button>
-					</DialogClose>
-					<Button type="submit">create</Button>
-				</DialogFooter>
 			</DialogContent>
 		</Dialog>
 	);
@@ -278,11 +257,12 @@ function StationMenu({
 	resetQueryParam,
 	stationId,
 }: Omit<ReturnType<typeof useQueryParam>, "setQueryParam">) {
+	const [isOpen, setIsOpen] = useState(false);
 	const util = api.useUtils();
 	const d = api.station.delete.useMutation({
 		onSuccess: async () => {
-			await util.station.get.invalidate();
 			resetQueryParam();
+			await util.station.get.invalidate();
 		},
 	});
 
@@ -296,18 +276,36 @@ function StationMenu({
 
 			<DropdownMenuPortal>
 				<DropdownMenuContent align="end">
-					<DropdownMenuItem
-						onClick={() => {
-							if (stationId) {
-								d.mutate({ stationId: stationId });
-							}
-						}}
-					>
-						delete
-					</DropdownMenuItem>
+					<DropdownMenuItem onClick={() => {
+						setIsOpen(true);
+					}}>delete</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenuPortal>
-		</DropdownMenu>
+			<Dialog open={isOpen} onOpenChange={(isOpen) => {
+				setIsOpen(isOpen);
+			}}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Are You Sure?</DialogTitle>
+					</DialogHeader>
+					<DialogDescription >
+						This will cause items to lose<br />relationship to the station
+					</DialogDescription>
+					<DialogFooter className="justify-center gap-2">
+						<DialogClose asChild>
+							<Button>cancel</Button>
+						</DialogClose>
+						<DialogClose asChild>
+							<Button variant="destructive" onClick={() => {
+								if (stationId) {
+									d.mutate({ stationId: stationId });
+								}
+							}}>delete</Button>
+						</DialogClose>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+		</DropdownMenu >
 	);
 }
 
@@ -318,7 +316,6 @@ function useQueryParam() {
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 	const stationId = searchParams.get(QPARAM);
-
 
 	function resetQueryParam() {
 		router.replace(pathname);
@@ -335,7 +332,7 @@ function useQueryParam() {
 	};
 }
 
-function setStationDone(
+function _setStationDone(
 	orders: Orders,
 	orderId: number,
 	stationId: number | undefined,
@@ -365,14 +362,17 @@ function setStationDone(
 	});
 }
 
-function sortDone(orders: OrderWithStation[] | undefined) {
-	const tempDoneOrders: OrderWithStation[] = [];
-	const tempStillOrders: OrderWithStation[] = [];
+// sortDone(orders: OrderWithStation[] | undefined):
+// (number | undefined)[] |
+// (number | OrderWithStation[])[]
+
+function _sortDone(orders: OrderWithStation[] | undefined) {
+	let tempDoneOrders: OrderWithStation[] = [];
+	let tempStillOrders: OrderWithStation[] = [];
 
 	if (!orders) {
 		const index = -1;
-		const arr: OrderWithStation[] | undefined = undefined;
-		return [arr, index] as const;
+		return { orders, index };
 	}
 
 	orders.forEach((order) => {
@@ -384,14 +384,14 @@ function sortDone(orders: OrderWithStation[] | undefined) {
 	});
 	const index = tempDoneOrders.length;
 	const arr = [...tempDoneOrders, ...tempStillOrders];
-	return [arr, index] as const;
+	return { orders: arr, index };
 }
 
-function filterByStation(
+function _filterByStation(
 	orders: Orders | undefined,
 	stationId: number | undefined,
-): OrderWithStation[] {
-	if (!orders) return [];
+): OrderWithStation[] | undefined {
+	if (!orders) return undefined;
 
 	if (!stationId) {
 		return orders.map((order) => {
@@ -402,8 +402,10 @@ function filterByStation(
 		});
 	}
 
+	//   let temporders
+
 	const tempOrders = orders.map((order) => {
-		const stations: boolean[] = [];
+		let stations: boolean[] = [];
 		const tempList = order.itemList.map((items) => {
 			const tempItems = items.filter((item) =>
 				item.stations.find((station) => {
@@ -420,7 +422,7 @@ function filterByStation(
 			}
 			return undefined;
 		});
-		const b: List = [];
+		let b: List = [];
 
 		tempList.forEach((r) => {
 			if (r) {
@@ -437,3 +439,4 @@ function filterByStation(
 
 	return tempOrders.filter((ol) => ol.list.length > 0);
 }
+
